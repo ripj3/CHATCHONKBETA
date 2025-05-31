@@ -1,0 +1,300 @@
+# ADHD Idea Harvest Template
+# ChatChonk - "Tame the Chatter. Find the Signal."
+# 
+# This template is designed to extract and organize scattered project ideas from
+# ideation-heavy conversations, optimized for ADHD thinking patterns.
+
+metadata:
+  name: "ADHD Idea Harvest"
+  id: "adhd-idea-harvest"
+  description: "Extracts and organizes scattered project ideas from ideation-heavy conversations"
+  version: "1.0.0"
+  author: "Rip Jonesy"
+  category: "neurodivergent"
+  tags: ["adhd", "ideation", "project-ideas", "hyperfocus"]
+
+# Configuration for AI processing
+ai_processing:
+  # Instruction for the AI to extract and organize content
+  system_prompt: |
+    You are an expert at organizing scattered thoughts from ADHD-style conversations.
+    Your task is to analyze this conversation and:
+    
+    1. Identify all project ideas, concepts, and creative thoughts
+    2. Group related ideas together, even if they appear in different parts of the conversation
+    3. Extract actionable next steps for each project idea
+    4. Identify the energy/excitement level for each idea (high, medium, low)
+    5. Note any patterns in thinking or creative connections
+    6. Preserve the original creative essence while providing structure
+    
+    The person who had this conversation experiences hyperfocus and generates many ideas
+    rapidly. Help them organize this creative output without losing the original spark.
+  
+  # Parameters for AI processing
+  parameters:
+    temperature: 0.7
+    max_tokens: 4000
+    top_p: 0.95
+
+# Template structure for the output
+template:
+  # YAML frontmatter for Obsidian/Dataview
+  frontmatter: |
+    ---
+    title: "{{title}}"
+    date: {{date}}
+    type: idea-harvest
+    source: "{{source}}"
+    platforms: {{platforms}}
+    mood: {{mood}}
+    energy_level: {{energy_level}}
+    idea_count: {{idea_count}}
+    project_count: {{project_count}}
+    actionable_items: {{actionable_count}}
+    tags: {{tags}}
+    dataview: true
+    ---
+  
+  # Main content structure
+  content: |
+    # {{title}}
+    
+    > [!summary] Conversation Overview
+    > **Date:** {{date}}  
+    > **Platforms:** {{platforms}}  
+    > **Mood/Energy:** {{mood}} / {{energy_level}}  
+    > **Ideas Extracted:** {{idea_count}}  
+    > **Projects Identified:** {{project_count}}  
+    > **Actionable Items:** {{actionable_count}}
+    
+    ## 🌟 Key Projects & Ideas
+    
+    {{#projects}}
+    ### {{name}}
+    
+    > [!info] Project Essence
+    > {{description}}
+    
+    #### Core Concepts
+    {{#concepts}}
+    - **{{title}}**: {{description}} [[{{title}}]]
+    {{/concepts}}
+    
+    #### Related Ideas
+    {{#related_ideas}}
+    - {{text}} {{#tags}}#{{.}} {{/tags}}
+    {{/related_ideas}}
+    
+    > [!tip] Action Steps
+    > {{#action_steps}}
+    > - {{.}}
+    > {{/action_steps}}
+    
+    > [!note] Energy Level: {{energy_level}}
+    > {{energy_notes}}
+    
+    ---
+    {{/projects}}
+    
+    ## 💭 Scattered Thoughts & Seeds
+    
+    > [!quote] Capture These Before They Vanish
+    > These are incomplete ideas or thought fragments that might be valuable later.
+    
+    {{#thought_seeds}}
+    - **{{title}}**: {{description}} {{#tags}}#{{.}} {{/tags}}
+    {{/thought_seeds}}
+    
+    ## 🔄 Patterns & Connections
+    
+    > [!abstract] Thinking Patterns
+    > Recurring themes and connections across different ideas.
+    
+    {{#patterns}}
+    ### {{name}}
+    {{description}}
+    
+    **Connected Ideas:**
+    {{#connected_ideas}}
+    - [[{{.}}]]
+    {{/connected_ideas}}
+    {{/patterns}}
+    
+    ## 📋 All Actionable Items
+    
+    > [!todo] Next Steps
+    > Consolidated list of all actionable items across projects.
+    
+    {{#all_actions}}
+    - [ ] {{text}} *from [[{{project}}]]* {{#priority}}🔥{{/priority}}
+    {{/all_actions}}
+    
+    ## 📊 ADHD Context
+    
+    > [!info] Session Insights
+    > **Hyperfocus Intensity:** {{hyperfocus_level}}  
+    > **Topic Jumps:** {{topic_jump_count}}  
+    > **Idea Generation Rate:** {{idea_rate}} per minute  
+    > **Completion Rate:** {{completion_percentage}}%
+    
+    ### Energy Flow
+    ```mermaid
+    graph LR
+      {{#energy_flow}}
+      {{from}} --> |{{transition}}| {{to}}
+      {{/energy_flow}}
+    ```
+    
+    ## 🏷️ All Tags
+    
+    {{#all_tags}}
+    #{{.}} 
+    {{/all_tags}}
+    
+    ---
+    
+    > [!success] Remember
+    > You enjoyed that hyperfocus. We organized it all.
+    > 
+    > Created with ❤️ by ChatChonk
+
+# Extraction rules for the AI to identify specific elements
+extraction_rules:
+  # Project identification
+  projects:
+    patterns:
+      - "I want to build"
+      - "I should create"
+      - "I'm thinking about making"
+      - "What if I developed"
+      - "My next project"
+      - "I could design"
+    context_window: 200  # words around the pattern to extract context
+  
+  # Action item identification
+  action_items:
+    patterns:
+      - "I need to"
+      - "Next step"
+      - "TODO"
+      - "I should"
+      - "First I'll"
+      - "Have to"
+    priority_indicators:
+      - "important"
+      - "urgent"
+      - "critical"
+      - "soon"
+      - "today"
+      - "now"
+  
+  # Energy/mood detection
+  energy_detection:
+    high_patterns:
+      - "excited"
+      - "amazing"
+      - "incredible"
+      - "love this idea"
+      - "can't wait"
+      - "!!!"
+    medium_patterns:
+      - "interesting"
+      - "good idea"
+      - "worth exploring"
+      - "might work"
+    low_patterns:
+      - "maybe"
+      - "could try"
+      - "not sure"
+      - "if I have time"
+  
+  # Tag generation
+  tag_generation:
+    base_tags:
+      - "adhd"
+      - "idea-harvest"
+      - "project-idea"
+    extract_from:
+      - project_names
+      - key_concepts
+      - domains_mentioned
+    exclude_words:
+      - "the"
+      - "and"
+      - "or"
+      - "but"
+      - "if"
+      - "then"
+
+# Obsidian-specific formatting
+obsidian:
+  # Link formatting
+  link_format: "[[{{title}}]]"
+  
+  # Callout styles
+  callouts:
+    info: "> [!info]"
+    tip: "> [!tip]"
+    warning: "> [!warning]"
+    important: "> [!important]"
+    success: "> [!success]"
+    quote: "> [!quote]"
+    abstract: "> [!abstract]"
+    todo: "> [!todo]"
+    summary: "> [!summary]"
+  
+  # Dataview queries to include
+  dataview_queries:
+    related_projects: |
+      ```dataview
+      TABLE idea_count, actionable_items, energy_level
+      FROM #project-idea
+      WHERE contains(file.outlinks, this.file.link)
+      SORT energy_level DESC
+      ```
+    
+    action_items: |
+      ```dataview
+      TASK
+      FROM [[{{title}}]]
+      ```
+  
+  # Canvas template for visual organization
+  canvas_template: |
+    {
+      "nodes": [
+        {"id": "root", "text": "{{title}}", "x": 0, "y": 0, "width": 200, "height": 60},
+        {{#projects}}
+        {"id": "{{id}}", "text": "{{name}}", "x": {{x}}, "y": {{y}}, "width": 180, "height": 50},
+        {{/projects}}
+        {{#thought_seeds}}
+        {"id": "seed-{{id}}", "text": "{{title}}", "x": {{x}}, "y": {{y}}, "width": 150, "height": 40},
+        {{/thought_seeds}}
+      ],
+      "edges": [
+        {{#project_connections}}
+        {"id": "{{id}}", "fromNode": "{{from}}", "toNode": "{{to}}", "label": "{{label}}"},
+        {{/project_connections}}
+      ]
+    }
+
+# Post-processing instructions
+post_processing:
+  # Generate backlinks between related concepts
+  generate_backlinks: true
+  
+  # Create separate notes for major projects
+  create_project_notes: true
+  
+  # Create MOC (Map of Content) for the harvest
+  create_moc: true
+  
+  # Generate daily note reference
+  link_to_daily_note: true
+  
+  # Tag management
+  consolidate_tags: true
+  max_tags_per_item: 5
+  
+  # File naming
+  file_naming: "ADHD-Harvest-{{date}}-{{title}}"

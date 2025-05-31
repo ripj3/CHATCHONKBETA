@@ -1,0 +1,124 @@
+# Cornell Notes Template for ChatChonk
+# Version: 1.0.0
+# Author: Rip Jonesy (with Factory AI assistance)
+# Description: Processes AI chat conversations into the Cornell Notes format,
+#              ideal for study, meeting notes, and structured learning.
+
+metadata:
+  name: "Cornell Notes Processor"
+  id: "cornell-notes-processor"
+  description: "Transforms AI chat conversations into the Cornell Notes format for structured review and learning."
+  version: "1.0.0"
+  author: "Rip Jonesy"
+  category: "structured-learning" # e.g., 'study', 'meeting-notes', 'research'
+  tags: ["cornell-notes", "study", "meeting", "summary", "structured", "adhd-friendly"]
+
+ai_processing:
+  system_prompt: |
+    You are an AI assistant specialized in transforming AI chat conversations into the Cornell Notes format.
+    Analyze the provided conversation and structure its content as follows:
+
+    1.  **Main Topic(s):** Identify the overarching theme or main subject(s) of the conversation.
+    2.  **Cues/Keywords/Questions:** Extract key terms, important questions asked or implied, main ideas, or significant concepts that serve as prompts for recalling information. These should be concise.
+    3.  **Main Notes:** Elaborate on the cues. Capture detailed information, explanations, examples, definitions, and supporting details discussed in the conversation related to each cue. Organize these notes logically.
+    4.  **Summary:** Write a concise summary (2-5 sentences) of the entire conversation, capturing the most critical takeaways and conclusions.
+    5.  **Action Items (if any):** List any clear tasks, to-dos, or follow-up actions mentioned.
+
+    The output should be well-organized, clear, and directly usable for study or review.
+    Focus on extracting the core information and presenting it in a structured manner.
+  parameters:
+    temperature: 0.6
+    max_tokens: 3500 # Adjust based on typical conversation length and desired detail
+    top_p: 0.9
+
+template:
+  frontmatter: |
+    ---
+    title: "Cornell Notes: {{main_topic | default('Untitled Conversation')}}"
+    date: {{date}}
+    source_conversation_id: "{{source_conversation_id | default('N/A')}}"
+    main_topic: "{{main_topic | default('General Discussion')}}"
+    keywords: [{{#keywords}}"{{.}}", {{/keywords}}]
+    related_topics: [{{#related_topics}}"[[{{.}}]]", {{/related_topics}}]
+    tags: [cornell-notes, {{#tags}}{{.}}, {{/tags}}]
+    chatchonk_template_id: "cornell-notes-processor"
+    dataview: true
+    ---
+  content: |
+    # Cornell Notes: {{main_topic | default('Untitled Conversation')}}
+
+    > [!summary] Conversation Overview
+    > **Date:** {{date}}
+    > **Source/Platform:** {{source_platform | default('N/A')}}
+    > **Main Topic(s):** {{main_topic_summary | default('Not identified')}}
+
+    ---
+
+    | Cues / Keywords / Questions                                  | Main Notes                                                                 |
+    | :----------------------------------------------------------- | :------------------------------------------------------------------------- |
+    {{#notes_sections}}
+    | > [!question]- {{cue_title | default('Cue/Question')}}        |                                                                            |
+    | {{cue_details | default('N/A')}}                             | > [!note]- Notes for "{{cue_title | default('Cue/Question')}}"                 |
+    |                                                              | {{#main_points}}                                                           |
+    |                                                              | - {{point_text}}                                                           |
+    |                                                              |   {{#sub_points}}                                                          |
+    |                                                              |   - *{{sub_point_text}}*                                                    |
+    |                                                              |   {{/sub_points}}                                                          |
+    |                                                              | {{/main_points}}                                                           |
+    |                                                              | {{#raw_notes_section}}                                                     |
+    |                                                              | {{notes_text}}                                                             |
+    |                                                              | {{/raw_notes_section}}                                                     |
+    {{/notes_sections}}
+    {{^notes_sections}}
+    | *No specific cues identified.*                               | *No detailed notes extracted based on cues.*                               |
+    {{/notes_sections}}
+
+    ---
+
+    > [!abstract] Summary of Key Takeaways
+    > {{summary_text | default('No summary generated.')}}
+
+    {{#action_items}}
+    ---
+    > [!todo] Action Items
+    {{#.}}
+    > - [ ] {{action_text}} {{#assignee}}(Assigned: {{.}}){{/assignee}} {{#due_date}}(Due: {{.}}){{/due_date}}
+    {{/.}}
+    {{/action_items}}
+
+extraction_rules: # Optional, to guide AI for more precise extraction
+  main_topic_extraction:
+    prompt: "What is the primary subject or main topic discussed in this conversation? Respond with the topic only."
+  cue_extraction:
+    prompt: "List the key questions, keywords, or main ideas from the conversation that would serve as good cues for recalling detailed information. For each cue, provide a concise title."
+    patterns: # Examples
+      - "What is...?"
+      - "How does... work?"
+      - "The main point about X is..."
+      - "Key concept: "
+  notes_extraction:
+    prompt: "For each cue identified, provide detailed notes, explanations, and examples from the conversation."
+  summary_extraction:
+    prompt: "Provide a brief summary (2-5 sentences) of the entire conversation's key insights and conclusions."
+  action_item_extraction:
+    prompt: "List any actionable tasks, to-dos, or follow-up items mentioned in the conversation. If none, state 'No action items'."
+    patterns:
+      - "I need to..."
+      - "We should..."
+      - "Action:"
+      - "TODO:"
+
+notes_on_tool_representation:
+  obsidian: |
+    - The Markdown table structure provides a visual layout similar to physical Cornell Notes.
+    - Callouts (`> [!question]`, `> [!note]`, `> [!abstract]`, `> [!todo]`) enhance readability and visual distinction of sections.
+    - YAML frontmatter is fully compatible with Dataview for querying and organizing notes.
+    - `[[Wikilinks]]` in `related_topics` facilitate knowledge graph connections.
+    - Tags are standard Obsidian tags.
+  notion: |
+    - The main sections (Cues, Main Notes, Summary, Action Items) can be represented as separate blocks or headings.
+    - The table structure can be replicated using a Notion table block, or each "row" (Cue + Notes) can be a pair of columns or a toggle list for the notes.
+    - Callout blocks in Notion can be used for the summary and action items.
+    - Notion properties can be populated from the YAML frontmatter.
+    - To-do list items can be Notion checkboxes.
+    - For a more dynamic layout, Cues could be H3 headings, and their corresponding Main Notes could be nested under a toggle list.

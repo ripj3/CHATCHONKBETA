@@ -1,0 +1,121 @@
+# render.yaml
+# Blueprint for deploying ChatChonk on Render
+# Defines two services: a Next.js static site frontend and a FastAPI Docker backend.
+#
+# "Tame the Chatter. Find the Signal." - ChatChonk
+# Author: Rip Jonesy (with Factory AI assistance)
+# Version: 1.1.0
+# Date: May 30, 2025
+
+version: 1
+
+# Environment Group for shared secrets (create this in Render Dashboard)
+# Add SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY,
+# HUGGINGFACE_API_KEY, CHONK_SECRET_KEY, etc. to this group.
+envVarGroups:
+  - name: chatchonk-secrets # Replace with your actual env group name in Render
+    envVars:
+      - key: SUPABASE_URL
+        fromGroup: chatchonk-secrets
+      - key: SUPABASE_KEY # Typically refers to SUPABASE_ANON_KEY for client-side
+        fromGroup: chatchonk-secrets
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        fromGroup: chatchonk-secrets
+      - key: HUGGINGFACE_API_KEY
+        fromGroup: chatchonk-secrets
+      - key: CHONK_SECRET_KEY
+        fromGroup: chatchonk-secrets
+      # Add other API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.) to the group as needed
+      # Example:
+      # - key: OPENAI_API_KEY
+      #   fromGroup: chatchonk-secrets
+      # - key: STRIPE_RESTRICTED_KEY # Or STRIPE_SECRET_KEY
+      #   fromGroup: chatchonk-secrets
+      # - key: STRIPE_WEBHOOK_SECRET
+      #   fromGroup: chatchonk-secrets
+
+services:
+  # ---------------------------------------------------------------------------
+  # Frontend Service: Next.js Static Site (ChatChonk Web Interface)
+  # ---------------------------------------------------------------------------
+  - type: static # Render's static site service type
+    name: chatchonk-web # Name of the service in Render
+    env: node # Use Node.js environment for building Next.js
+    branch: main-beta # Deploy from the 'main-beta' branch
+    rootDir: frontend # Root directory of the frontend code within the repository
+    autoDeploy: true # Automatically deploy on push to the specified branch
+    buildFilter: # Optional: only build if changes are detected in these paths
+      paths:
+        - "frontend/**"
+        - "render.yaml" # Rebuild if blueprint changes
+    buildCommand: "npm install && npm run build" # Standard Next.js build command
+    # publishDirectory: "frontend/out" # Only needed if `output: 'export'` is in next.config.js.
+    # For standard Next.js (output: 'standalone' or default), Render's Node environment typically serves from .next/server and .next/static.
+    envVars: # Environment variables specific to the frontend build process
+      - key: NEXT_PUBLIC_API_URL
+        # IMPORTANT: Update this in the Render Dashboard after your API service is deployed.
+        # It should be the external URL of your 'chatchonk-api' service.
+        # Example: https://chatchonk-api-xxxx.onrender.com/api
+        value: "https://your-chatchonk-api-url.onrender.com/api" # Placeholder - UPDATE THIS
+      - key: NODE_VERSION
+        value: "18" # Specify Node.js version for the build environment
+      # Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY here if frontend needs direct Supabase access
+      # - key: NEXT_PUBLIC_SUPABASE_URL
+      #   fromGroup: chatchonk-secrets # Or value: "your_supabase_url" if not in group
+      # - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+      #   fromGroup: chatchonk-secrets # Or value: "your_supabase_anon_key"
+
+  # ---------------------------------------------------------------------------
+  # Backend Service: FastAPI Application (ChatChonk API)
+  # ---------------------------------------------------------------------------
+  - type: web # Render's web service type for applications that listen for HTTP requests
+    name: chatchonk-api # Name of the service in Render
+    env: docker # Deploy using a Dockerfile
+    branch: main-beta # Deploy from the 'main-beta' branch
+    rootDir: . # Docker build context is the repository root.
+               # This allows Dockerfile to access `backend/` and `templates/`.
+    dockerfilePath: backend/Dockerfile # Path to the Dockerfile, relative to repository root
+    autoDeploy: true # Automatically deploy on push to the specified branch
+    buildFilter: # Optional: only build if changes are detected in these paths
+      paths:
+        - "backend/**"
+        - "templates/**" # If templates are baked into the image, rebuild if they change
+        - "render.yaml" # Rebuild if blueprint changes
+    plan: starter # Render's "Starter" plan (e.g., 512MB RAM, shared CPU, approx $7/month)
+    healthCheckPath: /api/health # Health check endpoint (ensure API_V1_STR is prefixed if used in FastAPI)
+    envVars:
+      - fromGroup: chatchonk-secrets # Pull secrets from the defined environment group
+      - key: PORT
+        value: "10000" # Render provides this PORT; Gunicorn in Dockerfile will use it.
+      - key: PYTHON_VERSION
+        value: "3.11" # Informational for Render's Docker build system
+      - key: ENVIRONMENT
+        value: "production"
+      - key: DEBUG
+        value: "False"
+      - key: RELOAD
+        value: "False"
+      # Paths below are inside the Docker container, assuming Dockerfile copies content to /app
+      - key: UPLOAD_DIR # Path inside the container
+        value: "/app/uploads" # Must match what the application expects
+      - key: TEMP_DIR
+        value: "/app/tmp"
+      - key: EXPORT_DIR
+        value: "/app/exports"
+      - key: TEMPLATES_DIR # Path for templates inside the container
+        value: "/app/templates" # Assumes Dockerfile copies root `templates/` to `/app/templates`
+      - key: ALLOWED_ORIGINS
+        # IMPORTANT: Update this in the Render Dashboard after your web service is deployed.
+        # It should be the external URL of your 'chatchonk-web' service.
+        # Example: https://chatchonk-web-xxxx.onrender.com
+        # For multiple origins, use a comma-separated string.
+        value: "https://your-chatchonk-web-url.onrender.com" # Placeholder - UPDATE THIS
+      - key: API_V1_STR # Ensure backend uses this for route prefixing
+        value: "/api"
+      - key: PROJECT_NAME
+        value: "ChatChonk"
+    # Optional: Define disk for persistent storage if not using Supabase for everything
+    # disks:
+    #   - name: chatchonk-data
+    #     mountPath: /app/persistent_data # Example mount path inside container
+    #     sizeGB: 10
