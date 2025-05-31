@@ -80,7 +80,9 @@ class Settings(BaseSettings):
     ROOT_PATH: str = Field(default="", description="API root path prefix if running behind a reverse proxy with path stripping.")
     RELOAD: bool = Field(default=False, description="Enable hot reloading for Uvicorn (development only).")
     API_HOST: str = Field(default="127.0.0.1", description="Host for constructing API URLs, typically localhost for dev.")
-    API_URL: AnyHttpUrl = Field(default="http://127.0.0.1:8080/api", description="Full base URL for the API in development.")
+:start_line:83
+-------
+    API_URL: AnyHttpUrl = Field(default="http://127.0.0.1:8080/api", alias="LOCAL_API_URL", description="Full base URL for the API in development.")
     PRODUCTION_API_URL: Optional[AnyHttpUrl] = Field(default=None, description="Full base URL for the API in production (e.g., https://api.chatchonk.com).")
 
     # ======================================================================
@@ -144,7 +146,8 @@ class Settings(BaseSettings):
     EPHEMERAL_CLEANUP_INTERVAL: int = Field(default=600, description="Interval for cleaning up ephemeral storage (10 minutes).")
     EPHEMERAL_ENCRYPTION_ENABLED: bool = Field(default=True, description="Enable encryption for files in ephemeral storage.")
     
-    MAX_UPLOAD_SIZE: int = Field(default=2_147_483_648, description="Maximum upload size in bytes (2GB).") # 2GB
+    MAX_UPLOAD_SIZE_MB: int = Field(default=2048, description="Maximum upload size in MB (2GB).")
+    MAX_UPLOAD_SIZE: int = Field(default=2_147_483_648, description="Maximum upload size in bytes (2GB). Derived from MAX_UPLOAD_SIZE_MB.")
     CHUNK_SIZE: int = Field(default=1_048_576, description="Chunk size for streaming file uploads in bytes (1MB).")
     CLEANUP_INTERVAL: int = Field(default=3600, description="General interval for temporary file cleanup tasks (1 hour).")
     FILE_RETENTION_PERIOD: int = Field(default=86400, description="Time to keep processed files locally before potential deletion (24 hours).")
@@ -299,7 +302,16 @@ class Settings(BaseSettings):
             raise ValueError("ALLOWED_FILE_TYPES must be a comma-separated string, list, or set.")
         
         # Ensure leading dot for extensions
+:start_line:301
+-------
         return {f".{t}" if not t.startswith('.') else t for t in types}
+
+    @validator("MAX_UPLOAD_SIZE", pre=True, always=True, allow_reuse=True)
+    def _derive_max_upload_size_from_mb(cls, v: Optional[int], values: Dict[str, Any]) -> int:
+        """Derive MAX_UPLOAD_SIZE in bytes from MAX_UPLOAD_SIZE_MB if available."""
+        if "MAX_UPLOAD_SIZE_MB" in values and values["MAX_UPLOAD_SIZE_MB"] is not None:
+            return values["MAX_UPLOAD_SIZE_MB"] * 1024 * 1024
+        return v if v is not None else 2_147_483_648 # Default to 2GB if MB not set
 
     @validator("DEBUG", allow_reuse=True)
     def _debug_implies_log_level_debug(cls, v: bool, values: Dict[str, Any]) -> bool:
