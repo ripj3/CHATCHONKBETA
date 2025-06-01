@@ -45,6 +45,28 @@ out/
 # Uploads directory
 uploads/
 
+# MCP Server configuration (contains secrets)
+mcp_servers.json
+
+# Additional security files
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+.secrets/
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Temporary and cache files
+tmp/
+temp/
+.cache/
+.temp/
+
 # Render.yaml specific
 .render/
 
