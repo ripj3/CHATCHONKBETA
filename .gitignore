@@ -13,6 +13,10 @@ venv/
 .venv/
 env/
 .env
+test_env/
+**/test_env/
+**/venv/
+**/.venv/
 pip-log.txt
 pip-delete-this-directory.txt
 .tox/
