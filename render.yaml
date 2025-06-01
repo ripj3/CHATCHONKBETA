@@ -72,9 +72,8 @@ services:
     name: chatchonk-api # Name of the service in Render
     env: docker # Deploy using a Dockerfile
     branch: main-beta # Deploy from the 'main-beta' branch
-    rootDir: . # Docker build context is the repository root.
-               # This allows Dockerfile to access `backend/` and `templates/`.
-    dockerfilePath: backend/Dockerfile # Path to the Dockerfile, relative to repository root
+    rootDir: . # Docker build context is the repository root
+    # dockerfilePath: ./Dockerfile # Default location, no need to specify
     autoDeploy: true # Automatically deploy on push to the specified branch
     buildFilter: # Optional: only build if changes are detected in these paths
       paths:

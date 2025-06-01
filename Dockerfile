@@ -11,8 +11,8 @@ ENV PYTHONUNBUFFERED=1 \
 # Set working directory for the build stage
 WORKDIR /opt/app_build
 
-# Copy requirements file from the build context (backend/ directory)
-COPY requirements.txt .
+# Copy requirements file from the backend directory
+COPY backend/requirements.txt .
 
 # Install dependencies into a specific prefix directory
 # This makes it easy to copy only the installed packages to the runtime stage
@@ -38,9 +38,11 @@ RUN addgroup --system appgroup && \
 # Copy installed Python packages from the builder stage to the standard Python path
 COPY --from=builder /install /usr/local
 
-# Copy the application code from the build context (backend/ directory) into the image
-# This assumes main.py and the app/ module are in the backend/ directory
-COPY . .
+# Copy the backend application code into the image
+COPY backend/ .
+
+# Copy templates directory from the repository root
+COPY templates/ ./templates
 
 # Switch to the non-root user
 USER appuser
