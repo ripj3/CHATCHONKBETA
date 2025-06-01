@@ -1,0 +1,100 @@
+# Sample Illustrative Template for ChatChonk
+# Purpose: Demonstrates the structure and components of ChatChonk templates
+# This template is designed for quick idea capture from AI conversations
+
+template_name: "Quick Idea Capture"
+template_description: "A lightweight template for capturing ideas, insights, and inspiration from AI conversations without imposing heavy structure."
+version: 1.0
+compatibility: 
+  - obsidian
+  - notion
+  - markdown
+tags:
+  - sample
+  - demonstration
+  - ideas
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Brief summary of the overall conversation - keeps context without overwhelming detail
+  core_summary:
+    title: "💡 Conversation Overview"
+    description: "A brief summary of what this conversation was about"
+    extraction_prompt: "Summarize this conversation in 2-3 sentences, focusing on the main topic and purpose."
+    format: "paragraph"
+    max_length: 500
+    
+  # The key ideas, insights, or concepts discussed - the "gold" of the conversation
+  key_elements:
+    title: "✨ Key Ideas"
+    description: "The most important ideas, insights, or concepts from this conversation"
+    extraction_prompt: "Extract 3-7 key ideas, insights, or concepts from this conversation. Focus on novel thoughts, creative sparks, or important realizations."
+    format: "bullet_list"
+    max_items: 7
+    
+  # Questions that emerged during the conversation - seeds for future exploration
+  emerging_questions:
+    title: "❓ Questions to Explore"
+    description: "Questions that emerged during this conversation that might be worth exploring further"
+    extraction_prompt: "Identify any explicit or implicit questions from this conversation that might be worth exploring further."
+    format: "bullet_list"
+    max_items: 5
+    optional: true
+    
+  # Any concrete next steps or actions discussed - optional, only if relevant
+  actionable_next_steps:
+    title: "➡️ Possible Next Steps"
+    description: "Potential actions or next steps mentioned or implied in the conversation"
+    extraction_prompt: "Extract any mentioned or implied next steps or actions from this conversation. Only include if clearly present in the discussion."
+    format: "checkbox_list"
+    max_items: 5
+    optional: true
+    
+  # References or resources mentioned - links, books, people, etc.
+  references:
+    title: "📚 References & Resources"
+    description: "Any references or resources mentioned in the conversation"
+    extraction_prompt: "Extract any references to external resources (articles, books, websites, people, tools, etc.) mentioned in the conversation."
+    format: "bullet_list"
+    max_items: 10
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I noticed this conversation contains several interesting ideas. Would you like me to suggest ways to develop any of these further, or would you prefer to keep them as inspiration for now?"
+    
+  # Example of a specialized coach prompt
+  creativity_coach:
+    prompt: "Looking at these ideas, I see a pattern around [PATTERN]. Would you like me to suggest a creative exercise to explore this theme further?"
+    
+  # Example of a project management coach prompt
+  project_coach:
+    prompt: "Based on these ideas, what's one small, low-pressure step you might take in the next day or two if you're feeling energized about this?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian" # Options: obsidian, notion, markdown
+  heading_level_start: 2 # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

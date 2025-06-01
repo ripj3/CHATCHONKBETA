@@ -1,0 +1,120 @@
+# Paper Outline Generator Template for ChatChonk
+# Purpose: Transforms AI chat discussions into a structured academic paper outline,
+# organizing key arguments, evidence, and supporting points into a cohesive framework for writing.
+
+template_name: "Paper Outline Generator"
+template_description: "Transforms conversation insights into a structured academic paper outline, organizing key arguments, evidence, and supporting points into a cohesive framework for writing."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - academic
+  - writing
+  - paper
+  - research
+  - outline
+  - essay
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The main topic and thesis statement that forms the foundation of the paper
+  paper_topic_thesis:
+    title: "📝 Paper Topic & Thesis Statement"
+    description: "The main subject and central argument or thesis of the paper."
+    extraction_prompt: "From this conversation, identify a clear, focused topic and develop a thesis statement that captures the main argument or position that could form the basis of an academic paper."
+    format: "paragraph"
+    max_length: 500
+    
+  # Key elements to include in the paper's introduction
+  introduction_elements:
+    title: "🌟 Introduction Elements"
+    description: "Key components to include in the paper's introduction."
+    extraction_prompt: "Identify elements that would work well in an introduction: context for the topic, the problem or question being addressed, the importance of this topic, and any brief preview of the main points to be covered."
+    format: "bullet_list"
+    
+  # The primary arguments or points organized into logical sections
+  main_arguments_sections:
+    title: "🧩 Main Arguments & Sections"
+    description: "The primary arguments or points organized into logical sections."
+    extraction_prompt: "Identify 3-5 main arguments or points that would form the core sections of this paper. For each, provide a brief description of what would be covered in that section."
+    format: "numbered_list"
+    subsections: true  # This indicates that each item might have nested points
+    
+  # Key evidence, examples, or data points that support the main arguments
+  supporting_evidence_examples:
+    title: "🔍 Supporting Evidence & Examples"
+    description: "Key evidence, examples, or data points that support the main arguments."
+    extraction_prompt: "For each main argument identified, extract specific evidence, examples, or data points from the conversation that could be used to support that point."
+    format: "bullet_list"
+    nested: true  # This would link these points to the main arguments
+    
+  # Possible opposing viewpoints or limitations to address in the paper
+  potential_counterarguments:
+    title: "⚖️ Potential Counterarguments"
+    description: "Possible opposing viewpoints or limitations to address in the paper."
+    extraction_prompt: "Identify any potential counterarguments, opposing viewpoints, or limitations that were mentioned or implied in the conversation that could be addressed in the paper."
+    format: "bullet_list"
+    optional: true
+    
+  # Areas for further exploration or unanswered questions
+  research_gaps_questions:
+    title: "❓ Research Gaps & Further Questions"
+    description: "Areas for further exploration or unanswered questions."
+    extraction_prompt: "Extract any mentioned or implied gaps in current research, unanswered questions, or areas where further exploration would be valuable."
+    format: "bullet_list"
+    optional: true
+    
+  # Key points to address in the paper's conclusion
+  conclusion_elements:
+    title: "🏁 Conclusion Elements"
+    description: "Key points to address in the paper's conclusion."
+    extraction_prompt: "Identify elements that would work well in a conclusion: summary of key points, restatement of thesis in light of the evidence presented, broader implications or significance, and potential next steps."
+    format: "bullet_list"
+    
+  # Sources mentioned or implied that could be cited in the paper
+  potential_references:
+    title: "📚 Potential References"
+    description: "Sources mentioned or implied that could be cited in the paper."
+    extraction_prompt: "List any specific sources, authors, papers, or bodies of work that were mentioned or clearly implied in the conversation that could serve as references in the paper."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "This outline provides a framework for your paper. Would you like me to help you develop any specific section further, or would you prefer to explore a different organizational structure?"
+    
+  # Hypothetical academic writing coach
+  academic_writing_coach:
+    prompt: "I notice that your outline focuses on [key theme]. Would you like guidance on strengthening the logical flow between these sections, or would you prefer to discuss how to integrate additional evidence?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

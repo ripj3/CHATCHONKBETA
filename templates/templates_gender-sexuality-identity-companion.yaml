@@ -1,0 +1,208 @@
+# Gender & Sexuality Identity Companion Template for ChatChonk
+# Purpose: Explores and documents personal experiences with gender and sexuality identity development,
+# affirming the unique journey of each individual while providing supportive structure for reflection.
+#
+# Note: This template acknowledges the deeply personal nature of gender and sexuality exploration.
+# Each person's journey is unique and valid. There is no single "right way" to experience or express
+# gender or sexuality. This template aims to provide supportive structure while honoring individual
+# perspectives, pacing, and terminology preferences. Your story belongs to you alone.
+
+template_name: "Gender & Sexuality Identity Companion"
+template_description: "Explores and documents personal experiences with gender and sexuality identity development, affirming the unique journey of each individual while providing supportive structure for reflection."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - gender
+  - sexuality
+  - identity
+  - LGBTQIA+
+  - personal-narrative
+  - self-discovery
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The overall journey of identity exploration
+  identity_exploration_journey:
+    title: "✨ Identity Exploration Journey"
+    description: "The story of your identity exploration, understanding, or coming-out process."
+    extraction_prompt: "Extract reflections on your journey of exploring, understanding, or coming to terms with your gender and/or sexuality. What has this process been like for you? What key moments or realizations stand out?"
+    format: "paragraph"
+    
+  # How understanding of identity has changed over time
+  self_understanding_evolution:
+    title: "🌱 Self-Understanding Evolution"
+    description: "How your understanding of your gender and/or sexuality has evolved over time."
+    extraction_prompt: "How has your understanding of your gender and/or sexuality evolved over time? Extract reflections on how your self-perception, labels, or language has changed or developed."
+    format: "bullet_list"
+    
+  # Ways of expressing identity authentically
+  affirming_expressions:
+    title: "💫 Affirming Expressions & Practices"
+    description: "Ways of expressing or affirming your gender and/or sexuality that feel authentic and meaningful."
+    extraction_prompt: "What ways of expressing or affirming your gender and/or sexuality feel authentic and meaningful to you? This might include appearance, language, names, pronouns, relationships, communities, or other forms of expression."
+    format: "bullet_list"
+    
+  # Key relationships and their impact
+  important_relationships:
+    title: "🤝 Important Relationships & Reactions"
+    description: "Significant relationships in your identity journey and important reactions or conversations."
+    extraction_prompt: "Extract reflections on significant relationships in your identity journey - whether supportive figures, challenging relationships, or important conversations about your identity. How have relationships been affected by or contributed to your identity exploration?"
+    format: "bullet_list"
+    optional: true
+    
+  # Community connections and representation
+  community_belonging:
+    title: "🌟 Community & Belonging"
+    description: "Connections to communities, representation, or experiences of belonging related to your identity."
+    extraction_prompt: "Extract reflections on connections to LGBTQIA+ or other identity-related communities, finding representation, or experiences of belonging. How have communities or representation impacted your identity journey?"
+    format: "bullet_list"
+    optional: true
+    
+  # Media and cultural influences on identity
+  media_cultural_influences:
+    title: "📱 Media & Cultural Influences"
+    description: "Media, cultural references, or influences that have been significant in your identity exploration."
+    extraction_prompt: "What media, cultural references, historical figures, books, shows, or other influences have been significant in your identity exploration? How have these influenced your understanding of yourself?"
+    format: "bullet_list"
+    optional: true
+    
+  # Terminology and language preferences
+  language_terminology:
+    title: "🔤 Language & Terminology"
+    description: "Words, terms, labels, or language that you use or avoid related to your identity."
+    extraction_prompt: "Extract reflections on words, terms, labels, or language that you use or avoid related to your identity. What terminology feels affirming, and how has your relationship with labels evolved?"
+    format: "bullet_list"
+    optional: true
+    
+  # Challenges and how they've been addressed
+  challenges_navigation:
+    title: "🧭 Challenges & Navigation"
+    description: "Challenges encountered and how you've navigated them in your identity journey."
+    extraction_prompt: "What challenges have you encountered in your identity journey, and how have you navigated them? This might include internal struggles, external obstacles, or institutional barriers."
+    format: "bullet_list"
+    optional: true
+    
+  # Personal growth and insights gained
+  growth_insights:
+    title: "💡 Growth & Insights"
+    description: "Personal growth, insights, or wisdom gained through your identity exploration."
+    extraction_prompt: "What personal growth, insights, or wisdom have you gained through your identity exploration? How has this journey contributed to your broader understanding of yourself or the world?"
+    format: "bullet_list"
+    
+  # How gender/sexuality intersects with other identities
+  intersecting_identities:
+    title: "🌈 Intersecting Identities"
+    description: "How gender and sexuality intersect with other aspects of your identity and experience."
+    extraction_prompt: "How does your gender and/or sexuality intersect with other aspects of your identity - such as race, ethnicity, disability, class, religion, or culture? Extract reflections on these intersections and how they shape your experience."
+    format: "bullet_list"
+    optional: true
+    
+  # Physical and embodiment experiences
+  embodiment_experiences:
+    title: "👤 Embodiment & Physical Experiences"
+    description: "Experiences related to your physical body, embodiment, or physical aspects of gender and sexuality."
+    extraction_prompt: "If mentioned, extract reflections on experiences related to your physical body, embodiment, or physical aspects of gender and sexuality. This might include gender expression, physical transition, or experiences of comfort or discomfort."
+    format: "bullet_list"
+    optional: true
+    
+  # Broader social and political contexts
+  social_political_contexts:
+    title: "🌐 Social & Political Contexts"
+    description: "How broader social, cultural, or political contexts have influenced your identity experience."
+    extraction_prompt: "How have broader social, cultural, or political contexts influenced your identity experience? Extract reflections on how these contexts have shaped or impacted your journey."
+    format: "bullet_list"
+    optional: true
+    
+  # Spiritual dimensions and values
+  spirituality_values:
+    title: "☯️ Spirituality & Values"
+    description: "Reflections on spirituality, values, or meaning-making in relation to your identity."
+    extraction_prompt: "If mentioned, extract reflections on spirituality, values, or meaning-making in relation to your gender and/or sexuality. How have these dimensions of life interacted with your identity exploration?"
+    format: "bullet_list"
+    optional: true
+    
+  # Disclosure and authenticity decisions
+  disclosure_decisions:
+    title: "💌 Disclosure & Authenticity Decisions"
+    description: "Thoughts and experiences related to disclosure, privacy, or authenticity in different contexts."
+    extraction_prompt: "Extract reflections on disclosure, privacy, or authenticity in different contexts. How do you navigate decisions about when, how, or with whom to share aspects of your identity?"
+    format: "bullet_list"
+    optional: true
+    
+  # Creative expressions of identity
+  creative_expression:
+    title: "🎨 Creative Expression"
+    description: "Ways you express or explore your identity through creative outlets."
+    extraction_prompt: "If mentioned, extract reflections on how you express or explore your identity through creative outlets - such as art, writing, music, performance, fashion, or other forms of creation."
+    format: "bullet_list"
+    optional: true
+    
+  # Future hopes and aspirations
+  future_aspirations:
+    title: "🔮 Future Aspirations & Vision"
+    description: "Hopes, goals, or visions for your future related to your gender and/or sexuality."
+    extraction_prompt: "Extract reflections on your hopes, goals, or visions for your future related to your gender and/or sexuality. What kind of life do you aspire to create that honors your authentic self?"
+    format: "bullet_list"
+    optional: true
+    
+  # Helpful resources and supports
+  resources_supports:
+    title: "📚 Resources & Supports"
+    description: "Helpful resources, supports, or tools in your identity journey."
+    extraction_prompt: "What resources, supports, tools, or practices have been helpful in your identity journey? This might include communities, books, therapy, online spaces, or personal practices."
+    format: "bullet_list"
+    optional: true
+    
+  # Ongoing questions and areas of exploration
+  ongoing_questions:
+    title: "❓ Ongoing Questions & Explorations"
+    description: "Questions you're still exploring or aspects of identity you're still processing."
+    extraction_prompt: "What questions are you still exploring or what aspects of your identity are you still processing? What remains unclear or continues to evolve for you?"
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these reflections on your gender and sexuality identity journey. Is there a particular aspect you'd like to explore further, or would you prefer to simply have this record to revisit when it feels meaningful to you?"
+    
+  # Personal reflection coach for deeper exploration
+  personal_reflection_coach:
+    prompt: "Your journey of self-discovery contains valuable insights. Would it be helpful to explore how certain aspects of your identity have become more clear over time, or perhaps consider how you might continue to honor your authentic self moving forward?"
+    
+  # Specialized coach for identity affirmation
+  identity_affirmation_coach:
+    prompt: "Your reflections on your identity journey are meaningful. Would it be helpful to discuss resources or communities that others have found supportive, or perhaps explore ways to celebrate and affirm aspects of your identity that bring you joy?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  privacy_note: true  # Special flag to include a privacy reminder at the top
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

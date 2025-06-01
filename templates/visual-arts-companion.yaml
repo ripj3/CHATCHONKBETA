@@ -1,0 +1,224 @@
+# Visual Arts Companion Template for ChatChonk
+# Purpose: Organizes information from conversations about visual arts practice,
+# including artistic development, project planning, gallery submissions, artist statements,
+# and professional development.
+#
+# Note: This template can be adapted for various visual art disciplines (painting, sculpture,
+# photography, installation, digital media, etc.) and for artists at different career stages.
+# Sections can be customized based on specific needs and priorities within your artistic practice.
+
+template_name: "Visual Arts Companion"
+template_description: "Organizes information from conversations about visual arts practice, including artistic development, project planning, gallery submissions, artist statements, and professional development."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - visual-arts
+  - art
+  - artist
+  - gallery
+  - portfolio
+  - creative-practice
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The core artistic vision and direction
+  artistic_vision:
+    title: "✨ Artistic Vision & Direction"
+    description: "Core artistic vision, interests, or direction being explored."
+    extraction_prompt: "Extract reflections on your core artistic vision, interests, or direction. What are the central themes, questions, or aesthetic concerns that drive your work? What are you exploring through your art?"
+    format: "paragraph"
+    
+  # Specific project concepts and development
+  project_concept:
+    title: "💡 Project Concept & Development"
+    description: "Ideas and development for specific art projects or series."
+    extraction_prompt: "Extract information about specific art projects or series being developed. What is the concept, theme, or idea behind this work? How is it developing or evolving?"
+    format: "bullet_list"
+    
+  # Technical approaches and materials
+  technical_approaches:
+    title: "🔧 Technical Approaches & Materials"
+    description: "Technical methods, materials, or processes being used or considered."
+    extraction_prompt: "Extract information about technical approaches, materials, or processes being used or considered. What media, techniques, or methods are you working with or exploring?"
+    format: "bullet_list"
+    optional: true
+    
+  # Artistic influences and references
+  artistic_influences:
+    title: "🎨 Artistic Influences & References"
+    description: "Artists, movements, or references influencing the work."
+    extraction_prompt: "Extract information about artistic influences, references, or inspirations. What artists, art movements, visual traditions, or other sources are informing or inspiring your work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Conceptual context and research
+  conceptual_context:
+    title: "🧠 Conceptual Context & Research"
+    description: "Conceptual, theoretical, or research context for the work."
+    extraction_prompt: "Extract information about the conceptual, theoretical, historical, or research context for your work. What ideas, theories, histories, or fields of knowledge are you engaging with?"
+    format: "bullet_list"
+    optional: true
+    
+  # Visual elements and aesthetic choices
+  visual_elements:
+    title: "👁️ Visual Elements & Aesthetic Choices"
+    description: "Key visual elements, aesthetic choices, or formal aspects of the work."
+    extraction_prompt: "Extract notes about key visual elements, aesthetic choices, or formal aspects of your work. This might include color palettes, composition strategies, visual motifs, scale considerations, or other formal decisions."
+    format: "bullet_list"
+    optional: true
+    
+  # Audience engagement and experience
+  audience_engagement:
+    title: "👥 Audience Engagement & Experience"
+    description: "How viewers or audiences might engage with or experience the work."
+    extraction_prompt: "Extract reflections on how viewers or audiences might engage with or experience your work. What reactions, interpretations, or experiences do you hope to evoke? How do you envision the viewer's relationship to the work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Artist statement elements
+  artist_statement:
+    title: "📝 Artist Statement Elements"
+    description: "Key elements for artist statements or work descriptions."
+    extraction_prompt: "Extract key elements that might be included in an artist statement or work description. How do you articulate your artistic approach, intentions, or the significance of your work in words?"
+    format: "bullet_list"
+    
+  # Portfolio development and curation
+  portfolio_development:
+    title: "📁 Portfolio Development"
+    description: "Ideas for portfolio development, curation, or presentation."
+    extraction_prompt: "Extract ideas for portfolio development, curation, or presentation. How might you organize, present, or strengthen your body of work for various contexts or audiences?"
+    format: "bullet_list"
+    optional: true
+    
+  # Exhibition and submission opportunities
+  exhibition_opportunities:
+    title: "🏛️ Exhibition & Submission Opportunities"
+    description: "Potential exhibition venues, submission opportunities, or presentation contexts."
+    extraction_prompt: "Extract information about potential exhibition venues, submission opportunities, or presentation contexts for your work. Where might your work be shown, submitted, or shared?"
+    format: "bullet_list"
+    optional: true
+    
+  # Application and submission materials
+  application_materials:
+    title: "📋 Application & Submission Materials"
+    description: "Materials needed for applications, submissions, or proposals."
+    extraction_prompt: "Extract information about materials needed for applications, submissions, or proposals. What documentation, statements, CV elements, or other materials might you need to prepare?"
+    format: "bullet_list"
+    optional: true
+    
+  # Grant and funding opportunities
+  grant_funding_opportunities:
+    title: "💰 Grant & Funding Opportunities"
+    description: "Potential grants, funding sources, or financial opportunities."
+    extraction_prompt: "Extract information about potential grants, funding sources, or financial opportunities for your work. What funding might be available to support your practice or specific projects?"
+    format: "bullet_list"
+    optional: true
+    
+  # Professional development needs and opportunities
+  professional_development:
+    title: "📈 Professional Development"
+    description: "Professional development needs, opportunities, or goals."
+    extraction_prompt: "Extract information about professional development needs, opportunities, or goals. What skills, connections, experiences, or knowledge might help advance your artistic practice or career?"
+    format: "bullet_list"
+    optional: true
+    
+  # Network and professional connections
+  network_connections:
+    title: "🔗 Network & Connections"
+    description: "Important professional relationships, contacts, or networking opportunities."
+    extraction_prompt: "Extract information about important professional relationships, contacts, or networking opportunities. Who are or might be important connections for your artistic practice or career?"
+    format: "bullet_list"
+    optional: true
+    
+  # Studio practice and work habits
+  studio_practice:
+    title: "🏠 Studio Practice & Work Habits"
+    description: "Notes on studio practice, work habits, or creative process."
+    extraction_prompt: "Extract reflections on studio practice, work habits, or creative process. How do you work? What approaches to the creative process are effective for you? What studio habits or practices support your work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Marketing and promotion strategies
+  marketing_promotion:
+    title: "📣 Marketing & Promotion"
+    description: "Approaches to marketing, promoting, or sharing work."
+    extraction_prompt: "Extract ideas about marketing, promoting, or sharing your work. How might you increase visibility, build audience, or communicate about your practice in various contexts?"
+    format: "bullet_list"
+    optional: true
+    
+  # Online presence and digital strategy
+  online_presence:
+    title: "🌐 Online Presence & Digital Strategy"
+    description: "Approaches to online presence, digital platforms, or web strategy."
+    extraction_prompt: "Extract ideas about online presence, digital platforms, or web strategy. How might you use websites, social media, or other digital tools to share and contextualize your work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Critique and feedback
+  critique_feedback:
+    title: "🔍 Critique & Feedback"
+    description: "Critique notes, feedback received, or reflective insights."
+    extraction_prompt: "Extract critique notes, feedback received, or your own reflective insights about your work. What observations, questions, or suggestions have emerged about the work's strengths, challenges, or potential directions?"
+    format: "bullet_list"
+    optional: true
+    
+  # Creative challenges and open questions
+  creative_challenges:
+    title: "🧩 Creative Challenges & Questions"
+    description: "Creative challenges, open questions, or areas for exploration."
+    extraction_prompt: "Extract creative challenges, open questions, or areas for further exploration in your work. What aspects of your practice are you still figuring out or want to develop further?"
+    format: "bullet_list"
+    optional: true
+    
+  # Project timeline and next steps
+  project_timeline:
+    title: "📅 Project Timeline & Next Steps"
+    description: "Timeline, deadlines, and next steps for projects or professional activities."
+    extraction_prompt: "Extract information about project timelines, deadlines, or next steps. What is your working schedule, and what are the immediate next actions for your practice or specific projects?"
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these notes about your visual arts practice. Would you like to explore any particular aspect further, such as developing your artist statement or identifying exhibition opportunities that align with your work?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your artistic vision has some fascinating elements! Would you like to brainstorm ways to further develop these concepts visually, or perhaps explore how different materials or techniques might help express these ideas?"
+    
+  # Hypothetical specialized coach for art career development
+  art_career_coach:
+    prompt: "I see some interesting directions in your artistic practice. Would it be helpful to discuss strategies for presenting this work to galleries or grant makers, or perhaps explore how to build connections with others working in related areas?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

@@ -1,0 +1,233 @@
+# Pathfinder 2e Companion Template for ChatChonk
+# Purpose: Organizes Pathfinder 2nd Edition information from conversations,
+# including character details, campaign notes, session summaries, and Pathfinder-specific elements.
+#
+# Note: This template is specifically designed for Pathfinder 2nd Edition and includes terminology
+# specific to that system (like Hero Points, Focus Points, Critical Success/Failure, etc.).
+# It's optimized for both players and Game Masters to capture the rich details of their campaigns.
+
+template_name: "Pathfinder 2e Companion"
+template_description: "Organizes Pathfinder 2nd Edition information from your conversations, including character details, campaign notes, session summaries, and Pathfinder-specific elements."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - pathfinder
+  - pathfinder-2e
+  - pf2e
+  - paizo
+  - ttrpg
+  - rpg
+  - tabletop-games
+  - role-playing
+  - gaming
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Overview of what happened in the session
+  session_summary:
+    title: "📝 Session Summary"
+    description: "A brief overview of what happened in the Pathfinder session."
+    extraction_prompt: "Summarize the key events, encounters, and developments from the Pathfinder session discussed. What were the main things that happened?"
+    format: "paragraph"
+    
+  # Notes on player character development
+  character_development:
+    title: "👤 Character Development"
+    description: "Notes on player character development, growth, or changes."
+    extraction_prompt: "Extract information about player character development - including personality evolution, significant choices, mechanical changes (level ups, new feats, class features), or character goals discussed."
+    format: "bullet_list"
+    
+  # Details about combat encounters
+  combat_encounters:
+    title: "⚔️ Combat Encounters"
+    description: "Details about combat encounters, tactics used, and outcomes."
+    extraction_prompt: "Extract information about combat encounters, including enemies faced, tactics used, significant dice rolls, critical hits/failures, and the outcome or resolution of the fight."
+    format: "bullet_list"
+    optional: true
+    
+  # Exploration and downtime activities
+  exploration_activities:
+    title: "🧭 Exploration & Downtime Activities"
+    description: "Details about exploration mode activities, environmental challenges, or downtime pursuits."
+    extraction_prompt: "Extract information about exploration activities, environmental challenges overcome, or downtime pursuits undertaken. How did the characters interact with the world outside of combat and social encounters?"
+    format: "bullet_list"
+    optional: true
+    
+  # Social interactions and encounters
+  social_encounters:
+    title: "🎭 Social Encounters"
+    description: "Social interactions, negotiations, or other encounters using social skills."
+    extraction_prompt: "Identify key social encounters, negotiations, or situations where social skills were used. How did the players approach these situations and what resulted from them?"
+    format: "bullet_list"
+    optional: true
+    
+  # Advancement of major plotlines
+  plot_developments:
+    title: "📚 Plot Developments & Story Threads"
+    description: "Advancement of major plotlines and emerging story threads."
+    extraction_prompt: "Extract developments in major plotlines or emerging story threads. What story elements moved forward? What new threads emerged? What mysteries deepened or were resolved?"
+    format: "bullet_list"
+    
+  # Information about NPCs
+  npc_information:
+    title: "🧑‍🤝‍🧑 NPC Information"
+    description: "Details about non-player characters encountered or discussed."
+    extraction_prompt: "Extract information about non-player characters (NPCs) encountered or discussed - including new NPCs introduced, developments with existing NPCs, or insights gained about their motivations or backgrounds."
+    format: "bullet_list"
+    optional: true
+    
+  # Places visited or encountered
+  locations_environments:
+    title: "🏰 Locations & Environments"
+    description: "Places visited, environments explored, or settings encountered."
+    extraction_prompt: "Extract information about locations visited, environments explored, or settings encountered. Include details about dungeons, cities, wilderness areas, planes, or other notable places."
+    format: "bullet_list"
+    optional: true
+    
+  # Campaign world information
+  world_lore:
+    title: "📜 World Lore & Setting Information"
+    description: "Information about the campaign world, its history, cultures, or cosmology."
+    extraction_prompt: "Extract information about the campaign world, its history, deities, cultures, factions, or cosmology that was revealed or discussed."
+    format: "bullet_list"
+    optional: true
+    
+  # Current quests and objectives
+  quests_objectives:
+    title: "📋 Quests & Objectives"
+    description: "Current quests, missions, goals, or objectives."
+    extraction_prompt: "What current quests, missions, goals, or objectives were mentioned? Include both main quests and side quests, along with any relevant details about them."
+    format: "bullet_list"
+    optional: true
+    
+  # Magic items and treasure acquired
+  magic_items_treasure:
+    title: "✨ Magic Items & Treasure"
+    description: "Magical items, treasure, or significant rewards acquired."
+    extraction_prompt: "Extract information about magic items, treasure, or significant rewards acquired or discussed. Include details about magical properties, rarity, or special significance."
+    format: "bullet_list"
+    optional: true
+    
+  # Heroic moments and Hero Point usage
+  heroic_moments:
+    title: "🌟 Heroic Moments & Hero Points"
+    description: "Notable heroic moments, critical successes, or Hero Point usage."
+    extraction_prompt: "Extract information about particularly heroic moments, critical successes, or situations where Hero Points were used or awarded. What standout character moments occurred?"
+    format: "bullet_list"
+    optional: true
+    
+  # Skill challenges and checks
+  skill_challenges:
+    title: "🎯 Skill Challenges & Checks"
+    description: "Notable skill challenges, significant skill checks, or skill-based solutions."
+    extraction_prompt: "Extract information about notable skill challenges overcome, significant skill checks attempted, or problems solved through creative skill use."
+    format: "bullet_list"
+    optional: true
+    
+  # The party's current resources and status
+  party_resources:
+    title: "🎒 Party Resources & Status"
+    description: "The party's current resources, condition, and general status."
+    extraction_prompt: "Extract information about the party's current resources, condition, and general status. This might include HP, focus points, spell slots, consumable items, Hero Points, money, or available assets."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes on Pathfinder 2e rules and mechanics
+  rules_mechanics:
+    title: "📊 Rules & Mechanics Notes"
+    description: "Notes on Pathfinder 2e rules, mechanics interpretations, or house rules."
+    extraction_prompt: "Extract any notes on Pathfinder 2e rules, mechanics interpretations, house rules, or mechanical interactions that were discussed or clarified."
+    format: "bullet_list"
+    optional: true
+    
+  # Ideas and plans discussed by players
+  player_ideas_plans:
+    title: "💭 Player Ideas & Plans"
+    description: "Ideas, plans, or strategies discussed by the players."
+    extraction_prompt: "What ideas, plans, theories, or strategies were discussed by the players? What are they thinking of doing next or how are they approaching their current situations?"
+    format: "bullet_list"
+    
+  # Character advancement plans
+  character_advancement_plans:
+    title: "📈 Character Advancement Plans"
+    description: "Plans for character advancement, feat selections, or build decisions."
+    extraction_prompt: "Extract any plans or discussions about character advancement, such as feat selections, skill increases, class features, or other build decisions the players are considering."
+    format: "bullet_list"
+    optional: true
+    
+  # Open questions and mysteries
+  unresolved_questions:
+    title: "❓ Unresolved Questions & Mysteries"
+    description: "Open questions, mysteries, or unresolved situations."
+    extraction_prompt: "What open questions, mysteries, or unresolved situations remain? What are the players still wondering about or trying to figure out?"
+    format: "bullet_list"
+    optional: true
+    
+  # Out-of-character discussions
+  table_talk_notes:
+    title: "🎲 Table Talk & Meta Notes"
+    description: "Out-of-character discussions, table dynamics, or meta-game considerations."
+    extraction_prompt: "Extract any out-of-character discussions, notes about table dynamics, scheduling details, or meta-game considerations that would be useful to remember."
+    format: "bullet_list"
+    optional: true
+    
+  # Memorable quotes from the session
+  memorable_quotes:
+    title: "💬 Memorable Quotes"
+    description: "Funny, dramatic, or otherwise memorable quotes from the session."
+    extraction_prompt: "Capture any funny, dramatic, or otherwise memorable quotes from the session, either in-character or out-of-character."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes for the next session
+  next_session_prep:
+    title: "📅 Next Session Preparation"
+    description: "Notes for preparing for the next Pathfinder session."
+    extraction_prompt: "Extract any notes relevant to preparing for the next Pathfinder session - including planned activities, things to remember, or preparation needed by either players or GM."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these notes from your Pathfinder session. Would you like me to help you explore any particular aspect further, like character development ideas or theories about the plot?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your Pathfinder game has some fascinating elements! Would you like to brainstorm some character development possibilities, potential plot theories, or creative ways your character might approach upcoming challenges?"
+    
+  # Hypothetical specialized coach for game masters
+  game_master_assistant:
+    prompt: "These session notes have a lot of great details. If you're the Game Master, would it be helpful to discuss how to develop certain plot threads further or perhaps create connections between different elements of your campaign world?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

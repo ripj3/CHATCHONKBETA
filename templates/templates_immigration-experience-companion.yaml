@@ -1,0 +1,205 @@
+# Immigration Experience Companion Template for ChatChonk
+# Purpose: Explores and documents the complex experiences of immigration, migration, or living between cultures,
+# capturing both challenges and strengths of multicultural identities.
+#
+# Note: This template acknowledges the diversity of immigration experiences. There is no single
+# "immigrant story" - each journey is unique, shaped by different circumstances, motivations,
+# and contexts. This template is designed to be flexible for many different circumstances and
+# does not make assumptions about the reasons for migration or the legal context.
+
+template_name: "Immigration Experience Companion"
+template_description: "Explores and documents the complex experiences of immigration, migration, or living between cultures, capturing both challenges and strengths of multicultural identities."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - immigration
+  - migration
+  - multicultural
+  - identity
+  - cross-cultural
+  - diaspora
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The story of the migration or immigration experience
+  migration_journey:
+    title: "🧭 Migration Journey"
+    description: "The story of your migration or immigration experience."
+    extraction_prompt: "Extract details about your migration journey. What led to this move? What were key moments or phases in this journey? Include both external circumstances and internal experiences."
+    format: "paragraph"
+    
+  # Significant places in the immigration story
+  places_significance:
+    title: "📍 Places & Their Significance"
+    description: "Significant places in your immigration story and what they mean to you."
+    extraction_prompt: "Identify places that have been significant in your immigration story - countries, cities, neighborhoods, or specific locations. What meaning do these places hold for you?"
+    format: "bullet_list"
+    
+  # Experiences adapting to different cultural contexts
+  cultural_transitions:
+    title: "🌉 Cultural Transitions & Adaptations"
+    description: "Experiences adapting to or navigating between different cultural contexts."
+    extraction_prompt: "Extract experiences related to cultural transitions, adaptations, or navigating between different cultural contexts. What adjustments did you make, and how did you navigate cultural differences?"
+    format: "bullet_list"
+    
+  # Experiences with language
+  language_experiences:
+    title: "💬 Language Experiences"
+    description: "Experiences with language learning, language barriers, or navigating multiple languages."
+    extraction_prompt: "Extract experiences related to language - learning new languages, facing language barriers, code-switching between languages, or how language connects to identity and belonging."
+    format: "bullet_list"
+    optional: true
+    
+  # Evolution of identity through immigration
+  identity_evolution:
+    title: "⭐ Identity Evolution"
+    description: "How your sense of identity has evolved through the immigration experience."
+    extraction_prompt: "How has your sense of identity evolved through your immigration experience? Extract reflections on cultural identity, belonging, and how you've integrated different aspects of your cultural heritage and current environment."
+    format: "bullet_list"
+    
+  # Navigating different cultural values
+  cultural_values_navigation:
+    title: "🧿 Cultural Values Navigation"
+    description: "Experiences navigating different or sometimes conflicting cultural values or expectations."
+    extraction_prompt: "Extract experiences related to navigating different or sometimes conflicting cultural values, norms, or expectations. How have you made sense of or integrated these different perspectives?"
+    format: "bullet_list"
+    optional: true
+    
+  # Experiences of belonging and connection
+  belonging_connection:
+    title: "🌟 Belonging & Connection"
+    description: "Experiences of belonging, connection, community, or sometimes disconnection."
+    extraction_prompt: "Extract reflections on experiences of belonging, connection, community, or sometimes disconnection related to your immigration experience. Where and with whom have you found a sense of home or belonging?"
+    format: "bullet_list"
+    
+  # Impact on family relationships
+  family_dynamics:
+    title: "👪 Family Dynamics & Relationships"
+    description: "How immigration has affected family relationships or dynamics."
+    extraction_prompt: "How has immigration affected your family relationships or dynamics? This might include separation from family, changing roles within families, intergenerational differences in cultural adaptation, or the creation of new family structures."
+    format: "bullet_list"
+    optional: true
+    
+  # Cultural practices and traditions
+  cultural_practices_traditions:
+    title: "🎭 Cultural Practices & Traditions"
+    description: "Cultural practices, traditions, customs, or celebrations that are meaningful to you."
+    extraction_prompt: "Identify cultural practices, traditions, customs, foods, celebrations, or rituals that are meaningful to you. How have you maintained, adapted, or integrated cultural practices from different contexts?"
+    format: "bullet_list"
+    optional: true
+    
+  # Navigating systems and institutions
+  systemic_navigation:
+    title: "🧩 Systems & Institutional Navigation"
+    description: "Experiences navigating systems, institutions, or bureaucracies in different countries."
+    extraction_prompt: "Extract experiences related to navigating systems, institutions, or bureaucracies - such as immigration systems, educational institutions, healthcare, housing, or employment. What challenges or successes have you experienced in these areas?"
+    format: "bullet_list"
+    optional: true
+    
+  # Social perceptions and interactions
+  social_perceptions:
+    title: "👁️ Social Perceptions & Interactions"
+    description: "Experiences with how others perceive you or interact with you based on your immigrant or cultural status."
+    extraction_prompt: "Extract experiences related to how others perceive or interact with you based on your immigrant status, accent, cultural background, or other aspects of your identity. This might include both challenging and positive interactions."
+    format: "bullet_list"
+    optional: true
+    
+  # Strengths gained through multicultural experience
+  cultural_strengths:
+    title: "💪 Multicultural Strengths & Insights"
+    description: "Strengths, skills, or insights gained through your multicultural experience."
+    extraction_prompt: "What strengths, skills, perspectives, or insights have you gained through your multicultural experience? How has navigating multiple cultural contexts benefited you or provided unique understandings?"
+    format: "bullet_list"
+    
+  # Experiences of loss and grief
+  loss_grief_aspects:
+    title: "💔 Loss & Grief Aspects"
+    description: "Experiences of loss, grief, or things missed from places left behind."
+    extraction_prompt: "Extract any reflections on loss, grief, nostalgia, or things missed from places or communities left behind. What aspects of your previous home or culture do you carry with you or wish to preserve?"
+    format: "bullet_list"
+    optional: true
+    
+  # Serving as a cultural bridge
+  cultural_bridging:
+    title: "🌉 Cultural Bridging & Mediation"
+    description: "Experiences serving as a cultural bridge, translator, or mediator between different communities."
+    extraction_prompt: "Have you found yourself serving as a cultural bridge, translator, or mediator between different communities or family members? Extract experiences related to helping others navigate cultural differences or connecting different worlds."
+    format: "bullet_list"
+    optional: true
+    
+  # Future hopes and aspirations
+  future_aspirations:
+    title: "🔮 Future Aspirations & Legacy"
+    description: "Hopes for the future, legacy, or what you wish to pass on to future generations."
+    extraction_prompt: "Extract reflections on your hopes for the future, the legacy you wish to create, or what aspects of your cultural heritage and immigration experience you hope to pass on to future generations."
+    format: "bullet_list"
+    optional: true
+    
+  # Experiences with discrimination and resilience
+  discrimination_resilience:
+    title: "🛡️ Discrimination & Resilience"
+    description: "Experiences with discrimination, prejudice, or exclusion, and the resilience developed in response."
+    extraction_prompt: "If mentioned, extract experiences related to discrimination, prejudice, xenophobia, or exclusion, as well as the resilience, resistance, or coping strategies you've developed in response. (This section is completely optional and only for experiences you wish to document.)"
+    format: "bullet_list"
+    optional: true
+    
+  # Third culture and hybrid identity perspectives
+  third_culture_perspectives:
+    title: "🌈 Third Culture & Hybrid Perspectives"
+    description: "Perspectives or experiences that reflect a blended, hybrid, or 'third culture' identity."
+    extraction_prompt: "Extract perspectives or experiences that reflect a blended, hybrid, or 'third culture' identity - ways of being that aren't fully aligned with either your culture of origin or your current culture, but represent something new or integrated."
+    format: "bullet_list"
+    optional: true
+    
+  # Advice and insights for others
+  advice_insights:
+    title: "💡 Advice & Insights for Others"
+    description: "Wisdom, advice, or insights you might share with others going through similar experiences."
+    extraction_prompt: "Based on your experience, what wisdom, advice, or insights might you share with others going through similar immigration or cross-cultural experiences? What have you learned that might be valuable to others?"
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these reflections on your immigration experience. Is there a particular aspect you'd like to explore further, or would you prefer to simply have this record to revisit when it feels meaningful to you?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your cross-cultural journey has given you such unique perspectives. Would you like to explore how these experiences might be shaped into a more detailed narrative, or perhaps consider creative ways to share these insights with others?"
+    
+  # Hypothetical specialized coach for cultural identity
+  cultural_identity_coach:
+    prompt: "Your reflections on navigating multiple cultural contexts are valuable. Would it be helpful to explore how your multicultural experiences have shaped your unique strengths, or perhaps discuss how you might continue to integrate different aspects of your cultural identity?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

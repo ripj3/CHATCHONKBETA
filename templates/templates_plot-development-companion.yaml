@@ -1,0 +1,194 @@
+# Plot Development Companion Template for ChatChonk
+# Purpose: Deeply explores and organizes plot elements from creative conversations,
+# supporting rich narrative development for fiction, games, and other storytelling projects.
+# Designed to accommodate different approaches to plotting, from structured to discovery-based.
+
+template_name: "Plot Development Companion"
+template_description: "Deeply explores and organizes plot elements from creative conversations, supporting rich narrative development for fiction, games, and other storytelling projects."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - creative
+  - fiction
+  - plot
+  - narrative
+  - story-structure
+  - writing
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The central story idea or concept
+  core_narrative:
+    title: "✨ Core Narrative & Premise"
+    description: "The central story idea, concept, or premise."
+    extraction_prompt: "What is the essential story idea, concept, or premise discussed? Capture the core narrative thrust or the central 'what if' that drives this plot."
+    format: "paragraph"
+    
+  # The main conflict or tension driving the story
+  central_conflict:
+    title: "⚔️ Central Conflict"
+    description: "The main conflict or tension that drives the story."
+    extraction_prompt: "What is the main conflict, problem, or tension at the heart of this story? What opposing forces create the central dramatic question that needs resolution?"
+    format: "paragraph"
+    
+  # The overall structure and major turning points
+  story_structure:
+    title: "🏗️ Story Structure & Major Beats"
+    description: "The overall structure and major turning points of the narrative."
+    extraction_prompt: "Identify the major structural elements or plot beats mentioned for this story. These might include inciting incidents, turning points, midpoints, climactic moments, resolution ideas, or other key structural elements."
+    format: "numbered_list"
+    
+  # Secondary storylines or B-plots
+  subplot_threads:
+    title: "🧵 Subplot Threads"
+    description: "Secondary storylines, subplots, or B-plots that complement the main narrative."
+    extraction_prompt: "Extract any subplots, secondary storylines, or parallel narrative threads mentioned in the conversation. For each, briefly note how it might connect to or complement the main plot."
+    format: "bullet_list"
+    optional: true
+    
+  # Larger structural divisions of the story
+  acts_sequences:
+    title: "📋 Acts & Sequences"
+    description: "The larger structural divisions of the story, if discussed."
+    extraction_prompt: "If the conversation discussed acts, sequences, or major structural divisions of the story, extract those details. How might the story be broken into larger chunks or movements?"
+    format: "nested_list"
+    optional: true
+    
+  # Important or pivotal scenes in the story
+  key_scenes:
+    title: "🎬 Key Scenes & Set Pieces"
+    description: "Important, pivotal, or visually striking scenes in the story."
+    extraction_prompt: "Identify any specific scenes, set pieces, or story moments that were discussed in detail. These could be pivotal moments, dramatic confrontations, or visually striking sequences that seem especially important to the story."
+    format: "bullet_list"
+    
+  # Elements that create intrigue or suspense
+  narrative_hooks:
+    title: "🪝 Narrative Hooks & Questions"
+    description: "Elements that create intrigue, suspense, or draw the audience in."
+    extraction_prompt: "Extract hooks, mysteries, questions, or elements of suspense that might pull the audience into the story and keep them engaged. What makes people want to know what happens next?"
+    format: "bullet_list"
+    optional: true
+    
+  # How character arcs connect with plot
+  character_arcs_integration:
+    title: "👤 Character Arcs Integration"
+    description: "How character development connects with plot development."
+    extraction_prompt: "How do character arcs and development connect with plot developments? Extract any details about how characters change through plot events or how their decisions drive the plot forward."
+    format: "bullet_list"
+    optional: true
+    
+  # How themes develop through the plot
+  thematic_development:
+    title: "🎭 Thematic Development"
+    description: "How themes evolve and are expressed through the plot."
+    extraction_prompt: "Identify how themes might develop or be expressed through the plot. How do story events reflect, challenge, or explore the central themes?"
+    format: "bullet_list"
+    optional: true
+    
+  # How setting and plot interact
+  setting_plot_integration:
+    title: "🌍 Setting-Plot Integration"
+    description: "How the setting influences or is influenced by the plot."
+    extraction_prompt: "Extract any details about how the setting influences the plot or how plot events might change or reveal aspects of the setting. How are world and story intertwined?"
+    format: "bullet_list"
+    optional: true
+    
+  # What's at risk in the story
+  stakes_consequences:
+    title: "⚡ Stakes & Consequences"
+    description: "What's at risk and what follows from success or failure."
+    extraction_prompt: "What are the stakes of this story? What might be gained or lost? What consequences might follow from different possible outcomes or character choices?"
+    format: "bullet_list"
+    
+  # Notes on story pacing and flow
+  pacing_rhythm:
+    title: "⏱️ Pacing & Rhythm Notes"
+    description: "Considerations about story pacing, tempo, and emotional flow."
+    extraction_prompt: "Extract any notes about the story's pacing, rhythm, tempo, or emotional flow. Are there discussed patterns of tension and release, or ideas about how to control the story's energy?"
+    format: "bullet_list"
+    optional: true
+    
+  # Surprising turns or reveals
+  twists_revelations:
+    title: "💥 Twists & Revelations"
+    description: "Surprising turns, reveals, or perspective shifts in the narrative."
+    extraction_prompt: "Identify any planned twists, reveals, surprises, or perspective shifts mentioned in the conversation. What might change how the audience sees the story or characters?"
+    format: "bullet_list"
+    optional: true
+    
+  # Plot elements still being considered
+  unresolved_plot_questions:
+    title: "❓ Unresolved Plot Questions"
+    description: "Plot elements, decisions, or directions still being considered."
+    extraction_prompt: "What aspects of the plot remain undecided or need further development? What plot questions or decision points remain open?"
+    format: "bullet_list"
+    optional: true
+    
+  # Genre-specific elements or expectations
+  genre_conventions:
+    title: "📚 Genre Conventions & Expectations"
+    description: "Genre-specific elements, tropes, or expectations in play."
+    extraction_prompt: "Extract any mentioned genre conventions, tropes, or expectations that might be embraced or subverted in this story. How does the plot relate to its genre traditions?"
+    format: "bullet_list"
+    optional: true
+    
+  # Notes on the approach to developing this plot
+  plotting_approach:
+    title: "🧭 Plotting Approach & Process Notes"
+    description: "Notes on the writing process and approach to developing this plot."
+    extraction_prompt: "Extract any notes about the approach to plotting this story, whether it's more outlined or discovery-based, or any process considerations for developing this narrative."
+    format: "bullet_list"
+    optional: true
+    
+  # Influences or inspirations for this plot
+  plot_inspirations:
+    title: "💭 Plot Inspirations & References"
+    description: "Influences, references, or inspirations for this plot or structure."
+    extraction_prompt: "Identify any mentioned influences, references, or inspirations for this plot - whether other stories, structural models, real events, or concepts."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these plot elements for you. Is there a particular aspect of the narrative you'd like to explore more deeply, or would you like to discuss how different elements might connect?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "I notice that [plot element] seems particularly intriguing. Would you like to explore how this might develop or connect to other aspects of your story?"
+    
+  # Specialized narrative structure coach
+  narrative_structure_coach:
+    prompt: "Your story has some fascinating elements. Would it be helpful to discuss how tension might build across these plot points, or perhaps examine where the emotional high points might fall?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

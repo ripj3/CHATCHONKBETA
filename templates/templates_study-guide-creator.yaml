@@ -1,0 +1,109 @@
+# Study Guide Creator Template for ChatChonk
+# Purpose: Transforms AI chat discussions into structured study guides
+# that highlight key concepts, definitions, examples, and practice questions.
+
+template_name: "Study Guide Creator"
+template_description: "Transforms AI chat discussions into a structured study guide, highlighting key concepts, definitions, examples, and practice questions to aid learning and revision."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - academic
+  - study
+  - learning
+  - education
+  - revision
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Overview of the main topic covered in the conversation
+  main_topic_overview:
+    title: "📚 Main Topic Overview"
+    description: "A concise summary of the main subject or topic covered in the conversation."
+    extraction_prompt: "Summarize the main topic or subject of this conversation in 1-2 paragraphs. What is the core area of study?"
+    format: "paragraph"
+    max_length: 500
+    
+  # Key terms and their definitions
+  key_concepts_definitions:
+    title: "🔑 Key Concepts & Definitions"
+    description: "Important terms, concepts, and their explanations discussed."
+    extraction_prompt: "List the key concepts or terms discussed and provide their definitions or core explanations as presented in the conversation. Format as Term: Definition."
+    format: "bullet_list"  # Each bullet could be "Term: Definition"
+    
+  # Fundamental rules, principles, or theories explained
+  core_principles_theories:
+    title: "🧠 Core Principles & Theories"
+    description: "Fundamental rules, principles, or theories explained in the chat."
+    extraction_prompt: "Identify and explain any core principles, theories, or fundamental rules that were central to the discussion."
+    format: "numbered_list"
+    
+  # Examples used to illustrate concepts
+  examples_illustrations:
+    title: "💡 Examples & Illustrations"
+    description: "Concrete examples or illustrations used to clarify concepts."
+    extraction_prompt: "Extract any concrete examples, case studies, or illustrations used to explain the concepts. Briefly describe each."
+    format: "bullet_list"
+    
+  # Questions for self-assessment or reflection
+  practice_questions_prompts:
+    title: "❓ Practice Questions & Reflection Prompts"
+    description: "Questions for self-assessment or prompts for deeper reflection on the material."
+    extraction_prompt: "Generate 3-5 practice questions or reflection prompts based on the key material discussed that would help someone test their understanding or think more deeply."
+    format: "numbered_list"
+    
+  # Description of any important visuals mentioned (optional)
+  visuals_diagrams_summary:
+    title: "📊 Summary of Key Visuals/Diagrams (if any)"
+    description: "A brief description of any important diagrams, charts, or visuals mentioned or implied that would be useful for study."
+    extraction_prompt: "Were any key diagrams, charts, models, or visuals discussed or implied? If so, briefly describe what they represent or what they would show. (Note: This is for textual description of visual aids)."
+    format: "paragraph"
+    optional: true
+    
+  # Resources for further exploration (optional)
+  further_exploration_resources:
+    title: "🔗 Further Exploration & Resources"
+    description: "Suggestions for further reading, related topics, or resources mentioned."
+    extraction_prompt: "List any suggestions for further reading, related topics to explore, or external resources (books, articles, websites) mentioned in the conversation."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "This study guide looks like a good start! Would you like to dive deeper into any specific section, or perhaps think about how you might use this to prepare for a test or discussion?"
+    
+  # Hypothetical academic success coach
+  academic_success_coach:
+    prompt: "Now that you have these key concepts, how about we try a quick recall exercise? Or I can help you link these ideas to other topics you've explored."
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

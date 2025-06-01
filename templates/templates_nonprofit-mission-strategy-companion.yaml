@@ -1,0 +1,206 @@
+# Nonprofit Mission & Strategy Companion Template for ChatChonk
+# Purpose: Organizes conversations about non-profit mission, vision, strategy, and program development,
+# helping translate inspiration into actionable plans with clear purpose.
+#
+# Note: This template acknowledges the diverse nature of non-profit work and can be adapted for
+# different types of social impact organizations and initiatives, including service providers,
+# advocacy organizations, community groups, and social enterprises. The sections are designed
+# to be flexible and applicable across various mission areas and organizational stages.
+
+template_name: "Nonprofit Mission & Strategy Companion"
+template_description: "Organizes conversations about non-profit mission, vision, strategy, and program development, helping translate inspiration into actionable plans with clear purpose."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - nonprofit
+  - social-impact
+  - mission
+  - strategy
+  - planning
+  - organizational-development
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The fundamental purpose and reason for existence
+  mission_purpose:
+    title: "✨ Mission & Purpose Exploration"
+    description: "Core purpose, mission, and reason for existence."
+    extraction_prompt: "Extract discussions about the organization's core purpose or mission. Why does this non-profit exist or why should it exist? What need is it addressing? What is its reason for being?"
+    format: "paragraph"
+    
+  # The long-term vision and aspirational impact
+  vision_aspiration:
+    title: "🔭 Vision & Aspiration"
+    description: "Long-term vision and aspirational goals for impact."
+    extraction_prompt: "What is the long-term vision discussed for this organization or initiative? What aspiration or future state is it working toward? What would success ultimately look like?"
+    format: "paragraph"
+    
+  # Analysis of community needs and context
+  community_needs:
+    title: "👥 Community Needs & Context"
+    description: "Analysis of community needs, gaps, and contextual factors."
+    extraction_prompt: "Extract information about community needs, gaps in services, or contextual factors that inform this work. What specific needs or problems were identified that this non-profit aims to address?"
+    format: "bullet_list"
+    
+  # Key stakeholders and relationships
+  key_stakeholders:
+    title: "🤝 Key Stakeholders"
+    description: "Primary stakeholders, beneficiaries, and other key relationships."
+    extraction_prompt: "Who are the key stakeholders discussed? This might include primary beneficiaries, partners, funders, community members, board members, or other important relationships for this work."
+    format: "bullet_list"
+    optional: true
+    
+  # Values and principles guiding the work
+  core_values:
+    title: "🧭 Core Values & Guiding Principles"
+    description: "Values, principles, or ethical frameworks guiding the work."
+    extraction_prompt: "What values, principles, or ethical frameworks were mentioned that guide this work? What standards or ideals inform how the organization operates or makes decisions?"
+    format: "bullet_list"
+    optional: true
+    
+  # Program and service ideas to fulfill the mission
+  program_ideas:
+    title: "💡 Program & Service Ideas"
+    description: "Ideas for programs, services, or initiatives to fulfill the mission."
+    extraction_prompt: "Extract ideas for programs, services, or initiatives that were discussed. What specific activities might the organization undertake to fulfill its mission and address community needs?"
+    format: "bullet_list"
+    
+  # Impact measurement and evaluation approaches
+  impact_measurement:
+    title: "📊 Impact Goals & Measurement"
+    description: "Desired outcomes, impact metrics, and evaluation approaches."
+    extraction_prompt: "What desired outcomes or impacts were discussed? How might success be measured or evaluated? What specific metrics, indicators, or evaluation approaches were considered?"
+    format: "bullet_list"
+    optional: true
+    
+  # Funding strategies and sustainability considerations
+  funding_sustainability:
+    title: "💰 Funding & Sustainability"
+    description: "Funding strategies, resource needs, and sustainability considerations."
+    extraction_prompt: "Extract ideas about funding strategies, resource needs, or sustainability considerations. How might this work be financially supported or sustained over time?"
+    format: "bullet_list"
+    optional: true
+    
+  # Specific funding opportunities and potential funders
+  potential_funders:
+    title: "🏛️ Potential Funders & Grants"
+    description: "Specific funding opportunities, grants, or potential funders identified."
+    extraction_prompt: "Extract information about specific funding opportunities, grants, foundations, or potential funders that were mentioned or might align with this work."
+    format: "bullet_list"
+    optional: true
+    
+  # Organizational structure and capacity considerations
+  organizational_structure:
+    title: "🏗️ Organizational Structure & Capacity"
+    description: "Staffing, structure, governance, and capacity considerations."
+    extraction_prompt: "Extract information about organizational structure, staffing, governance, or capacity considerations discussed. This might include team roles, board structure, volunteer management, or operational models."
+    format: "bullet_list"
+    optional: true
+    
+  # Potential partnerships and collaborations
+  collaborative_opportunities:
+    title: "🌉 Collaborative Opportunities"
+    description: "Potential partnerships, alliances, or collaborative efforts."
+    extraction_prompt: "What potential partnerships, alliances, or collaborative opportunities were discussed? Who might the organization work with to extend its impact or share resources?"
+    format: "bullet_list"
+    optional: true
+    
+  # Equity and inclusion considerations
+  equity_inclusion:
+    title: "🌈 Equity & Inclusion Considerations"
+    description: "Equity, inclusion, justice, and accessibility considerations."
+    extraction_prompt: "Extract considerations related to equity, inclusion, justice, or accessibility in the organization's work. How might these values be operationalized or centered in the approach?"
+    format: "bullet_list"
+    optional: true
+    
+  # Community engagement strategies
+  community_engagement:
+    title: "🗣️ Community Engagement Strategies"
+    description: "Approaches for engaging communities and incorporating their voice."
+    extraction_prompt: "What strategies for community engagement or participation were discussed? How might the organization ensure the voices of communities served are incorporated into its work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Potential challenges and risks
+  challenges_risks:
+    title: "⚠️ Challenges & Risks"
+    description: "Potential obstacles, risks, or challenges to address."
+    extraction_prompt: "What potential challenges, obstacles, risks, or limitations were identified that might affect this work? What contingencies or mitigations were considered?"
+    format: "bullet_list"
+    optional: true
+    
+  # Research and evidence informing the approach
+  research_evidence:
+    title: "🔍 Research & Evidence Base"
+    description: "Research, evidence, or best practices informing the approach."
+    extraction_prompt: "Extract information about research, evidence, models, or best practices mentioned that inform or support the approach being discussed. What existing knowledge is this work building upon?"
+    format: "bullet_list"
+    optional: true
+    
+  # Policy and advocacy elements
+  policy_advocacy:
+    title: "📣 Policy & Advocacy Elements"
+    description: "Policy changes, advocacy efforts, or systems change approaches."
+    extraction_prompt: "Extract any elements related to policy change, advocacy, or systems change that were discussed. How might the organization address structural or systemic aspects of the issues it's working on?"
+    format: "bullet_list"
+    optional: true
+    
+  # Next steps and action items
+  next_steps:
+    title: "👣 Next Steps & Action Items"
+    description: "Immediate next steps, action items, or development priorities."
+    extraction_prompt: "What immediate next steps, action items, or development priorities were identified? What needs to happen next to move this work forward?"
+    format: "bullet_list"
+    
+  # Key questions to explore further
+  key_questions:
+    title: "❓ Key Questions to Explore"
+    description: "Important questions to consider or explore further."
+    extraction_prompt: "What important questions remain to be answered or require further exploration? What aspects of this work need more consideration or development?"
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these ideas about your non-profit mission and strategy. Would you like to explore any particular aspect further, like connecting your program ideas to potential funding sources or developing your impact measurement approach?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your non-profit vision contains some powerful elements! Would you like to brainstorm how these ideas might be developed into compelling narratives for different audiences like potential funders, community members, or partners?"
+    
+  # Hypothetical specialized coach for funding strategy
+  funding_strategy_coach:
+    prompt: "I notice several interesting program ideas here. Would it be helpful to discuss how these might align with current funding priorities in this sector, or perhaps explore what elements would make these ideas particularly attractive to specific types of funders?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

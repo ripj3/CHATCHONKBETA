@@ -1,0 +1,254 @@
+# Craft & Material Arts Companion Template for ChatChonk
+# Purpose: Organizes information from conversations about craft practices, textile arts, and material design,
+# including technical processes, material exploration, design development, and professional aspects of craft practice.
+#
+# Note: This template can be adapted for various craft disciplines (textiles, ceramics, woodworking, jewelry, etc.)
+# and for makers at different career stages. Sections can be customized based on specific needs and priorities
+# within your craft practice.
+
+template_name: "Craft & Material Arts Companion"
+template_description: "Organizes information from conversations about craft practices, textile arts, and material design, including technical processes, material exploration, design development, and professional aspects of craft practice."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - craft
+  - textiles
+  - material-arts
+  - fiber-arts
+  - design
+  - handmade
+  - making
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The core making philosophy and creative direction
+  craft_vision:
+    title: "✨ Craft Vision & Approach"
+    description: "Core approach to craft, making philosophy, or creative direction."
+    extraction_prompt: "Extract reflections on your core approach to craft, making philosophy, or creative direction. What drives your craft practice? What values, ideas, or aesthetics guide your work with materials?"
+    format: "paragraph"
+    
+  # Specific project concepts and development
+  project_concept:
+    title: "💡 Project Concept & Development"
+    description: "Ideas and development for specific craft projects or collections."
+    extraction_prompt: "Extract information about specific craft projects or collections being developed. What is the concept, theme, or idea behind this work? How is it developing or evolving?"
+    format: "bullet_list"
+    
+  # Materials being explored or considered
+  materials_exploration:
+    title: "🧶 Materials Exploration & Selection"
+    description: "Materials being explored, sourced, or considered."
+    extraction_prompt: "Extract information about materials being explored, sourced, or considered. What specific materials are you working with or interested in? What qualities, properties, or characteristics are you seeking in materials?"
+    format: "bullet_list"
+    
+  # Specific techniques and processes
+  techniques_processes:
+    title: "🧵 Techniques & Processes"
+    description: "Specific techniques, processes, or methods being used or explored."
+    extraction_prompt: "Extract information about specific techniques, processes, or methods being used or explored in your craft practice. What making approaches are you employing or developing? What technical aspects are you focusing on?"
+    format: "bullet_list"
+    
+  # Design elements and considerations
+  design_considerations:
+    title: "🎨 Design Considerations"
+    description: "Design elements, principles, or considerations guiding the work."
+    extraction_prompt: "Extract information about design elements, principles, or considerations guiding your craft work. What visual, formal, functional, or aesthetic decisions are shaping your process or outcomes?"
+    format: "bullet_list"
+    optional: true
+    
+  # Functional aspects and intended use
+  functionality_purpose:
+    title: "🛠️ Functionality & Purpose"
+    description: "Functional aspects, intended use, or purpose of the craft work."
+    extraction_prompt: "Extract information about functional aspects, intended use, or purpose of your craft work. How is your work meant to be used, experienced, or interacted with? What is the relationship between form and function in your practice?"
+    format: "bullet_list"
+    optional: true
+    
+  # Traditional craft practices and cultural influences
+  craft_traditions:
+    title: "🌍 Craft Traditions & Influences"
+    description: "Traditional craft practices, historical techniques, or cultural influences."
+    extraction_prompt: "Extract information about craft traditions, historical techniques, or cultural influences informing your work. What heritage practices, traditional methods, or cultural contexts are you engaging with or drawing from?"
+    format: "bullet_list"
+    optional: true
+    
+  # Sustainability and ethical considerations
+  sustainability_ethics:
+    title: "🌱 Sustainability & Ethics"
+    description: "Sustainability considerations, ethical approaches, or responsible practices."
+    extraction_prompt: "Extract information about sustainability considerations, ethical approaches, or responsible practices in your craft work. How are you addressing environmental impact, material sourcing, waste reduction, or other ethical dimensions of making?"
+    format: "bullet_list"
+    optional: true
+    
+  # Technical challenges and potential solutions
+  technical_challenges:
+    title: "🧩 Technical Challenges & Solutions"
+    description: "Technical challenges encountered and potential solutions."
+    extraction_prompt: "Extract information about technical challenges encountered in your craft practice and potential solutions being considered. What making problems are you working to solve? What technical hurdles are you facing or overcoming?"
+    format: "bullet_list"
+    optional: true
+    
+  # Tools, equipment, and workspace needs
+  tool_equipment_needs:
+    title: "🔨 Tools & Equipment"
+    description: "Tools, equipment, or workspace considerations."
+    extraction_prompt: "Extract information about tools, equipment, or workspace considerations relevant to your craft practice. What specific tools are you using or need? What equipment or studio setup supports your work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Production methods and scaling considerations
+  production_considerations:
+    title: "⚙️ Production & Scaling"
+    description: "Production methods, scaling considerations, or efficiency approaches."
+    extraction_prompt: "Extract information about production methods, scaling considerations, or efficiency approaches. How might your craft practice be scaled or adapted for different production volumes or contexts? What production challenges or opportunities are you considering?"
+    format: "bullet_list"
+    optional: true
+    
+  # Elements for craft statements or work descriptions
+  craft_statement:
+    title: "📝 Craft Statement Elements"
+    description: "Key elements for artist/maker statements or work descriptions."
+    extraction_prompt: "Extract key elements that might be included in a craft statement or work description. How do you articulate your approach to materials, making process, or the significance of your craft work in words?"
+    format: "bullet_list"
+    
+  # Collection development and portfolio curation
+  collection_development:
+    title: "📁 Collection & Portfolio Development"
+    description: "Ideas for collection development, portfolio curation, or body of work."
+    extraction_prompt: "Extract ideas for collection development, portfolio curation, or developing a cohesive body of work. How might you organize, curate, or build upon your craft practice to create meaningful collections or series?"
+    format: "bullet_list"
+    optional: true
+    
+  # Approaches to pricing and selling craft work
+  pricing_selling:
+    title: "💲 Pricing & Selling"
+    description: "Approaches to pricing, selling, or marketing craft work."
+    extraction_prompt: "Extract information about approaches to pricing, selling, or marketing your craft work. How might you determine value, set prices, or find appropriate markets for your work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Exhibition venues, markets, and sales platforms
+  exhibition_sales_opportunities:
+    title: "🏛️ Exhibition & Sales Opportunities"
+    description: "Potential exhibition venues, markets, fairs, or sales platforms."
+    extraction_prompt: "Extract information about potential exhibition venues, markets, fairs, or sales platforms for your craft work. Where might your work be shown, sold, or shared?"
+    format: "bullet_list"
+    optional: true
+    
+  # Teaching and workshop ideas
+  teaching_workshops:
+    title: "👩‍🏫 Teaching & Workshops"
+    description: "Ideas for teaching, workshops, or skill sharing."
+    extraction_prompt: "Extract ideas for teaching, workshops, or skill sharing related to your craft practice. How might you share your craft knowledge, skills, or approaches with others?"
+    format: "bullet_list"
+    optional: true
+    
+  # Commission opportunities and client work
+  commission_opportunities:
+    title: "📋 Commission & Client Work"
+    description: "Commission opportunities, client work, or custom projects."
+    extraction_prompt: "Extract information about commission opportunities, client work, or custom projects. What possibilities exist for creating work for specific clients, contexts, or purposes?"
+    format: "bullet_list"
+    optional: true
+    
+  # Grant and funding opportunities
+  grant_funding_opportunities:
+    title: "💰 Grant & Funding Opportunities"
+    description: "Potential grants, funding sources, or financial opportunities."
+    extraction_prompt: "Extract information about potential grants, funding sources, or financial opportunities for your craft practice. What funding might be available to support your work or specific projects?"
+    format: "bullet_list"
+    optional: true
+    
+  # Craft communities and professional connections
+  craft_community:
+    title: "🤝 Craft Community & Connections"
+    description: "Craft communities, professional connections, or collaborative opportunities."
+    extraction_prompt: "Extract information about craft communities, professional connections, or collaborative opportunities. Who are or might be important connections for your craft practice? What communities support or inform your work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Approaches to documenting work and process
+  documentation_process:
+    title: "📸 Documentation & Process Recording"
+    description: "Approaches to documenting work, recording process, or sharing making."
+    extraction_prompt: "Extract ideas about documenting your work, recording your process, or sharing your making. How might you capture and communicate your craft practice visually or in other forms?"
+    format: "bullet_list"
+    optional: true
+    
+  # Online presence and digital strategy
+  online_presence:
+    title: "🌐 Online Presence & Digital Strategy"
+    description: "Approaches to online presence, digital platforms, or web strategy."
+    extraction_prompt: "Extract ideas about online presence, digital platforms, or web strategy for your craft practice. How might you use websites, social media, or other digital tools to share and contextualize your work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Feedback and critique notes
+  feedback_critique:
+    title: "🔍 Feedback & Critique"
+    description: "Feedback received, critique notes, or reflective insights."
+    extraction_prompt: "Extract feedback received, critique notes, or your own reflective insights about your craft work. What observations, questions, or suggestions have emerged about the work's strengths, challenges, or potential directions?"
+    format: "bullet_list"
+    optional: true
+    
+  # Creative challenges and areas for exploration
+  creative_challenges:
+    title: "⚡ Creative Challenges & Explorations"
+    description: "Creative challenges, experiments, or areas for exploration."
+    extraction_prompt: "Extract creative challenges, experiments, or areas for exploration in your craft practice. What aspects of your making are you still figuring out or want to develop further?"
+    format: "bullet_list"
+    optional: true
+    
+  # Project timeline and next steps
+  project_timeline:
+    title: "📅 Project Timeline & Next Steps"
+    description: "Timeline, deadlines, and next steps for projects or professional activities."
+    extraction_prompt: "Extract information about project timelines, deadlines, or next steps. What is your working schedule, and what are the immediate next actions for your craft practice or specific projects?"
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these notes about your craft practice. Would you like to explore any particular aspect further, such as developing technical solutions for a challenge you're facing or identifying markets that align with your work?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your craft approach has some fascinating elements! Would you like to brainstorm ways to further develop these ideas through materials and techniques, or perhaps explore how different design considerations might enhance your work?"
+    
+  # Hypothetical specialized coach for craft business
+  craft_business_coach:
+    prompt: "I notice some interesting directions in your craft practice. Would it be helpful to discuss strategies for bringing this work to market, exploring pricing approaches, or perhaps developing your professional presentation as a maker?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

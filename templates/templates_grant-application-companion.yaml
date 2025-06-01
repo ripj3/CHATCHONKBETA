@@ -1,0 +1,214 @@
+# Grant Application Companion Template for ChatChonk
+# Purpose: Organizes information for grant applications and funding proposals from conversations,
+# helping transform ideas into compelling funding requests.
+#
+# Note: This template can be adapted for different types of grant applications (foundations, 
+# government, corporate, etc.) and for various purposes (projects, research, arts, organizational 
+# support, etc.). Sections can be customized based on specific funder requirements.
+
+template_name: "Grant Application Companion"
+template_description: "Organizes information for grant applications and funding proposals from conversations, helping transform ideas into compelling funding requests for projects, research, creative work, or organizational support."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - grants
+  - funding
+  - proposal-writing
+  - foundation
+  - fundraising
+  - project-funding
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Brief overview of the project or proposal
+  project_summary:
+    title: "📝 Project Summary/Abstract"
+    description: "Brief overview of the project or proposal."
+    extraction_prompt: "Create a concise summary of the project or initiative seeking funding. What is the essence of what you're proposing to do, why it matters, and what you hope to achieve? (This should function as an executive summary or abstract for your proposal.)"
+    format: "paragraph"
+    
+  # Information about the organization or individual applying
+  organization_background:
+    title: "🏢 Organization/Applicant Background"
+    description: "Information about the organization or individual applying."
+    extraction_prompt: "Extract information about the organization or individual applying for funding. What is your mission, history, expertise, or relevant experience that qualifies you to undertake this project?"
+    format: "bullet_list"
+    optional: true
+    
+  # Clear articulation of the need or problem being addressed
+  need_statement:
+    title: "⚠️ Need Statement/Problem Definition"
+    description: "Clear articulation of the need or problem being addressed."
+    extraction_prompt: "Extract a clear statement of the need or problem this project addresses. What issue, gap, or opportunity exists that requires intervention? Why is this important now? Include relevant data or evidence of the need when possible."
+    format: "paragraph"
+    
+  # Detailed description of the project or initiative
+  project_description:
+    title: "💡 Project Description/Proposed Solution"
+    description: "Detailed description of the project or initiative."
+    extraction_prompt: "Extract a detailed description of the proposed project or solution. What specifically do you plan to do? How will your approach address the identified need or problem? What makes your approach effective or innovative?"
+    format: "bullet_list"
+    
+  # Specific goals, objectives, and intended outcomes
+  goals_objectives:
+    title: "🎯 Goals & Objectives"
+    description: "Specific goals, objectives, and intended outcomes."
+    extraction_prompt: "What are the specific goals and objectives of this project? Extract both the broader goals and the concrete, measurable objectives that will indicate progress toward those goals."
+    format: "bullet_list"
+    
+  # Who will benefit from the project
+  target_population:
+    title: "👥 Target Population/Beneficiaries"
+    description: "Who will benefit from the project."
+    extraction_prompt: "Extract information about who will benefit from this project. Who is the target population or audience? How many people will be served or impacted? What are their characteristics or needs?"
+    format: "bullet_list"
+    optional: true
+    
+  # Specific methods, activities, or strategies to be employed
+  methods_activities:
+    title: "🔧 Methods & Activities"
+    description: "Specific methods, activities, or strategies to be employed."
+    extraction_prompt: "Extract the specific methods, activities, or strategies that will be employed in this project. What concrete steps will you take to implement your approach? How will these activities lead to your desired outcomes?"
+    format: "bullet_list"
+    optional: true
+    
+  # Project timeline, phases, and implementation schedule
+  timeline:
+    title: "📅 Timeline & Implementation Plan"
+    description: "Project timeline, phases, and implementation schedule."
+    extraction_prompt: "Extract information about the project timeline, phases, or implementation schedule. When and in what sequence will key activities occur? What is the overall duration of the project?"
+    format: "bullet_list"
+    optional: true
+    
+  # How success will be measured and evaluated
+  evaluation_plan:
+    title: "📊 Evaluation Plan"
+    description: "How success will be measured and evaluated."
+    extraction_prompt: "How will you measure and evaluate success? Extract information about evaluation methods, metrics, indicators, or data collection plans that will demonstrate the project's effectiveness or impact."
+    format: "bullet_list"
+    optional: true
+    
+  # Summary of funding needs and budget allocation
+  budget_overview:
+    title: "💰 Budget Overview"
+    description: "Summary of funding needs and budget allocation."
+    extraction_prompt: "Extract information about funding needs and budget allocation. What is the total amount requested? What are the major budget categories or line items? How will funds be used?"
+    format: "bullet_list"
+    optional: true
+    
+  # How the project or its impact will be sustained beyond the grant period
+  sustainability_plan:
+    title: "♻️ Sustainability Plan"
+    description: "How the project or its impact will be sustained beyond the grant period."
+    extraction_prompt: "Extract information about how this project or its impact will be sustained beyond the grant period. What is the long-term plan for this work? Are there plans for future funding, revenue generation, or institutional support?"
+    format: "bullet_list"
+    optional: true
+    
+  # Key personnel and their qualifications
+  team_qualifications:
+    title: "👩‍💼 Team & Qualifications"
+    description: "Key personnel and their qualifications."
+    extraction_prompt: "Extract information about key personnel involved in the project and their relevant qualifications, experience, or expertise. Who will be leading or implementing various aspects of this work?"
+    format: "bullet_list"
+    optional: true
+    
+  # Collaborative aspects and partnerships involved
+  partnerships_collaboration:
+    title: "🤝 Partnerships & Collaboration"
+    description: "Collaborative aspects and partnerships involved."
+    extraction_prompt: "Extract information about partnerships, collaborations, or cooperative aspects of this project. What organizations or individuals will you be working with, and what will be their roles or contributions?"
+    format: "bullet_list"
+    optional: true
+    
+  # What makes this project innovative, unique, or particularly effective
+  innovation_uniqueness:
+    title: "⭐ Innovation & Uniqueness"
+    description: "What makes this project innovative, unique, or particularly effective."
+    extraction_prompt: "What makes this project innovative, unique, or particularly effective? Extract elements that distinguish this approach from others or that represent new solutions to the identified problem."
+    format: "bullet_list"
+    optional: true
+    
+  # How the project aligns with potential funder interests and priorities
+  alignment_with_funder:
+    title: "🎯 Alignment with Funder Priorities"
+    description: "How the project aligns with potential funder interests and priorities."
+    extraction_prompt: "Extract information about how this project might align with funder interests or priorities. What aspects of this work would be particularly appealing to specific types of funders or grant makers?"
+    format: "bullet_list"
+    optional: true
+    
+  # Specific funding sources or opportunities to pursue
+  potential_funders:
+    title: "🏛️ Potential Funders & Opportunities"
+    description: "Specific funding sources or opportunities to pursue."
+    extraction_prompt: "Extract information about specific funding sources, grant opportunities, foundations, or other potential funders mentioned that might be a good fit for this project."
+    format: "bullet_list"
+    optional: true
+    
+  # Additional materials or documentation required for applications
+  supporting_materials:
+    title: "📎 Supporting Materials Needed"
+    description: "Additional materials or documentation required for applications."
+    extraction_prompt: "What supporting materials, documentation, or attachments might be needed for grant applications? This could include letters of support, data, work samples, budgets, or other supplementary information."
+    format: "bullet_list"
+    optional: true
+    
+  # Potential obstacles and how they will be addressed
+  anticipated_challenges:
+    title: "⚠️ Anticipated Challenges"
+    description: "Potential obstacles and how they will be addressed."
+    extraction_prompt: "Extract information about potential challenges, obstacles, or limitations of this project, and how these might be addressed or mitigated in your proposal."
+    format: "bullet_list"
+    optional: true
+    
+  # Strategy for approaching applications and immediate next steps
+  application_strategy:
+    title: "🧩 Application Strategy & Next Steps"
+    description: "Strategy for approaching applications and immediate next steps."
+    extraction_prompt: "Extract any discussion about grant application strategy or immediate next steps. What actions need to be taken to prepare or submit applications? What is the approach to seeking funding?"
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these elements for your grant application. Would you like to focus on strengthening a particular section, like the need statement or evaluation plan? Or would you prefer guidance on finding grant opportunities that align with this project?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your project has some compelling elements! Would you like to brainstorm ways to frame these ideas in language that would resonate strongly with funders, or perhaps explore how to make your unique approach stand out in a competitive funding landscape?"
+    
+  # Hypothetical specialized coach for grant writing
+  grant_writing_coach:
+    prompt: "Looking at these grant application elements, I notice some strong points and opportunities for enhancement. Would it be helpful to discuss how to strengthen your case for funding by more explicitly connecting your methods to your outcomes, or perhaps by addressing some common questions funders might have about this type of project?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

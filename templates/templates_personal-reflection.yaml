@@ -1,0 +1,97 @@
+# Personal Reflection Template for ChatChonk
+# Purpose: Provides a gentle framework for personal reflection and pattern recognition
+# without imposing judgment or rigid structure.
+
+template_name: "Personal Reflection"
+template_description: "A gentle template for exploring personal thoughts, feelings, energy levels, and emerging patterns from AI conversations, fostering self-awareness without pressure."
+version: 1.0
+compatibility: 
+  - obsidian
+  - notion
+  - markdown
+tags:
+  - personal
+  - reflection
+  - journaling
+  - self-awareness
+  - energy-tracking
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The overall feeling or essence of the conversation
+  conversation_essence:
+    title: "✨ Conversation Essence & Vibe"
+    description: "A brief note on the overall feeling or core of this conversation."
+    extraction_prompt: "Briefly describe the overall mood, energy, or central theme of this conversation. What was its essence for you?"
+    format: "paragraph"
+    max_length: 300
+    
+  # Patterns and themes that emerged during the conversation
+  emerging_patterns_themes:
+    title: "🌿 Emerging Patterns & Themes"
+    description: "Recurring thoughts, feelings, or topics noticed during the conversation. No judgment, just observation."
+    extraction_prompt: "What recurring themes, ideas, or emotional patterns gently emerged during this conversation? List them as simple observations."
+    format: "bullet_list"
+    
+  # Key personal realizations or moments of clarity
+  personal_insights_moments:
+    title: "💡 Personal Insights & 'Aha!' Moments"
+    description: "Key personal realizations or moments of clarity."
+    extraction_prompt: "Were there any personal insights, 'aha!' moments, or new understandings that surfaced for you in this chat?"
+    format: "bullet_list"
+    
+  # Space for feelings, bodily sensations, or deeper reflections
+  feelings_sensations_reflections:
+    title: "🌊 Feelings, Sensations & Deeper Reflections"
+    description: "A space for any feelings, bodily sensations, or deeper reflections that came up. (Optional)"
+    extraction_prompt: "What feelings, bodily sensations (if any), or deeper reflections came up for you during or after this conversation? This space is for you, if you wish to use it."
+    format: "free_text"  # Allows for more open, paragraph-style input
+    optional: true
+    
+  # Gentle curiosities or topics to explore further
+  gentle_curiosities:
+    title: "🌱 Gentle Curiosities & Explorations"
+    description: "Soft questions or topics you might feel drawn to explore further, without any pressure."
+    extraction_prompt: "Did this conversation spark any gentle curiosities or areas you might like to explore further when/if you feel ready?"
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've noticed some interesting reflections here. Would you like me to help you connect these to any previous thoughts, or would you prefer to let them sit for now?"
+    
+  # A hypothetical coach for deeper, gentle reflection
+  reflection_guidance_coach:
+    prompt: "The pattern of [emerging_pattern] seems to connect with [personal_insight]. Is that something you'd be open to exploring a little more, perhaps with a gentle prompt or two?"
+    
+  # Another hypothetical coach focused on self-compassion
+  self_compassion_coach:
+    prompt: "Remember, all feelings and reflections are valid. Based on what you've shared, what's one small, kind way you could acknowledge your experience today?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

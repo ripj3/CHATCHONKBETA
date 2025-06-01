@@ -1,0 +1,231 @@
+# Call of Cthulhu Companion Template for ChatChonk
+# Purpose: Organizes Call of Cthulhu RPG information from conversations,
+# including investigator details, case notes, session summaries, and horror elements.
+#
+# Note: This template is specifically designed for Call of Cthulhu and includes terminology
+# specific to that system (like Sanity, Mythos, Investigator, Keeper, etc.).
+# It's optimized for both players and Keepers to capture the investigative and horror
+# elements that make Call of Cthulhu unique.
+
+template_name: "Call of Cthulhu Companion"
+template_description: "Organizes Call of Cthulhu RPG information from your conversations, including investigator details, case notes, session summaries, and horror elements for your cosmic horror adventures."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - call-of-cthulhu
+  - coc
+  - lovecraft
+  - cosmic-horror
+  - investigative
+  - ttrpg
+  - rpg
+  - chaosium
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Overview of what happened in the session
+  session_summary:
+    title: "📝 Session Summary"
+    description: "A brief overview of what happened in the Call of Cthulhu session."
+    extraction_prompt: "Summarize the key events, investigations, and developments from the Call of Cthulhu session discussed. What were the main things that happened?"
+    format: "paragraph"
+    
+  # Important clues and discoveries made during investigation
+  investigative_discoveries:
+    title: "🔍 Investigative Discoveries & Clues"
+    description: "Important clues, evidence, and information discovered during investigation."
+    extraction_prompt: "Extract information about clues, evidence, or investigative discoveries made during the session. What new information was uncovered and how might it connect to the overall case or mystery?"
+    format: "bullet_list"
+    
+  # Notes on investigator development and changes
+  character_development:
+    title: "👤 Investigator Development"
+    description: "Notes on investigator (player character) development, psychological changes, or personal growth."
+    extraction_prompt: "Extract information about investigator development - including psychological evolution, significant choices, skill improvements, sanity effects, or personal connections that developed or changed."
+    format: "bullet_list"
+    
+  # Sanity-affecting events and psychological impacts
+  sanity_events:
+    title: "🧠 Sanity Events & Psychological Impact"
+    description: "Sanity checks, psychological trauma, or mental states affecting investigators."
+    extraction_prompt: "Extract information about sanity checks, psychological trauma, phobias, manias, or other mental states affecting the investigators. What caused these effects and how did they manifest?"
+    format: "bullet_list"
+    optional: true
+    
+  # Encounters with Mythos entities or supernatural phenomena
+  mythos_encounters:
+    title: "🐙 Mythos Encounters & Entities"
+    description: "Encounters with Mythos entities, phenomena, or supernatural elements."
+    extraction_prompt: "Extract information about encounters with Mythos entities, supernatural phenomena, or other cosmic horror elements. What was encountered and how did the investigators respond?"
+    format: "bullet_list"
+    optional: true
+    
+  # Places investigated or explored
+  locations_explored:
+    title: "🏚️ Locations & Settings"
+    description: "Places investigated, environments explored, or settings encountered."
+    extraction_prompt: "Extract information about locations investigated, environments explored, or settings encountered. Include details about buildings, towns, wilderness areas, or other notable places."
+    format: "bullet_list"
+    optional: true
+    
+  # Information about NPCs
+  npc_information:
+    title: "🧑‍🤝‍🧑 NPC Information"
+    description: "Details about non-player characters encountered or discussed."
+    extraction_prompt: "Extract information about non-player characters encountered or discussed - including witnesses, suspects, victims, allies, or other significant individuals. What is known about their backgrounds, connections, or relevance to the investigation?"
+    format: "bullet_list"
+    optional: true
+    
+  # Information about organizations and groups
+  organizations_factions:
+    title: "🏛️ Organizations & Factions"
+    description: "Information about organizations, cults, factions, or groups in the scenario."
+    extraction_prompt: "Extract information about organizations, cults, factions, or groups mentioned in the scenario. What are their motives, connections, or significance to the investigation?"
+    format: "bullet_list"
+    optional: true
+    
+  # Significant items and artifacts
+  artifacts_tomes:
+    title: "📜 Artifacts, Tomes & Objects"
+    description: "Significant items, artifacts, tomes, or objects encountered or obtained."
+    extraction_prompt: "Extract information about significant items, artifacts, tomes, or objects encountered or obtained. What is known about their properties, history, or relevance to the investigation?"
+    format: "bullet_list"
+    optional: true
+    
+  # Magical spells and rituals
+  spells_rituals:
+    title: "✨ Spells & Rituals"
+    description: "Magical spells, rituals, or incantations discovered or performed."
+    extraction_prompt: "Extract information about magical spells, rituals, or incantations that were discovered, witnessed, or performed. What are their effects, requirements, or dangers?"
+    format: "bullet_list"
+    optional: true
+    
+  # Advancement of major plotlines
+  plot_developments:
+    title: "📚 Plot Developments & Story Threads"
+    description: "Advancement of major plotlines and emerging story threads."
+    extraction_prompt: "Extract developments in major plotlines or emerging story threads. What elements of the mystery moved forward? What new complications arose? What theories are developing about the true nature of events?"
+    format: "bullet_list"
+    
+  # Horror and atmospheric elements
+  atmospheric_elements:
+    title: "🌫️ Atmospheric & Horror Elements"
+    description: "Notable atmospheric details, horror elements, or mood-setting aspects of the session."
+    extraction_prompt: "Extract notable atmospheric details, horror elements, or mood-setting aspects that contributed to the cosmic horror feel of the session."
+    format: "bullet_list"
+    optional: true
+    
+  # Information from research and references
+  research_reference_notes:
+    title: "📖 Research & Reference Notes"
+    description: "Information gleaned from research, libraries, newspapers, or other reference materials."
+    extraction_prompt: "Extract information obtained through research, libraries, newspaper archives, or other reference materials. What historical, scientific, or contextual information was discovered?"
+    format: "bullet_list"
+    optional: true
+    
+  # Current resources and status of investigators
+  investigator_resources:
+    title: "🧳 Investigator Resources & Status"
+    description: "The investigators' current resources, condition, and general status."
+    extraction_prompt: "Extract information about the investigators' current resources, condition, and general status. This might include health, sanity levels, equipment, contacts, or other assets."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes on game mechanics and rules
+  mechanics_notes:
+    title: "📊 Mechanics & Rules Notes"
+    description: "Notes on Call of Cthulhu rules, mechanics interpretations, or house rules."
+    extraction_prompt: "Extract any notes on Call of Cthulhu rules, mechanics interpretations, house rules, or mechanical interactions that were discussed or clarified."
+    format: "bullet_list"
+    optional: true
+    
+  # Theories and speculations by players
+  player_theories:
+    title: "🔎 Player Theories & Speculations"
+    description: "Theories, speculations, or hypotheses discussed by the players about the investigation."
+    extraction_prompt: "What theories, speculations, or hypotheses did the players discuss about the investigation? How are they interpreting the evidence and clues discovered so far?"
+    format: "bullet_list"
+    
+  # Planned next steps in the investigation
+  next_steps:
+    title: "👣 Next Investigative Steps"
+    description: "Planned next steps in the investigation or immediate future plans."
+    extraction_prompt: "What next steps in the investigation are the players planning? What leads do they intend to follow, what research do they plan to conduct, or what locations do they intend to visit?"
+    format: "bullet_list"
+    
+  # Open questions and mysteries
+  unresolved_questions:
+    title: "❓ Unresolved Questions & Mysteries"
+    description: "Open questions, mysteries, or unresolved situations."
+    extraction_prompt: "What open questions, mysteries, or unresolved situations remain? What are the investigators still wondering about or trying to figure out?"
+    format: "bullet_list"
+    optional: true
+    
+  # Out-of-character discussions
+  table_talk_notes:
+    title: "🎲 Table Talk & Meta Notes"
+    description: "Out-of-character discussions, table dynamics, or meta-game considerations."
+    extraction_prompt: "Extract any out-of-character discussions, notes about table dynamics, scheduling details, or meta-game considerations that would be useful to remember."
+    format: "bullet_list"
+    optional: true
+    
+  # Memorable quotes from the session
+  memorable_quotes:
+    title: "💬 Memorable Quotes"
+    description: "Chilling, dramatic, or otherwise memorable quotes from the session."
+    extraction_prompt: "Capture any chilling, dramatic, or otherwise memorable quotes from the session, either in-character or out-of-character."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes for the next session
+  next_session_prep:
+    title: "📅 Next Session Preparation"
+    description: "Notes for preparing for the next Call of Cthulhu session."
+    extraction_prompt: "Extract any notes relevant to preparing for the next Call of Cthulhu session - including planned activities, things to remember, or preparation needed by either players or Keeper."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these notes from your Call of Cthulhu session. Would you like me to help you explore any particular aspect further, like developing your investigator's psychological state or connecting different investigative threads?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your cosmic horror investigation has some fascinating elements! Would you like to brainstorm some potential theories about what might be happening, or perhaps explore how your investigator might process these eldritch experiences?"
+    
+  # Hypothetical specialized coach for keepers
+  keeper_assistant:
+    prompt: "These session notes have a lot of great atmospheric and investigative elements. If you're the Keeper, would it be helpful to discuss how to develop certain horror aspects further or perhaps create connections between different clues and Mythos elements?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

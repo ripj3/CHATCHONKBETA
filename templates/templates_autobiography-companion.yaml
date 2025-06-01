@@ -1,0 +1,207 @@
+# Autobiography Companion Template for ChatChonk
+# Purpose: Transforms conversations about personal experiences into organized autobiographical elements,
+# supporting meaningful reflection and personal narrative development.
+#
+# NOTE: This template is designed for personal autobiographical content which may be sensitive or private.
+# ChatChonk respects your privacy and does not share your personal narratives without your explicit permission.
+# Consider your comfort level with storing personal reflections before proceeding.
+
+template_name: "Autobiography Companion"
+template_description: "Transforms conversations about personal experiences into organized autobiographical elements, supporting meaningful reflection and personal narrative development."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - autobiography
+  - memoir
+  - personal
+  - reflection
+  - life-story
+  - writing
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The central focus or themes of the personal narrative
+  narrative_focus:
+    title: "✨ Narrative Focus & Themes"
+    description: "The central focus, question, or themes of this personal narrative exploration."
+    extraction_prompt: "What central themes, questions, or focus emerged in this conversation about your life experiences? What seems to be the core of what you're exploring in your personal narrative?"
+    format: "paragraph"
+    
+  # Significant periods or chapters of life discussed
+  key_life_chapters:
+    title: "📚 Key Life Chapters & Periods"
+    description: "Significant periods, phases, or chapters of life discussed."
+    extraction_prompt: "What significant periods, phases, or chapters of your life were discussed? These might be defined by age, location, relationships, education, career stages, or other transitional markers."
+    format: "bullet_list"
+    optional: true
+    
+  # Significant memories or experiences that shaped identity
+  formative_experiences:
+    title: "⭐ Formative Experiences & Key Memories"
+    description: "Significant memories, moments, or experiences that shaped your life."
+    extraction_prompt: "Extract significant memories, moments, or experiences mentioned that seem to have shaped your identity, perspective, or life path. Focus on those that had emotional impact or led to change or growth."
+    format: "bullet_list"
+    
+  # Key people and relationships in the life story
+  people_relationships:
+    title: "👥 People & Relationships"
+    description: "Key people and relationships in your life story."
+    extraction_prompt: "Identify key people and relationships mentioned in your life story. How have they influenced you, and what role have they played in your personal narrative?"
+    format: "nested_list"
+    optional: true
+    
+  # Significant locations or environments in the life story
+  places_settings:
+    title: "🏠 Places & Settings"
+    description: "Significant locations, environments, or settings in your life."
+    extraction_prompt: "Extract details about important places, locations, environments, or settings in your life story. How have these physical contexts shaped your experiences or identity?"
+    format: "bullet_list"
+    optional: true
+    
+  # Moments of significant change or transition
+  turning_points:
+    title: "🔄 Turning Points & Transitions"
+    description: "Moments of significant change, decision, or transition."
+    extraction_prompt: "Identify turning points, pivotal decisions, or transitions discussed that changed your path or perspective in meaningful ways."
+    format: "bullet_list"
+    
+  # Difficulties or obstacles faced and addressed
+  challenges_obstacles:
+    title: "🧗 Challenges & Obstacles"
+    description: "Difficulties, struggles, or obstacles faced and addressed."
+    extraction_prompt: "Extract challenges, difficulties, or obstacles you've faced that were mentioned in the conversation. How have these shaped your story or contributed to your growth?"
+    format: "bullet_list"
+    optional: true
+    
+  # Evolution of values and beliefs over time
+  values_beliefs_evolution:
+    title: "🧭 Values & Beliefs Evolution"
+    description: "How your values, beliefs, or worldview have developed or changed."
+    extraction_prompt: "How have your values, beliefs, or worldview evolved throughout your life? Extract reflections on how your perspective has developed or changed over time."
+    format: "bullet_list"
+    optional: true
+    
+  # Significant accomplishments or milestones
+  achievements_milestones:
+    title: "🏆 Achievements & Milestones"
+    description: "Significant accomplishments, successes, or important milestones."
+    extraction_prompt: "Identify achievements, accomplishments, or important milestones mentioned in your life story. What meanings do these hold for you beyond the accomplishment itself?"
+    format: "bullet_list"
+    optional: true
+    
+  # Patterns or themes that recur throughout the life story
+  recurring_patterns:
+    title: "🔄 Recurring Patterns & Themes"
+    description: "Patterns, themes, or motifs that recur throughout your life story."
+    extraction_prompt: "What patterns, themes, or motifs seem to recur throughout your life story? Are there situations, feelings, or types of relationships that have appeared multiple times?"
+    format: "bullet_list"
+    optional: true
+    
+  # Broader context that has shaped experiences
+  cultural_historical_context:
+    title: "🌐 Cultural & Historical Context"
+    description: "The broader cultural, social, or historical context that has shaped your experiences."
+    extraction_prompt: "Extract elements of the cultural, social, historical, or generational context that have influenced your experiences or provided a backdrop to your life story."
+    format: "bullet_list"
+    optional: true
+    
+  # Reflections on identity and self-perception
+  identity_exploration:
+    title: "🔍 Identity & Self-Perception"
+    description: "Reflections on identity, self-image, and how you've understood yourself."
+    extraction_prompt: "How have you understood or defined yourself at different points in your life? Extract reflections on your identity, self-perception, or how you've made sense of who you are."
+    format: "bullet_list"
+    optional: true
+    
+  # Wisdom or insights gained from life experiences
+  lessons_insights:
+    title: "💡 Lessons & Insights"
+    description: "Wisdom, lessons, or insights gained from life experiences."
+    extraction_prompt: "What wisdom, lessons, or insights have you gained from your life experiences as mentioned in the conversation? What has life taught you?"
+    format: "bullet_list"
+    
+  # Notes on narrative voice or perspective
+  voice_perspective_notes:
+    title: "🗣️ Voice & Perspective Notes"
+    description: "Notes on narrative voice, perspective, or tone for telling your story."
+    extraction_prompt: "Extract any thoughts on how you might tell your story - what voice, perspective, or tone feels right? Are there certain parts that call for a different approach than others?"
+    format: "bullet_list"
+    optional: true
+    
+  # Vivid sensory or emotional details from memories
+  sensory_emotional_details:
+    title: "👁️ Sensory & Emotional Details"
+    description: "Vivid sensory or emotional elements from memories that bring your story to life."
+    extraction_prompt: "Capture vivid sensory details (sights, sounds, smells, etc.) or emotional elements from your memories that were mentioned. These details can bring your story to life."
+    format: "bullet_list"
+    optional: true
+    
+  # Physical objects or items connected to the life story
+  artifacts_memorabilia:
+    title: "📦 Artifacts & Memorabilia"
+    description: "Physical objects, documents, photos, or other items that connect to your story."
+    extraction_prompt: "Were any physical objects, documents, photos, or other memorabilia mentioned that connect to your life story? What significance do these items hold?"
+    format: "bullet_list"
+    optional: true
+    
+  # Areas of the story that remain unexplored
+  narrative_gaps_questions:
+    title: "❓ Narrative Gaps & Questions"
+    description: "Areas of your story that remain unexplored or questions you're still pondering."
+    extraction_prompt: "What aspects of your life story remain unexplored or need further reflection? What questions are you still pondering about your experiences or their meaning?"
+    format: "bullet_list"
+    optional: true
+    
+  # Considerations about sharing the story
+  sharing_ethical_considerations:
+    title: "🤝 Sharing & Ethical Considerations"
+    description: "Thoughts on sharing your story and respecting others involved."
+    extraction_prompt: "Extract any thoughts about sharing your story publicly, including concerns about privacy, the impact on others in your story, or ethical considerations about how to represent shared experiences."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these elements of your life story. Is there a particular aspect you'd like to explore further, or would you prefer to reflect on these insights in your own time?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your story has such rich elements. Would you like to explore how these experiences might be shaped into a particular format, or would you like to discuss what themes seem to connect these memories?"
+    
+  # Hypothetical specialized coach for personal reflection
+  personal_reflection_coach:
+    prompt: "These experiences you've shared are meaningful. Would it be helpful to explore what insights these memories might offer about your journey, or perhaps consider how they've shaped your perspective today?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  privacy_note: true  # Special flag to include a privacy reminder at the top
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

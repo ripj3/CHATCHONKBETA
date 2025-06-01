@@ -1,0 +1,182 @@
+# TTRPG Companion Template for ChatChonk
+# Purpose: Organizes tabletop role-playing game information from conversations,
+# including character details, campaign notes, session summaries, and worldbuilding elements.
+#
+# Note: This template is system-agnostic and designed to work across different TTRPG systems.
+# More specialized templates for specific game systems (D&D 5e, Pathfinder, Call of Cthulhu, etc.)
+# are also available if you prefer game-specific organization.
+
+template_name: "TTRPG Companion"
+template_description: "Organizes tabletop role-playing game information from your conversations, including character details, campaign notes, session summaries, and worldbuilding elements."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - ttrpg
+  - rpg
+  - tabletop-games
+  - dungeons-and-dragons
+  - pathfinder
+  - role-playing
+  - gaming
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Overview of what happened in the session
+  session_summary:
+    title: "📝 Session Summary"
+    description: "A brief overview of what happened in the gaming session."
+    extraction_prompt: "Summarize the key events, encounters, and developments from the gaming session discussed. What were the main things that happened?"
+    format: "paragraph"
+    
+  # Notes on player character development
+  character_development:
+    title: "👤 Character Development"
+    description: "Notes on player character development, growth, or changes."
+    extraction_prompt: "Extract information about player character development - including personality evolution, significant choices, mechanical changes (level ups, new abilities), or character goals discussed."
+    format: "bullet_list"
+    
+  # Memorable scenes and roleplay moments
+  narrative_moments:
+    title: "✨ Narrative Highlights & Key Moments"
+    description: "Memorable scenes, roleplay moments, or significant story beats."
+    extraction_prompt: "Identify memorable scenes, great roleplay moments, dramatic turning points, or significant story beats that were mentioned or discussed."
+    format: "bullet_list"
+    
+  # Advancement of major plotlines
+  plot_developments:
+    title: "📚 Plot Developments & Story Threads"
+    description: "Advancement of major plotlines and emerging story threads."
+    extraction_prompt: "Extract developments in major plotlines or emerging story threads. What story elements moved forward? What new threads emerged? What mysteries deepened or were resolved?"
+    format: "bullet_list"
+    
+  # Information about NPCs
+  npc_information:
+    title: "🧑‍🤝‍🧑 NPC Information"
+    description: "Details about non-player characters encountered or discussed."
+    extraction_prompt: "Extract information about non-player characters (NPCs) encountered or discussed - including new NPCs introduced, developments with existing NPCs, or insights gained about their motivations or backgrounds."
+    format: "bullet_list"
+    optional: true
+    
+  # Details about the game world
+  world_setting_details:
+    title: "🌍 World & Setting Details"
+    description: "Information about the game world, locations, cultures, or history."
+    extraction_prompt: "Extract information about the game world, locations visited, cultures encountered, historical lore, or other setting details revealed or discussed."
+    format: "bullet_list"
+    optional: true
+    
+  # Current quests and objectives
+  quests_objectives:
+    title: "⚔️ Quests & Objectives"
+    description: "Current quests, missions, goals, or objectives."
+    extraction_prompt: "What current quests, missions, goals, or objectives were mentioned? Include both main quests and side quests, along with any relevant details about them."
+    format: "bullet_list"
+    optional: true
+    
+  # Items and rewards acquired
+  items_rewards:
+    title: "💰 Items & Rewards"
+    description: "Notable items, equipment, or rewards acquired."
+    extraction_prompt: "Extract information about notable items, equipment, treasure, or rewards acquired or discussed. Include magical items, significant gear, or special resources."
+    format: "bullet_list"
+    optional: true
+    
+  # The party's current resources and status
+  party_resources:
+    title: "🎒 Party Resources & Status"
+    description: "The party's current resources, condition, and general status."
+    extraction_prompt: "Extract information about the party's current resources, condition, and general status. This might include inventory, funds, consumables, health status, or available assets."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes on game mechanics and rules
+  mechanics_rules_notes:
+    title: "📊 Mechanics & Rules Notes"
+    description: "Notes on game mechanics, rules interpretations, or house rules."
+    extraction_prompt: "Extract any notes on game mechanics, rules interpretations, house rules, or mechanical interactions that were discussed or clarified."
+    format: "bullet_list"
+    optional: true
+    
+  # Ideas and plans discussed by players
+  player_ideas_plans:
+    title: "💭 Player Ideas & Plans"
+    description: "Ideas, plans, or strategies discussed by the players."
+    extraction_prompt: "What ideas, plans, theories, or strategies were discussed by the players? What are they thinking of doing next or how are they approaching their current situations?"
+    format: "bullet_list"
+    
+  # Open questions and mysteries
+  unresolved_questions:
+    title: "❓ Unresolved Questions & Mysteries"
+    description: "Open questions, mysteries, or unresolved situations."
+    extraction_prompt: "What open questions, mysteries, or unresolved situations remain? What are the players still wondering about or trying to figure out?"
+    format: "bullet_list"
+    optional: true
+    
+  # Out-of-character discussions
+  table_talk_notes:
+    title: "🎲 Table Talk & Meta Notes"
+    description: "Out-of-character discussions, table dynamics, or meta-game considerations."
+    extraction_prompt: "Extract any out-of-character discussions, notes about table dynamics, scheduling details, or meta-game considerations that would be useful to remember."
+    format: "bullet_list"
+    optional: true
+    
+  # Memorable quotes from the session
+  memorable_quotes:
+    title: "💬 Memorable Quotes"
+    description: "Funny, dramatic, or otherwise memorable quotes from the session."
+    extraction_prompt: "Capture any funny, dramatic, or otherwise memorable quotes from the session, either in-character or out-of-character."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes for the next session
+  next_session_prep:
+    title: "📅 Next Session Preparation"
+    description: "Notes for preparing for the next gaming session."
+    extraction_prompt: "Extract any notes relevant to preparing for the next gaming session - including planned activities, things to remember, or preparation needed by either players or game master."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these notes from your gaming session. Would you like me to help you explore any particular aspect further, like character development ideas or theories about the plot?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your game has some fascinating elements! Would you like to brainstorm some character development possibilities, potential plot theories, or creative ways your character might approach upcoming challenges?"
+    
+  # Hypothetical specialized coach for game masters
+  game_master_assistant:
+    prompt: "These session notes have a lot of great details. If you're the Game Master, would it be helpful to discuss how to develop certain plot threads further or perhaps create connections between different elements of your game world?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

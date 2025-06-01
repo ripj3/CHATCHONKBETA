@@ -1,0 +1,121 @@
+# Task List Clarifier Template for ChatChonk
+# Purpose: Gently transforms conversations with scattered tasks or implied actions into a clear,
+# structured task list, while being mindful of neurodiversity needs and avoiding imposing demands.
+
+template_name: "Task List Clarifier"
+template_description: "Gently transforms conversations with scattered tasks or ideas into a clear, structured task list that respects your energy and workflow preferences."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - productivity
+  - tasks
+  - organization
+  - workflow
+  - project
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Brief context about why these tasks emerged from the conversation
+  conversation_context:
+    title: "🌈 Conversation Context"
+    description: "A brief summary of what the conversation was about and why tasks emerged from it."
+    extraction_prompt: "Briefly summarize what this conversation was about and why tasks or action items emerged from it. Keep this to 1-2 sentences to provide context."
+    format: "paragraph"
+    
+  # The main tasks or action items identified from the conversation
+  key_tasks_identified:
+    title: "✨ Key Tasks Identified"
+    description: "The main tasks or action items mentioned or implied in the conversation."
+    extraction_prompt: "Identify the clear tasks or action items mentioned or implied in the conversation. Format each as a simple, actionable statement without being demanding. For each task, try to capture what needs to be done rather than how it should be done."
+    format: "checkbox_list" # This allows for checking off completed items in compatible platforms
+    
+  # Additional context or notes related to specific tasks
+  task_context_notes:
+    title: "💭 Task Context & Notes"
+    description: "Additional context, details, or notes that provide helpful information for completing the tasks."
+    extraction_prompt: "For any tasks that had additional context, details, or notes mentioned, provide that helpful information. Link each note to its relevant task when possible."
+    format: "bullet_list"
+    optional: true
+    
+  # Optional suggestion for task prioritization, framed gently
+  suggested_priority_order:
+    title: "🌟 Suggested Priority Order (Optional)"
+    description: "A gentle suggestion for task order based on the conversation, if clear priorities were discussed."
+    extraction_prompt: "If any clear priorities or sequencing were mentioned or strongly implied in the conversation, suggest a possible order for approaching these tasks. Frame this as a flexible suggestion rather than a rigid requirement. If no clear priorities were discussed, indicate that all tasks seem equally important or that sequencing is flexible."
+    format: "numbered_list"
+    optional: true
+    gentle_framing: true # Special flag to ensure language is especially non-demanding
+    
+  # Considerations for matching tasks to energy levels
+  energy_level_considerations:
+    title: "🔋 Energy Level Considerations"
+    description: "Notes on which tasks might require more or less energy, based on conversation context."
+    extraction_prompt: "Based on the conversation, identify which tasks might require higher energy levels (more focus, creativity, or executive function) and which might be more suitable for lower energy periods. This helps with energy-based rather than time-based planning."
+    format: "bullet_list"
+    optional: true
+    
+  # Suggestions for grouping related tasks together
+  potential_task_groupings:
+    title: "🧩 Potential Task Groupings"
+    description: "Suggested ways to group or batch tasks that might work well together."
+    extraction_prompt: "Suggest some possible ways to group or batch these tasks that might work well together, either by theme, context, energy level required, or other logical connections."
+    format: "bullet_list"
+    optional: true
+    
+  # Tasks that depend on others or potential obstacles
+  dependencies_blockers:
+    title: "🔄 Dependencies & Potential Blockers"
+    description: "Tasks that might be dependent on others or potential obstacles mentioned."
+    extraction_prompt: "Identify any mentioned or implied dependencies between tasks (where one task needs to be completed before another can begin) or potential blockers that might delay progress."
+    format: "bullet_list"
+    optional: true
+    
+  # Resources or tools needed to complete the tasks
+  resources_tools_needed:
+    title: "🛠️ Resources & Tools Needed"
+    description: "Any resources, tools, or information needed to complete the tasks."
+    extraction_prompt: "List any specific resources, tools, information, or people that were mentioned as needed to complete these tasks."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these tasks based on your conversation. Would you like me to help you think about which ones align with your current energy levels, or would you prefer to adapt this list in some way?"
+    
+  # Project Flow Coach (renamed from "Project Planning Coach")
+  project_flow_coach:
+    prompt: "These tasks represent possibilities from your discussion. Would it be helpful to talk about which ones feel most important or energizing to you right now, or would you prefer to revisit this list when you're ready to take action?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  special_formatting: "gentle_phrasing" # Special flag to ensure language is especially non-demanding throughout
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"
