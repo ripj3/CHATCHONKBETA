@@ -12,7 +12,7 @@ fastapi-pagination==0.12.8
 
 # === Supabase Client ===
 supabase==1.2.0
-postgrest-py==0.10.8
+postgrest-py==0.10.6
 
 # === AI/ML Libraries ===
 # HuggingFace
