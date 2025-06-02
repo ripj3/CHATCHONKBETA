@@ -19,6 +19,9 @@ COPY templates/ ./templates
 RUN addgroup --system appgroup && \
     adduser --system --ingroup appgroup --no-create-home appuser
 
+# Create and set permissions for the uploads directory
+RUN mkdir -p uploads && chown appuser:appgroup uploads
+
 USER appuser
 
 EXPOSE 8000

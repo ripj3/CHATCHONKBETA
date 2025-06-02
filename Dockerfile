@@ -61,6 +61,9 @@ COPY templates/ ./templates
 # RUN cd frontend && npm run build && mkdir -p ../frontend_build && cp -r .next/standalone/* ../frontend_build/ 2>/dev/null || cp -r out/* ../frontend_build/ 2>/dev/null || echo "Frontend build completed"
 RUN mkdir -p frontend_build
 
+# Create and set permissions for the uploads directory
+RUN mkdir -p uploads && chown appuser:appgroup uploads
+
 # Switch to the non-root user
 USER appuser
 
