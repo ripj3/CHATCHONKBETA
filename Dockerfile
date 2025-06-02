@@ -33,14 +33,6 @@ ENV PORT=8000
 # Set working directory for the application
 WORKDIR /app
 
-# Install Node.js for frontend build
-RUN apt-get update && apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-
-
 # Create a non-root user and group for security
 RUN addgroup --system appgroup && \
     adduser --system --ingroup appgroup --no-create-home appuser
@@ -53,13 +45,6 @@ COPY backend/ .
 
 # Copy templates directory from the repository root
 COPY templates/ ./templates
-
-# Frontend build temporarily disabled - will add Node.js later
-# COPY frontend/package*.json ./frontend/
-# RUN cd frontend && npm install
-# COPY frontend/ ./frontend/
-# RUN cd frontend && npm run build && mkdir -p ../frontend_build && cp -r .next/standalone/* ../frontend_build/ 2>/dev/null || cp -r out/* ../frontend_build/ 2>/dev/null || echo "Frontend build completed"
-RUN mkdir -p frontend_build
 
 # Create and set permissions for the uploads directory
 RUN mkdir -p uploads && chown appuser:appgroup uploads
