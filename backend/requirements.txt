@@ -14,6 +14,9 @@ fastapi-pagination==0.12.8
 supabase==1.2.0
 # postgrest-py==0.10.6  # Included as dependency of supabase
 
+# === HTTP Client for Cloudflare KV ===
+httpx==0.25.2  # For async HTTP requests to Cloudflare KV API
+
 # === AI/ML Libraries ===
 # HuggingFace
 transformers>=4.35.0,<5.0.0

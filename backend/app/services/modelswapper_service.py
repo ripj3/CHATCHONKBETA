@@ -69,8 +69,7 @@ class ModelSwapperService:
     async def _execute_mswap_query(self, query: str, params: Optional[List] = None) -> List[Dict]:
         """Execute a query against the MSWAP database with proper error handling."""
         try:
-            # TODO: Replace with actual MSWAP database connection
-            # For now, use the Supabase MCP server
+            from app.services.database_service import get_database_service
             from app.services.cache_service import get_cache_service
 
             cache_key = f"mswap_query:{hash(query)}:{hash(str(params))}"
@@ -82,9 +81,10 @@ class ModelSwapperService:
                 import json
                 return json.loads(cached_result)
 
-            # Execute query (placeholder - replace with actual MSWAP connection)
+            # Execute query using the database service
             logger.debug(f"MSWAP Query: {query} with params: {params}")
-            results = []  # TODO: Implement actual query execution
+            db_service = get_database_service()
+            results = await db_service.execute_mswap_raw_query(query, params)
 
             # Cache results
             import json

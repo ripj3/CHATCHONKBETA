@@ -112,15 +112,22 @@ class Settings(BaseSettings):
     MAX_API_KEYS_PER_USER: int = Field(default=5, description="Maximum API keys a user can generate.")
 
     # ======================================================================
-    # SUPABASE CONFIGURATION
+    # SUPABASE CONFIGURATION (CHCH3 - Main Database)
     # ======================================================================
     SUPABASE_URL: Optional[AnyHttpUrl] = Field(default=None, description="Supabase project URL.")
     SUPABASE_KEY: Optional[SecretStr] = Field(default=None, alias="SUPABASE_ANON_KEY", description="Supabase anonymous key (public).") # Alias for common naming
     SUPABASE_SERVICE_ROLE_KEY: Optional[SecretStr] = Field(default=None, description="Supabase service role key (secret, for backend admin operations).")
     SUPABASE_PERSONAL_ACCESS_TOKEN: Optional[SecretStr] = Field(default=None, description="Supabase Personal Access Token for management API calls.")
-    
+
     # Optional direct DB passwords if self-hosting or specific needs
     SUPABASE_DB_PASSWORD: Optional[SecretStr] = Field(default=None, description="Password for the main Supabase PostgreSQL database user.")
+
+    # ======================================================================
+    # MSWAP SUPABASE CONFIGURATION (ModelSwapper Database)
+    # ======================================================================
+    MSWAP_SUPABASE_URL: Optional[AnyHttpUrl] = Field(default=None, description="MSWAP Supabase project URL.")
+    MSWAP_SUPABASE_KEY: Optional[SecretStr] = Field(default=None, alias="MSWAP_SUPABASE_ANON_KEY", description="MSWAP Supabase anonymous key (public).")
+    MSWAP_SUPABASE_SERVICE_ROLE_KEY: Optional[SecretStr] = Field(default=None, description="MSWAP Supabase service role key (secret, for backend admin operations).")
     SUPABASE_DB_PASSWORD_MSWAP: Optional[SecretStr] = Field(default=None, description="Specific DB password for ModelSwapper service if it uses a different user/role.")
 
     # ======================================================================
@@ -252,7 +259,14 @@ class Settings(BaseSettings):
     DISCORD_SUPPORT_ROLE_ID: Optional[int] = Field(default=None, description="Support team role ID.")
 
     # ======================================================================
-    # REDIS CACHING (Optional)
+    # CLOUDFLARE KV CACHING (Recommended)
+    # ======================================================================
+    CLOUDFLARE_API_TOKEN: Optional[SecretStr] = Field(default=None, description="Cloudflare API token for KV access.")
+    CLOUDFLARE_ACCOUNT_ID: Optional[str] = Field(default=None, description="Cloudflare account ID.")
+    CLOUDFLARE_KV_NAMESPACE_ID: Optional[str] = Field(default=None, description="Cloudflare KV namespace ID for caching.")
+
+    # ======================================================================
+    # REDIS CACHING (Optional - Deprecated in favor of Cloudflare KV)
     # ======================================================================
     REDIS_HOST: str = Field(default="localhost", description="Redis server host.")
     REDIS_PORT: int = Field(default=6379, description="Redis server port.")

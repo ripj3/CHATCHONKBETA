@@ -15,16 +15,38 @@ version: 1
 envVarGroups:
   - name: chatchonk-secrets # Replace with your actual env group name in Render
     envVars:
+      # CHCH3 (Main Database) Configuration
       - key: SUPABASE_URL
         fromGroup: chatchonk-secrets
       - key: SUPABASE_KEY # Typically refers to SUPABASE_ANON_KEY for client-side
         fromGroup: chatchonk-secrets
       - key: SUPABASE_SERVICE_ROLE_KEY
         fromGroup: chatchonk-secrets
+
+      # MSWAP (ModelSwapper Database) Configuration
+      - key: MSWAP_SUPABASE_URL
+        fromGroup: chatchonk-secrets
+      - key: MSWAP_SUPABASE_ANON_KEY
+        fromGroup: chatchonk-secrets
+      - key: MSWAP_SUPABASE_SERVICE_ROLE_KEY
+        fromGroup: chatchonk-secrets
+
+      # AI Provider Keys
       - key: HUGGINGFACE_API_KEY
         fromGroup: chatchonk-secrets
+
+      # Security Keys
       - key: CHONK_SECRET_KEY
         fromGroup: chatchonk-secrets
+
+      # Cloudflare KV Cache Configuration
+      - key: CLOUDFLARE_API_TOKEN
+        fromGroup: chatchonk-secrets
+      - key: CLOUDFLARE_ACCOUNT_ID
+        fromGroup: chatchonk-secrets
+      - key: CLOUDFLARE_KV_NAMESPACE_ID
+        fromGroup: chatchonk-secrets
+
       # Add other API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.) to the group as needed
       # Example:
       # - key: OPENAI_API_KEY
