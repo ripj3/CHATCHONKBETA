@@ -1,9 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
+import {
   TrendingUp,
   TrendingDown,
   Users,
@@ -11,15 +12,19 @@ import {
   Brain,
   Clock,
   Download,
-  Calendar
+  Calendar,
+  Server, // New icon for backend metrics
+  CheckCircle, // New icon for successful requests
+  XCircle // New icon for error requests
 } from 'lucide-react'
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   AreaChart,
   Area,
@@ -29,6 +34,17 @@ import {
   Pie,
   Cell
 } from 'recharts'
+
+// Define a type for the metrics data
+interface BackendMetrics {
+  total_requests: number;
+  successful_requests: number;
+  error_requests: number;
+  average_processing_time_seconds: string; // Keep as string for now, parse if needed for calculations
+  request_counts_by_path: { [key: string]: number };
+  error_counts_by_path: { [key: string]: number };
+  status_code_counts: { [key: string]: number };
+}
 
 // Mock analytics data - replace with real API calls
 const kpiData = [
@@ -105,6 +121,71 @@ const revenueData = [
 ]
 
 export default function AnalyticsPage() {
+  const [backendMetrics, setBackendMetrics] = useState<BackendMetrics | null>(null);
+  const [loadingMetrics, setLoadingMetrics] = useState(true);
+  const [metricsError, setMetricsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        setLoadingMetrics(true);
+        const response = await fetch('/api/metrics'); // Assuming /api/metrics is accessible
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: BackendMetrics = await response.json();
+        setBackendMetrics(data);
+      } catch (error) {
+        console.error("Failed to fetch backend metrics:", error);
+        setMetricsError("Failed to load backend metrics.");
+      } finally {
+        setLoadingMetrics(false);
+      }
+    };
+
+    fetchMetrics();
+    // Optionally, refetch metrics periodically
+    const intervalId = setInterval(fetchMetrics, 15000); // Refetch every 15 seconds
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
+
+  // Combine mock KPI data with real backend metrics
+  const combinedKpiData = [
+    ...kpiData,
+    {
+      title: 'Total API Requests',
+      value: backendMetrics?.total_requests.toLocaleString() || 'N/A',
+      change: '', // No change calculation for now
+      changeType: 'positive' as const,
+      icon: Server,
+      period: 'since last restart'
+    },
+    {
+      title: 'Successful Requests',
+      value: backendMetrics?.successful_requests.toLocaleString() || 'N/A',
+      change: '',
+      changeType: 'positive' as const,
+      icon: CheckCircle,
+      period: 'since last restart'
+    },
+    {
+      title: 'Error Requests',
+      value: backendMetrics?.error_requests.toLocaleString() || 'N/A',
+      change: '',
+      changeType: 'negative' as const, // Assuming errors are negative
+      icon: XCircle,
+      period: 'since last restart'
+    },
+    {
+      title: 'Avg API Latency',
+      value: backendMetrics?.average_processing_time_seconds ? `${parseFloat(backendMetrics.average_processing_time_seconds).toFixed(2)}s` : 'N/A',
+      change: '',
+      changeType: 'positive' as const, // Can be positive or negative depending on trend
+      icon: Clock,
+      period: 'since last restart'
+    }
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -127,7 +208,21 @@ export default function AnalyticsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpiData.map((kpi) => (
+        {loadingMetrics && (
+          <Card className="col-span-full">
+            <CardContent className="p-6 text-center text-gray-500">
+              Loading backend metrics...
+            </CardContent>
+          </Card>
+        )}
+        {metricsError && (
+          <Card className="col-span-full border-red-500">
+            <CardContent className="p-6 text-center text-red-600">
+              {metricsError}
+            </CardContent>
+          </Card>
+        )}
+        {combinedKpiData.map((kpi) => (
           <Card key={kpi.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -138,14 +233,18 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className="text-2xl font-bold">{kpi.value}</div>
               <p className="text-xs text-muted-foreground flex items-center">
-                {kpi.changeType === 'positive' ? (
-                  <TrendingUp className="h-3 w-3 mr-1 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 mr-1 text-red-600" />
+                {kpi.change && (
+                  kpi.changeType === 'positive' ? (
+                    <TrendingUp className="h-3 w-3 mr-1 text-green-600" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 mr-1 text-red-600" />
+                  )
                 )}
-                <span className={kpi.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}>
-                  {kpi.change}
-                </span>
+                {kpi.change && (
+                  <span className={kpi.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}>
+                    {kpi.change}
+                  </span>
+                )}
                 <span className="ml-1">{kpi.period}</span>
               </p>
             </CardContent>
@@ -170,19 +269,19 @@ export default function AnalyticsPage() {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Area 
-                  type="monotone" 
-                  dataKey="users" 
+                <Area
+                  type="monotone"
+                  dataKey="users"
                   stackId="1"
-                  stroke="#8884d8" 
+                  stroke="#8884d8"
                   fill="#8884d8"
                   name="Total Users"
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="activeUsers" 
+                <Area
+                  type="monotone"
+                  dataKey="activeUsers"
                   stackId="2"
-                  stroke="#82ca9d" 
+                  stroke="#82ca9d"
                   fill="#82ca9d"
                   name="Active Users"
                 />
@@ -203,20 +302,20 @@ export default function AnalyticsPage() {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={processingVolumeData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString()} />
+                <XAxis dataKey="date" tickFormatter={(value: string) => new Date(value).toLocaleDateString()} />
                 <YAxis />
                 <Tooltip labelFormatter={(value) => new Date(value).toLocaleDateString()} />
-                <Line 
-                  type="monotone" 
-                  dataKey="files" 
-                  stroke="#8884d8" 
+                <Line
+                  type="monotone"
+                  dataKey="files"
+                  stroke="#8884d8"
                   strokeWidth={2}
                   name="Files Uploaded"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="requests" 
-                  stroke="#82ca9d" 
+                <Line
+                  type="monotone"
+                  dataKey="requests"
+                  stroke="#82ca9d"
                   strokeWidth={2}
                   name="AI Requests"
                 />
@@ -332,10 +431,10 @@ export default function AnalyticsPage() {
               <Badge className="bg-green-100 text-green-800">
                 Excellent
               </Badge>
-            </div>
+            </CardContent>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

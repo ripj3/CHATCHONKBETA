@@ -14,7 +14,6 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
-
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
@@ -23,6 +22,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 from fastapi.staticfiles import StaticFiles
+from collections import defaultdict
 
 # Import application settings
 from app.core.config import settings
@@ -34,8 +34,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger("chatchonk")
 
-# Directory creation will be handled in startup event to avoid permission issues
-
+# In-memory metrics storage (for demonstration purposes)
+# In a real application, use a proper metrics library like Prometheus client or a time-series database
+metrics = {
+    "total_requests": 0,
+    "successful_requests": 0,
+    "error_requests": 0,
+    "total_processing_time": 0.0,
+    "request_counts_by_path": defaultdict(int),
+    "error_counts_by_path": defaultdict(int),
+    "status_code_counts": defaultdict(int),
+}
 
 # App lifecycle management
 @asynccontextmanager
@@ -127,27 +136,46 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
-# Request logging middleware
+# Request logging and metrics middleware
 @app.middleware("http")
-async def log_requests(request: Request, call_next: Callable) -> Response:
-    """Log request information and timing."""
+async def log_and_metric_requests(request: Request, call_next: Callable) -> Response:
+    """Log request information, timing, and collect basic metrics."""
     start_time = time.time()
     
     # Generate request ID
     request_id = f"req_{int(start_time * 1000)}"
     logger.info(f"[{request_id}] {request.method} {request.url.path}")
     
+    # Increment total requests
+    metrics["total_requests"] += 1
+    metrics["request_counts_by_path"][request.url.path] += 1
+
     # Process the request
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-        logger.info(
-            f"[{request_id}] Completed: {response.status_code} ({process_time:.4f}s)"
-        )
+        
+        metrics["total_processing_time"] += process_time
+        metrics["status_code_counts"][response.status_code] += 1
+
+        if response.status_code >= 400:
+            metrics["error_requests"] += 1
+            metrics["error_counts_by_path"][request.url.path] += 1
+            logger.warning(
+                f"[{request_id}] Completed with error: {response.status_code} ({process_time:.4f}s)"
+            )
+        else:
+            metrics["successful_requests"] += 1
+            logger.info(
+                f"[{request_id}] Completed: {response.status_code} ({process_time:.4f}s)"
+            )
+        
         # Add timing header
         response.headers["X-Process-Time"] = f"{process_time:.4f}"
         return response
     except Exception as e:
+        metrics["error_requests"] += 1
+        metrics["error_counts_by_path"][request.url.path] += 1
         logger.error(f"[{request_id}] Request failed: {str(e)}")
         raise
 
@@ -156,6 +184,9 @@ async def log_requests(request: Request, call_next: Callable) -> Response:
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle validation errors with user-friendly messages."""
+    metrics["error_requests"] += 1 # Count validation errors as errors
+    metrics["error_counts_by_path"][request.url.path] += 1
+    metrics["status_code_counts"][status.HTTP_422_UNPROCESSABLE_ENTITY] += 1
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
@@ -168,6 +199,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Custom HTTP exception handler with consistent format."""
+    metrics["error_requests"] += 1 # Count HTTP exceptions as errors
+    metrics["error_counts_by_path"][request.url.path] += 1
+    metrics["status_code_counts"][exc.status_code] += 1
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},
@@ -177,6 +211,9 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle unexpected errors gracefully."""
+    metrics["error_requests"] += 1 # Count general exceptions as errors
+    metrics["error_counts_by_path"][request.url.path] += 1
+    metrics["status_code_counts"][status.HTTP_500_INTERNAL_SERVER_ERROR] += 1
     logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -219,6 +256,28 @@ api_router = APIRouter(prefix="/api", tags=["API"])
 async def api_status():
     """API status endpoint."""
     return {"status": "ok", "message": "ChatChonk API is operational"}
+
+@api_router.get("/metrics", tags=["System"])
+async def get_metrics():
+    """
+    Exposes basic application metrics.
+    NOTE: These are in-memory metrics and will reset on application restart.
+    For production, use a dedicated metrics system (e.g., Prometheus).
+    """
+    avg_processing_time = (
+        metrics["total_processing_time"] / metrics["total_requests"]
+        if metrics["total_requests"] > 0
+        else 0
+    )
+    return {
+        "total_requests": metrics["total_requests"],
+        "successful_requests": metrics["successful_requests"],
+        "error_requests": metrics["error_requests"],
+        "average_processing_time_seconds": f"{avg_processing_time:.4f}",
+        "request_counts_by_path": dict(metrics["request_counts_by_path"]),
+        "error_counts_by_path": dict(metrics["error_counts_by_path"]),
+        "status_code_counts": dict(metrics["status_code_counts"]),
+    }
 
 app.include_router(api_router)
 

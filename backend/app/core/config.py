@@ -344,34 +344,18 @@ class Settings(BaseSettings):
         return v
     
     @validator("ALLOWED_FILE_TYPES", pre=True, allow_reuse=True)
-    def _parse_allowed_file_types(cls, v: Union[str, Set[str], List[str]]) -> Set[str]:
+    def _parse_allowed_file_types(cls, v: Union[str, List[str]]) -> str:
         """
-        Parse allowed file types from string, list, or set into a set of lowercase strings with leading dot.
-        Handles string representations of sets (e.g., "{'.txt', '.zip'}").
+        Ensure ALLOWED_FILE_TYPES is a comma-separated string.
+        If a list or set is provided, convert it to a comma-separated string.
         """
-        if isinstance(v, str):
-            # Attempt to parse as a Python set literal if it looks like one
-            if v.strip().startswith('{') and v.strip().endswith('}'):
-                try:
-                    parsed_set = ast.literal_eval(v)
-                    if isinstance(parsed_set, set):
-                        types = {item.strip().lower() for item in parsed_set if isinstance(item, str) and item.strip()}
-                    else:
-                        # Fallback if it's a string that looks like a set but isn't
-                        types = {item.strip().lower() for item in v.split(",") if item.strip()}
-                except (ValueError, SyntaxError):
-                    # If literal_eval fails, treat as a comma-separated string
-                    types = {item.strip().lower() for item in v.split(",") if item.strip()}
-            else:
-                # Regular comma-separated string
-                types = {item.strip().lower() for item in v.split(",") if item.strip()}
-        elif isinstance(v, (list, set)):
-            types = {item.strip().lower() for item in v if isinstance(item, str) and item.strip()}
-        else:
-            raise ValueError("ALLOWED_FILE_TYPES must be a comma-separated string, list, or set.")
-        
-        # Ensure leading dot for extensions
-        return {f".{t}" if not t.startswith('.') else t for t in types}
+        if isinstance(v, (list, set)):
+            # Convert list/set to comma-separated string
+            return ",".join([item.strip().lower().lstrip('.') for item in v if isinstance(item, str) and item.strip()])
+        elif isinstance(v, str):
+            # Ensure it's a clean comma-separated string without extra spaces or leading dots
+            return ",".join([item.strip().lower().lstrip('.') for item in v.split(",") if item.strip()])
+        raise ValueError("ALLOWED_FILE_TYPES must be a comma-separated string, list, or set.")
 
     @validator("DEBUG", allow_reuse=True)
     def _debug_implies_log_level_debug(cls, v: bool, values: Dict[str, Any]) -> bool:
