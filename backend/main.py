@@ -37,11 +37,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("chatchonk")
 
-# Create necessary directories (simplified for initial deployment)
-import os
-os.makedirs("./uploads", exist_ok=True)
-os.makedirs("./tmp", exist_ok=True)
-os.makedirs("./exports", exist_ok=True)
+# Directory creation will be handled in startup event to avoid permission issues
 
 
 # App lifecycle management
@@ -54,15 +50,8 @@ async def lifespan(app: FastAPI):
     # Startup: Initialize resources
     logger.info("ChatChonk backend starting up...")
 
-    # Create necessary directories
-    try:
-        import os
-        os.makedirs("./uploads", exist_ok=True)
-        os.makedirs("./tmp", exist_ok=True)
-        os.makedirs("./exports", exist_ok=True)
-        logger.info("Directories created successfully")
-    except Exception as e:
-        logger.warning(f"Could not create directories: {e}")
+    # Skip directory creation to avoid permission issues
+    logger.info("Skipping directory creation in production environment")
 
     # Skip Discord bot and AI initialization for now
     if False:  # Disabled for initial deployment
@@ -218,7 +207,13 @@ async def root():
 
 
 # Import and include API routers
-# These will be implemented in separate modules
+try:
+    # ModelSwapper router - handles model configuration and selection
+    from app.api.routes.modelswapper import router as modelswapper_router
+    app.include_router(modelswapper_router, prefix=settings.API_V1_STR)
+    logger.info("ModelSwapper router loaded successfully")
+except Exception as e:
+    logger.warning(f"Could not load ModelSwapper router: {e}")
 
 # Simple API router for basic endpoints
 api_router = APIRouter(prefix="/api", tags=["API"])
@@ -231,7 +226,7 @@ async def api_status():
 app.include_router(api_router)
 
 # TODO: Add other routers as they are implemented and tested
-# Files, Templates, Exports, AI, ModelSwapper routers will be added later
+# Files, Templates, Exports, AI routers will be added incrementally
 
 
 # Run the application if executed directly
