@@ -7,6 +7,7 @@ routers, and configuration for the ChatChonk backend.
 Author: Rip Jonesy
 """
 
+import asyncio
 import logging
 import os
 import time
@@ -57,6 +58,41 @@ async def lifespan(app: FastAPI):
     # Initialize AutoModel system
     # This will be implemented in a separate module
     logger.info("Initializing AI models...")
+
+    # Initialize Discord bot if configured
+    if settings.DISCORD_BOT_TOKEN and settings.DISCORD_GUILD_ID:
+        logger.info("Starting Discord bot...")
+        try:
+            from app.services.discord_service import get_discord_service, DiscordConfig
+
+            discord_config = DiscordConfig(
+                bot_token=settings.DISCORD_BOT_TOKEN.get_secret_value(),
+                guild_id=settings.DISCORD_GUILD_ID,
+                general_channel_id=settings.DISCORD_GENERAL_CHANNEL_ID,
+                support_channel_id=settings.DISCORD_SUPPORT_CHANNEL_ID,
+                announcements_channel_id=settings.DISCORD_ANNOUNCEMENTS_CHANNEL_ID,
+                feedback_channel_id=settings.DISCORD_FEEDBACK_CHANNEL_ID,
+                free_role_id=settings.DISCORD_FREE_ROLE_ID,
+                lilbean_role_id=settings.DISCORD_LILBEAN_ROLE_ID,
+                clawback_role_id=settings.DISCORD_CLAWBACK_ROLE_ID,
+                bigchonk_role_id=settings.DISCORD_BIGCHONK_ROLE_ID,
+                meowtrix_role_id=settings.DISCORD_MEOWTRIX_ROLE_ID,
+                admin_role_id=settings.DISCORD_ADMIN_ROLE_ID,
+                moderator_role_id=settings.DISCORD_MODERATOR_ROLE_ID,
+                support_role_id=settings.DISCORD_SUPPORT_ROLE_ID
+            )
+
+            discord_service = get_discord_service()
+            await discord_service.initialize(discord_config)
+
+            # Start Discord bot in background
+            asyncio.create_task(discord_service.start())
+            logger.info("Discord bot started successfully")
+
+        except Exception as e:
+            logger.error(f"Failed to start Discord bot: {e}")
+    else:
+        logger.info("Discord bot not configured - skipping Discord integration")
     
     # Yield control to FastAPI
     yield
@@ -192,6 +228,10 @@ app.include_router(exports_router)
 ai_router = APIRouter(prefix=f"{settings.API_V1_STR}/ai", tags=["AI"])
 # TODO: Implement AI endpoints
 app.include_router(ai_router)
+
+# ModelSwapper router - handles model configuration and selection
+from app.api.routes.modelswapper import router as modelswapper_router
+app.include_router(modelswapper_router, prefix=settings.API_V1_STR)
 
 
 # Run the application if executed directly

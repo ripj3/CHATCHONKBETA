@@ -20,7 +20,9 @@ from typing import Any, Dict, List, Optional, Tuple, Union, cast
 from pydantic import BaseModel, Field, ValidationError
 
 from app.core.config import get_settings
-from app.services.cache_service import CacheService
+from app.services.cache_service import get_cache_service, CacheService
+from app.services.modelswapper_service import ModelSwapperService
+from app.models.mswap_models import ModelSelectionRequest, UserTier
 
 from .model_registry import ModelRegistry
 from .providers.base import BaseProvider, ProviderResponse
@@ -126,6 +128,7 @@ class AutoModel:
     _model_registry: Optional[ModelRegistry] = None
     _task_router: Optional[TaskRouter] = None
     _cache_service: Optional[CacheService] = None
+    _modelswapper_service: Optional[ModelSwapperService] = None
     _active_sessions: Dict[str, Dict[str, Any]] = {}
     _performance_metrics: List[PerformanceMetrics] = []
     
@@ -142,8 +145,18 @@ class AutoModel:
         
         logger.info("Initializing AutoModel system...")
         
-        # Initialize model registry
-        cls._model_registry = ModelRegistry()
+        # Initialize model registry with configuration
+        settings = get_settings()
+        config = {
+            "openai": {"api_key": getattr(settings, "OPENAI_API_KEY", None)},
+            "anthropic": {"api_key": getattr(settings, "ANTHROPIC_API_KEY", None)},
+            "huggingface": {"api_key": getattr(settings, "HUGGINGFACE_API_KEY", None)},
+            "mistral": {"api_key": getattr(settings, "MISTRAL_API_KEY", None)},
+            "deepseek": {"api_key": getattr(settings, "DEEPSEEK_API_KEY", None)},
+            "qwen": {"api_key": getattr(settings, "QWEN_API_KEY", None)},
+            "openrouter": {"api_key": getattr(settings, "OPENROUTER_API_KEY", None)},
+        }
+        cls._model_registry = ModelRegistry(config)
         await cls._model_registry.initialize()
         
         # Initialize task router
@@ -151,8 +164,11 @@ class AutoModel:
         
         # Initialize cache service
         settings = get_settings()
-        cls._cache_service = CacheService()
-        
+        cls._cache_service = get_cache_service()
+
+        # Initialize ModelSwapper service
+        cls._modelswapper_service = ModelSwapperService()
+
         # Mark as initialized
         cls._initialized = True
         logger.info("AutoModel system initialized successfully")
@@ -425,12 +441,20 @@ class AutoModel:
             
             return provider, model
         
-        # Otherwise, route based on task type and priority
-        return cls._task_router.route(
+        # Otherwise, use task router to find the best model
+        model = await cls._task_router.get_model_recommendation(
             task_type=request.task_type,
-            priority=request.priority,
-            content=request.content,
+            priority=request.priority
         )
+
+        if not model:
+            raise ModelNotFoundError(f"No suitable model found for task {request.task_type}")
+
+        provider = cls._model_registry.get_provider(model.provider)
+        if not provider:
+            raise ProviderNotAvailableError(f"Provider {model.provider} is not available")
+
+        return provider, model
     
     @classmethod
     async def _try_cache(cls, request: ProcessRequest) -> Optional[ProcessResponse]:
@@ -636,6 +660,220 @@ class AutoModel:
         sorted_metrics = sorted(filtered_metrics, key=lambda m: m.timestamp, reverse=True)
         return sorted_metrics[:limit]
     
+    @classmethod
+    async def process_with_models(
+        cls,
+        task_type: TaskType,
+        content: Union[str, Dict[str, Any], List[Dict[str, Any]]],
+        model_configs: List[Dict[str, Any]],
+        compare_results: bool = False,
+        **kwargs
+    ) -> Union[ProcessResponse, List[ProcessResponse]]:
+        """
+        Process content with multiple specific models for experimentation.
+
+        Args:
+            task_type: Type of AI task to perform
+            content: Content to process
+            model_configs: List of model configurations, each containing:
+                - provider: Provider name (e.g., "openai", "anthropic")
+                - model_id: Specific model ID
+                - temperature: Optional temperature override
+                - max_tokens: Optional max_tokens override
+                - name: Optional friendly name for this config
+            compare_results: If True, return all results; if False, return first successful
+            **kwargs: Additional parameters for processing
+
+        Returns:
+            Single ProcessResponse or list of ProcessResponse objects
+
+        Example:
+            # Test multiple models for summarization
+            results = await AutoModel.process_with_models(
+                task_type=TaskType.SUMMARIZATION,
+                content="Long text to summarize...",
+                model_configs=[
+                    {"provider": "openai", "model_id": "gpt-4o", "name": "GPT-4o"},
+                    {"provider": "anthropic", "model_id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5"},
+                    {"provider": "huggingface", "model_id": "facebook/bart-large-cnn", "name": "BART"}
+                ],
+                compare_results=True
+            )
+        """
+        await cls.ensure_initialized()
+
+        results = []
+        errors = []
+
+        for i, config in enumerate(model_configs):
+            try:
+                # Extract config parameters
+                provider = config.get("provider")
+                model_id = config.get("model_id")
+                config_name = config.get("name", f"{provider}/{model_id}")
+
+                # Override parameters from config
+                process_kwargs = kwargs.copy()
+                if "temperature" in config:
+                    process_kwargs["temperature"] = config["temperature"]
+                if "max_tokens" in config:
+                    process_kwargs["max_tokens"] = config["max_tokens"]
+
+                logger.info(f"Processing with model config: {config_name}")
+
+                # Process with this specific model
+                result = await cls.process(
+                    task_type=task_type,
+                    content=content,
+                    provider=ProviderType(provider) if provider else None,
+                    model_id=model_id,
+                    **process_kwargs
+                )
+
+                # Add config info to metadata
+                result.metadata = result.metadata or {}
+                result.metadata["config_name"] = config_name
+                result.metadata["config_index"] = i
+
+                results.append(result)
+
+                # If not comparing results, return first successful result
+                if not compare_results:
+                    return result
+
+            except Exception as e:
+                error_info = {
+                    "config": config,
+                    "config_name": config.get("name", f"{config.get('provider')}/{config.get('model_id')}"),
+                    "error": str(e)
+                }
+                errors.append(error_info)
+                logger.error(f"Failed to process with config {error_info['config_name']}: {str(e)}")
+
+                # If not comparing results and this was the only config, raise the error
+                if not compare_results and len(model_configs) == 1:
+                    raise
+
+        # If comparing results, return all successful results
+        if compare_results:
+            if not results and errors:
+                # All configs failed
+                error_summary = "; ".join([f"{e['config_name']}: {e['error']}" for e in errors])
+                raise ProcessingError(f"All model configurations failed: {error_summary}")
+            return results
+
+        # If not comparing and we get here, all configs failed
+        if errors:
+            error_summary = "; ".join([f"{e['config_name']}: {e['error']}" for e in errors])
+            raise ProcessingError(f"All model configurations failed: {error_summary}")
+
+        raise ProcessingError("No model configurations provided")
+
+    @classmethod
+    async def get_available_models(
+        cls,
+        task_type: Optional[TaskType] = None,
+        provider: Optional[ProviderType] = None,
+        include_performance: bool = False
+    ) -> List[Dict[str, Any]]:
+        """
+        Get list of available models with their capabilities.
+
+        Args:
+            task_type: Filter by task type support
+            provider: Filter by provider
+            include_performance: Include performance metrics
+
+        Returns:
+            List of model information dictionaries
+        """
+        await cls.ensure_initialized()
+
+        models = []
+        registry_models = cls._model_registry.get_models()
+
+        for model in registry_models:
+            # Apply filters
+            if task_type and task_type not in model.supported_tasks:
+                continue
+            if provider and model.provider != provider:
+                continue
+
+            model_info = {
+                "id": model.id,
+                "name": model.name,
+                "provider": model.provider.value,
+                "description": model.description,
+                "max_tokens": model.max_tokens,
+                "supports_streaming": model.supports_streaming,
+                "supports_functions": model.supports_functions,
+                "supports_vision": model.supports_vision,
+                "cost_per_1k_tokens": model.cost_per_1k_tokens,
+                "supported_tasks": [task.value for task in model.supported_tasks],
+                "priority_score": model.priority_score,
+                "is_available": model.is_available
+            }
+
+            # Add performance metrics if requested
+            if include_performance and cls._model_registry:
+                metrics = cls._model_registry._performance_metrics.get(model.id, {})
+                model_info["performance"] = {
+                    "total_requests": metrics.get("total_requests", 0),
+                    "success_rate": 1.0 - metrics.get("error_rate", 0.0),
+                    "average_response_time": metrics.get("average_response_time", 0.0),
+                    "last_used": metrics.get("last_used")
+                }
+
+            models.append(model_info)
+
+        # Sort by priority score (highest first)
+        models.sort(key=lambda m: m["priority_score"], reverse=True)
+        return models
+
+    @classmethod
+    async def set_task_model_preferences(
+        cls,
+        task_preferences: Dict[TaskType, List[Dict[str, str]]]
+    ) -> None:
+        """
+        Set custom model preferences for specific tasks.
+
+        Args:
+            task_preferences: Dictionary mapping task types to ordered lists of model preferences
+                Each preference is a dict with "provider" and "model_id" keys
+
+        Example:
+            await AutoModel.set_task_model_preferences({
+                TaskType.SUMMARIZATION: [
+                    {"provider": "anthropic", "model_id": "claude-3-5-sonnet-20241022"},
+                    {"provider": "openai", "model_id": "gpt-4o"}
+                ],
+                TaskType.EMBEDDING: [
+                    {"provider": "openai", "model_id": "text-embedding-3-large"},
+                    {"provider": "huggingface", "model_id": "sentence-transformers/all-mpnet-base-v2"}
+                ]
+            })
+        """
+        await cls.ensure_initialized()
+
+        # Update task router with custom preferences
+        if cls._task_router:
+            # Convert to provider type preferences
+            for task_type, preferences in task_preferences.items():
+                provider_order = []
+                for pref in preferences:
+                    try:
+                        provider_type = ProviderType(pref["provider"])
+                        if provider_type not in provider_order:
+                            provider_order.append(provider_type)
+                    except ValueError:
+                        logger.warning(f"Unknown provider: {pref['provider']}")
+
+                # Update fallback chain for this task
+                cls._task_router._fallback_chains[task_type] = provider_order
+
+        logger.info(f"Updated task model preferences for {len(task_preferences)} task types")
+
     @classmethod
     async def _apply_template(
         cls,

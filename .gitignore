@@ -2,6 +2,9 @@
 node_modules/
 .pnp/
 .pnp.js
+package-lock.json
+.next/
+.nuxt/
 
 # Python
 __pycache__/
@@ -73,6 +76,12 @@ temp/
 
 # Render.yaml specific
 .render/
+
+# Internal documentation files
+MODELSWAPPER_IMPLEMENTATION.md
+*_IMPLEMENTATION.md
+*_SUMMARY.md
+IMPLEMENTATION_*.md
 
 # Other
 .env.local

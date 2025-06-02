@@ -228,6 +228,30 @@ class Settings(BaseSettings):
     STRIPE_PROMO_CODE_YEARLY: Optional[str] = Field(default=None, description="Default yearly promo code for Stripe.")
 
     # ======================================================================
+    # DISCORD INTEGRATION CONFIGURATION
+    # ======================================================================
+    DISCORD_BOT_TOKEN: Optional[SecretStr] = Field(default=None, description="Discord bot token for ChatChonk support bot.")
+    DISCORD_GUILD_ID: Optional[int] = Field(default=None, description="Discord server (guild) ID for ChatChonk support.")
+
+    # Channel IDs
+    DISCORD_GENERAL_CHANNEL_ID: Optional[int] = Field(default=None, description="General chat channel ID.")
+    DISCORD_SUPPORT_CHANNEL_ID: Optional[int] = Field(default=None, description="Support channel ID.")
+    DISCORD_ANNOUNCEMENTS_CHANNEL_ID: Optional[int] = Field(default=None, description="Announcements channel ID.")
+    DISCORD_FEEDBACK_CHANNEL_ID: Optional[int] = Field(default=None, description="Feedback channel ID.")
+
+    # User tier role IDs
+    DISCORD_FREE_ROLE_ID: Optional[int] = Field(default=None, description="Free tier role ID.")
+    DISCORD_LILBEAN_ROLE_ID: Optional[int] = Field(default=None, description="LilBean tier role ID.")
+    DISCORD_CLAWBACK_ROLE_ID: Optional[int] = Field(default=None, description="Clawback tier role ID.")
+    DISCORD_BIGCHONK_ROLE_ID: Optional[int] = Field(default=None, description="BigChonk tier role ID.")
+    DISCORD_MEOWTRIX_ROLE_ID: Optional[int] = Field(default=None, description="Meowtrix tier role ID.")
+
+    # Staff role IDs
+    DISCORD_ADMIN_ROLE_ID: Optional[int] = Field(default=None, description="Admin role ID.")
+    DISCORD_MODERATOR_ROLE_ID: Optional[int] = Field(default=None, description="Moderator role ID.")
+    DISCORD_SUPPORT_ROLE_ID: Optional[int] = Field(default=None, description="Support team role ID.")
+
+    # ======================================================================
     # REDIS CACHING (Optional)
     # ======================================================================
     REDIS_HOST: str = Field(default="localhost", description="Redis server host.")
