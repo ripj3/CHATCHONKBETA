@@ -6,7 +6,6 @@ Complex features will be added incrementally.
 """
 
 import logging
-import os
 import time
 from contextlib import asynccontextmanager
 
@@ -23,17 +22,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("chatchonk")
 
-# Create necessary directories
-os.makedirs("./uploads", exist_ok=True)
-os.makedirs("./tmp", exist_ok=True)
-os.makedirs("./exports", exist_ok=True)
+# Directory creation will be handled in startup event
 
 # App lifecycle management
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application startup and shutdown events."""
     logger.info("ChatChonk backend starting up...")
-    logger.info("Directories created successfully")
+    logger.info("Minimal mode - skipping directory creation")
     yield
     logger.info("ChatChonk backend shutting down...")
 
