@@ -58,37 +58,42 @@ envVarGroups:
 
 services:
   # ---------------------------------------------------------------------------
-  # Frontend Service: Next.js Static Site (ChatChonk Web Interface)
+  # Frontend Service: Next.js Web Service (ChatChonk Web Interface)
   # ---------------------------------------------------------------------------
-  - type: static # Render's static site service type
-    name: chatchonk-web # Name of the service in Render
-    env: node # Use Node.js environment for building Next.js
-    branch: main-beta # Deploy from the 'main-beta' branch
-    rootDir: frontend # Root directory of the frontend code within the repository
-    autoDeploy: true # Automatically deploy on push to the specified branch
-    buildFilter: # Optional: only build if changes are detected in these paths
+  - type: web # Changed from static
+    name: chatchonk-web
+    env: node
+    branch: main-beta
+    rootDir: frontend # Build command and start command will be relative to this
+    autoDeploy: true
+    buildFilter:
       paths:
         - "frontend/**"
-        - "render.yaml" # Rebuild if blueprint changes
-    buildCommand: "npm install && npm run build" # Standard Next.js build command
-    # publishDirectory: "frontend/out" # Only needed if `output: 'export'` is in next.config.js.
-    # For standard Next.js (output: 'standalone' or default), Render's Node environment typically serves from .next/server and .next/static.
-    cache:
+        - "render.yaml"
+    buildCommand: "npm install && npm run build"
+    startCommand: "node .next/standalone/server.js" # Command to start the Next.js standalone server
+    healthCheckPath: / # Optional: Basic health check
+    cache: # Cache paths are relative to the repository root
       - path: frontend/node_modules
       - path: frontend/.next/cache
-    envVars: # Environment variables specific to the frontend build process
+    envVars:
       - key: NEXT_PUBLIC_API_URL
-        # IMPORTANT: Update this in the Render Dashboard after your API service is deployed.
-        # It should be the external URL of your 'chatchonk-api' service.
-        # Example: https://chatchonk-api-xxxx.onrender.com/api
         value: "https://your-chatchonk-api-url.onrender.com/api" # Placeholder - UPDATE THIS
       - key: NODE_VERSION
-        value: "18" # Specify Node.js version for the build environment
-      # Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY here if frontend needs direct Supabase access
-      # - key: NEXT_PUBLIC_SUPABASE_URL
-      #   fromGroup: chatchonk-secrets # Or value: "your_supabase_url" if not in group
-      # - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-      #   fromGroup: chatchonk-secrets # Or value: "your_supabase_anon_key"
+        value: "18"
+      # Add other NEXT_PUBLIC_ variables found in next.config.js
+      # These should ideally be in your 'chatchonk-secrets' env group if sensitive,
+      # or have appropriate values set directly or via Render's dashboard.
+      - key: NEXT_PUBLIC_APP_NAME
+        value: "ChatChonk" # Or fromGroup: chatchonk-secrets
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        fromGroup: chatchonk-secrets # Assuming it's in your secrets group
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        fromGroup: chatchonk-secrets # Assuming it's in your secrets group
+      - key: NEXT_PUBLIC_FRONTEND_URL
+        value: "https://your-chatchonk-web-url.onrender.com" # Placeholder, Render will provide the actual URL
+      # PORT is automatically provided by Render for web services.
+      # The standalone server will listen on the port specified by Render.
 
   # ---------------------------------------------------------------------------
   # Backend Service: FastAPI Application (ChatChonk API)
