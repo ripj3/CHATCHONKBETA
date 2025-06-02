@@ -19,13 +19,13 @@ from typing import Any, Dict, List, Optional, Set, Union
 
 from pydantic import (
     AnyHttpUrl,
-    BaseSettings,
     EmailStr,
     Field,
     PostgresDsn, # Not directly used but good for reference if direct DB DSN needed
     SecretStr,
     validator,
 )
+from pydantic_settings import BaseSettings
 
 
 class LogLevel(str, Enum):
