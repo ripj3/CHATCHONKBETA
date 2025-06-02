@@ -206,6 +206,7 @@ class Settings(BaseSettings):
     # ======================================================================
     LOG_LEVEL: LogLevel = Field(default=LogLevel.INFO, description="Logging level for the application.")
     LOG_FILE: Optional[Path] = Field(default=None, description="Path to the log file. Set to None for stdout, or a path for file logging.")
+    LOG_FORMAT: str = Field(default="%(levelname)s:	%(asctime)s %(name)s - %(message)s", description="Log output format string.")
 
     # ======================================================================
     # EMAIL SETTINGS (Optional, for future use like notifications, MFA)
