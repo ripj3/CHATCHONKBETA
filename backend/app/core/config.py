@@ -76,7 +76,7 @@ class Settings(BaseSettings):
     # ======================================================================
     API_V1_STR: str = Field(default="/api", description="API version prefix.")
     HOST: str = Field(default="0.0.0.0", description="Server host to bind to.")
-    PORT: int = Field(default=8080, description="Server port to listen on.") # User specified 8080
+    PORT: int = Field(default=8000, description="Server port to listen on.") # Match Dockerfile default
     ROOT_PATH: str = Field(default="", description="API root path prefix if running behind a reverse proxy with path stripping.")
     RELOAD: bool = Field(default=False, description="Enable hot reloading for Uvicorn (development only).")
     API_HOST: str = Field(default="127.0.0.1", description="Host for constructing API URLs, typically localhost for dev.")

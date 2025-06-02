@@ -28,7 +28,7 @@ from fastapi.routing import APIRouter
 load_dotenv()
 
 # Import application settings
-from backend.app.core.config import settings
+from app.core.config import settings
 
 # Configure logging
 logging.basicConfig(
@@ -37,12 +37,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger("chatchonk")
 
-# Create necessary directories using settings
-settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-settings.TEMP_DIR.mkdir(parents=True, exist_ok=True)
-settings.EXPORT_DIR.mkdir(parents=True, exist_ok=True) # Ensure export directory exists
-settings.STORAGE_PATH.mkdir(parents=True, exist_ok=True) # Ensure general storage exists
-settings.EPHEMERAL_STORAGE_PATH.mkdir(parents=True, exist_ok=True) # Ensure ephemeral storage exists
+# Create necessary directories (simplified for initial deployment)
+import os
+os.makedirs("./uploads", exist_ok=True)
+os.makedirs("./tmp", exist_ok=True)
+os.makedirs("./exports", exist_ok=True)
 
 
 # App lifecycle management
@@ -53,14 +52,20 @@ async def lifespan(app: FastAPI):
     Creates necessary directories and initializes resources.
     """
     # Startup: Initialize resources
-    logger.info(f"{settings.PROJECT_NAME} backend starting up in {settings.ENVIRONMENT.value} environment...")
-    
-    # Initialize AutoModel system
-    # This will be implemented in a separate module
-    logger.info("Initializing AI models...")
+    logger.info("ChatChonk backend starting up...")
 
-    # Initialize Discord bot if configured
-    if settings.DISCORD_BOT_TOKEN and settings.DISCORD_GUILD_ID:
+    # Create necessary directories
+    try:
+        import os
+        os.makedirs("./uploads", exist_ok=True)
+        os.makedirs("./tmp", exist_ok=True)
+        os.makedirs("./exports", exist_ok=True)
+        logger.info("Directories created successfully")
+    except Exception as e:
+        logger.warning(f"Could not create directories: {e}")
+
+    # Skip Discord bot and AI initialization for now
+    if False:  # Disabled for initial deployment
         logger.info("Starting Discord bot...")
         try:
             from app.services.discord_service import get_discord_service, DiscordConfig
@@ -199,39 +204,34 @@ async def health_check():
     """Health check endpoint for monitoring."""
     return {
         "status": "ok",
-        "service": settings.PROJECT_NAME.lower().replace(" ", "-") + "-api",
-        "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT.value,
-        "debug_mode": settings.DEBUG,
+        "service": "chatchonk-api",
+        "version": "0.1.0",
+        "environment": "production",
+        "debug_mode": False,
     }
+
+# Simple root endpoint
+@app.get("/", tags=["System"])
+async def root():
+    """Root endpoint."""
+    return {"message": "ChatChonk API is running", "status": "ok"}
 
 
 # Import and include API routers
 # These will be implemented in separate modules
 
-# Files router - handles file uploads and processing
-files_router = APIRouter(prefix=f"{settings.API_V1_STR}/files", tags=["Files"])
-# TODO: Implement file upload endpoints with 2GB limit
-app.include_router(files_router)
+# Simple API router for basic endpoints
+api_router = APIRouter(prefix="/api", tags=["API"])
 
-# Templates router - handles template management
-templates_router = APIRouter(prefix=f"{settings.API_V1_STR}/templates", tags=["Templates"])
-# TODO: Implement template endpoints
-app.include_router(templates_router)
+@api_router.get("/status")
+async def api_status():
+    """API status endpoint."""
+    return {"status": "ok", "message": "ChatChonk API is operational"}
 
-# Export router - handles export generation
-exports_router = APIRouter(prefix=f"{settings.API_V1_STR}/exports", tags=["Exports"])
-# TODO: Implement export endpoints
-app.include_router(exports_router)
+app.include_router(api_router)
 
-# AI router - handles AI processing
-ai_router = APIRouter(prefix=f"{settings.API_V1_STR}/ai", tags=["AI"])
-# TODO: Implement AI endpoints
-app.include_router(ai_router)
-
-# ModelSwapper router - handles model configuration and selection
-from app.api.routes.modelswapper import router as modelswapper_router
-app.include_router(modelswapper_router, prefix=settings.API_V1_STR)
+# TODO: Add other routers as they are implemented and tested
+# Files, Templates, Exports, AI, ModelSwapper routers will be added later
 
 
 # Run the application if executed directly

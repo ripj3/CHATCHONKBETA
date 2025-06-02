@@ -16,7 +16,9 @@ COPY backend/requirements.txt .
 
 # Install dependencies into a specific prefix directory
 # This makes it easy to copy only the installed packages to the runtime stage
-RUN pip install --no-cache-dir --prefix="/install" -r requirements.txt
+# Use pip cache for faster rebuilds when requirements don't change
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --prefix="/install" -r requirements.txt --root-user-action=ignore
 
 # Stage 2: Runtime - Create the final application image
 FROM python:3.11-slim-bullseye AS runtime
@@ -61,4 +63,4 @@ EXPOSE 8000
 # Uses sh -c to allow environment variable expansion for $PORT
 # Render provides the PORT environment variable (typically 10000)
 # If PORT is not set, it defaults to 8000 (defined by ENV PORT=8000 above)
-CMD ["sh", "-c", "gunicorn -w 2 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:${PORT}"]
+CMD ["sh", "-c", "gunicorn -w 2 -k uvicorn.workers.UvicornWorker main_minimal:app -b 0.0.0.0:${PORT}"]
