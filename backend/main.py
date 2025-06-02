@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,9 +23,6 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 from fastapi.staticfiles import StaticFiles
-
-# Load environment variables from .env file
-load_dotenv()
 
 # Import application settings
 from app.core.config import settings
