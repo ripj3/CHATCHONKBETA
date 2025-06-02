@@ -16,7 +16,7 @@ supabase==1.2.0
 # postgrest-py==0.10.6  # Included as dependency of supabase
 
 # === HTTP Client for Cloudflare KV ===
-httpx==0.25.2  # For async HTTP requests to Cloudflare KV API
+httpx==0.24.1  # Compatible with supabase 1.2.0 (requires httpx>=0.24.0,<0.25.0)
 
 # === AI/ML Libraries ===
 # HuggingFace
@@ -66,7 +66,7 @@ langchain==0.0.335  # Framework for LLM applications
 langchain-community==0.0.10  # Community extensions
 
 # === HTTP Clients and Utilities ===
-# httpx==0.24.1  # Removed duplicate - using 0.25.2 version above
+# httpx is specified above - compatible with supabase requirements
 requests==2.31.0  # Sync HTTP client
 websockets==12.0  # WebSocket support
 tenacity==8.2.3  # Retry logic
