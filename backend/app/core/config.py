@@ -9,6 +9,7 @@ Environment variables are loaded from .env file if present.
 Author: Rip Jonesy
 """
 
+import ast # Added for literal_eval
 import logging
 import os
 import secrets
@@ -344,12 +345,27 @@ class Settings(BaseSettings):
     
     @validator("ALLOWED_FILE_TYPES", pre=True, allow_reuse=True)
     def _parse_allowed_file_types(cls, v: Union[str, Set[str], List[str]]) -> Set[str]:
-        """Parse allowed file types from string or list into a set of lowercase strings with leading dot."""
+        """
+        Parse allowed file types from string, list, or set into a set of lowercase strings with leading dot.
+        Handles string representations of sets (e.g., "{'.txt', '.zip'}").
+        """
         if isinstance(v, str):
-            types = {item.strip().lower() for item in v.split(",") if item.strip()}
-        elif isinstance(v, list):
-            types = {item.strip().lower() for item in v if isinstance(item, str) and item.strip()}
-        elif isinstance(v, set):
+            # Attempt to parse as a Python set literal if it looks like one
+            if v.strip().startswith('{') and v.strip().endswith('}'):
+                try:
+                    parsed_set = ast.literal_eval(v)
+                    if isinstance(parsed_set, set):
+                        types = {item.strip().lower() for item in parsed_set if isinstance(item, str) and item.strip()}
+                    else:
+                        # Fallback if it's a string that looks like a set but isn't
+                        types = {item.strip().lower() for item in v.split(",") if item.strip()}
+                except (ValueError, SyntaxError):
+                    # If literal_eval fails, treat as a comma-separated string
+                    types = {item.strip().lower() for item in v.split(",") if item.strip()}
+            else:
+                # Regular comma-separated string
+                types = {item.strip().lower() for item in v.split(",") if item.strip()}
+        elif isinstance(v, (list, set)):
             types = {item.strip().lower() for item in v if isinstance(item, str) and item.strip()}
         else:
             raise ValueError("ALLOWED_FILE_TYPES must be a comma-separated string, list, or set.")
