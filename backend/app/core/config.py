@@ -164,9 +164,9 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = Field(default=1_048_576, description="Chunk size for streaming file uploads in bytes (1MB).")
     CLEANUP_INTERVAL: int = Field(default=3600, description="General interval for temporary file cleanup tasks (1 hour).")
     FILE_RETENTION_PERIOD: int = Field(default=86400, description="Time to keep processed files locally before potential deletion (24 hours).")
-    ALLOWED_FILE_TYPES: Set[str] = Field(
-        default={".zip", ".json", ".txt", ".md", ".csv"}, # Default as a set of strings with leading dots
-        description="Set of allowed file extensions for direct uploads (archives might contain more types internally).",
+    ALLOWED_FILE_TYPES: str = Field(
+        default="zip,json,txt,md,csv", # Comma-separated string for environment variable parsing
+        description="Comma-separated list of allowed file extensions for direct uploads (archives might contain more types internally).",
     )
 
     # ======================================================================
@@ -401,7 +401,6 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
         case_sensitive = False # Typically env vars are case-insensitive, but can be True if needed
         validate_assignment = True # Ensure type hints are respected on assignment
-        env_nested_delimiter = '__' # For nested settings from environment variables
 
         # Custom section for ChatChonk-specific metadata (not loaded from env)
         chatchonk_settings = {
