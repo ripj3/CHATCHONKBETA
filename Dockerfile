@@ -63,4 +63,4 @@ EXPOSE 8000
 # Uses sh -c to allow environment variable expansion for $PORT
 # Render provides the PORT environment variable (typically 10000)
 # If PORT is not set, it defaults to 8000 (defined by ENV PORT=8000 above)
-CMD ["sh", "-c", "gunicorn -w 2 -k uvicorn.workers.UvicornWorker main_minimal:app -b 0.0.0.0:${PORT}"]
+CMD ["sh", "-c", "gunicorn -w 2 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:${PORT}"]
