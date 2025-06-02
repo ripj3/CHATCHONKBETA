@@ -195,6 +195,7 @@ class Settings(BaseSettings):
     # ======================================================================
     # LOGGING CONFIGURATION
     # ======================================================================
+    LOG_LEVEL: LogLevel = Field(default=LogLevel.INFO, description="Logging level for the application.")
 
     # ======================================================================
     # EMAIL SETTINGS (Optional, for future use like notifications, MFA)
@@ -299,10 +300,9 @@ class Settings(BaseSettings):
     ENABLE_MOCK_SUPABASE: bool = Field(default=False, description="Enable mock Supabase client for testing purposes.")
 
 
-    # === Validators ===
     # === Post-initialization for environment-specific paths ===
     def model_post_init(self, __context: Any) -> None:
-        """Set environment-specific default paths after initialization."""
+        """Set environment-specific default paths and create directories if needed."""
         # Always use cloud storage for UPLOAD_DIR, EXPORT_DIR, STORAGE_PATH
         # These fields remain None and are expected to be handled by Supabase integration.
 
@@ -311,29 +311,22 @@ class Settings(BaseSettings):
             self.TEMP_DIR = self.TEMP_DIR or Path("./tmp")
             self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("./ephemeral_storage")
             self.LOG_FILE = self.LOG_FILE or Path("chatchonk.log")
+
+            # Create directories for local development/test
+            if self.TEMP_DIR:
+                self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
+            if self.EPHEMERAL_STORAGE_PATH:
+                self.EPHEMERAL_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
+            if self.LOG_FILE:
+                self.LOG_FILE.parent.mkdir(parents=True, exist_ok=True) # Create parent dir for log file
         elif self.ENVIRONMENT in {Environment.STAGING, Environment.PRODUCTION, Environment.PRODUCTION_BETA}:
             # Cloud deployment paths for temporary files and logs
             self.TEMP_DIR = self.TEMP_DIR or Path("/tmp")
             self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("/tmp/ephemeral_storage") # Use /tmp for ephemeral
             self.LOG_FILE = None # Ensure logs go to stdout in production
+            # No need to create directories in /tmp as it's usually managed by the environment
 
     # === Validators ===
-    @validator("TEMP_DIR", "EPHEMERAL_STORAGE_PATH", "LOG_FILE", pre=True, allow_reuse=True)
-    def _ensure_path_type_and_create(cls, v: Union[str, Path, None], values: Dict[str, Any]) -> Optional[Path]:
-        """Ensure path variables are Path objects and create directories if they don't exist in dev/test."""
-        if v is None:
-            return None
-        
-        path = Path(v)
-        
-        # Only attempt to create directories if the environment is DEVELOPMENT or TEST
-        if values.get("ENVIRONMENT") in {Environment.DEVELOPMENT, Environment.TEST}:
-            if str(v).endswith('.log'): # For LOG_FILE, only create parent directory.
-                path.parent.mkdir(parents=True, exist_ok=True)
-            else:
-                path.mkdir(parents=True, exist_ok=True)
-        return path
-
     @validator("ALLOWED_ORIGINS", "ALLOWED_HOSTS", "ALLOWED_IPS", pre=True, allow_reuse=True)
     def _parse_comma_separated_list(cls, v: Union[str, List[str]]) -> List[str]:
         """Parse comma-separated string into a list of strings."""
@@ -463,4 +456,3 @@ if __name__ == "__main__":
         print(f"  Redis Enabled: Host={settings.REDIS_HOST}, Port={settings.REDIS_PORT}")
     else:
         print(f"  Redis Enabled: False")
-
