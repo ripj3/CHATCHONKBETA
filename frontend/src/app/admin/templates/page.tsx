@@ -119,7 +119,7 @@ export default function TemplatesPage() {
   const totalTemplates = templates.length
   const activeTemplates = templates.filter(t => t.status === 'active').length
   const totalUsage = templates.reduce((sum, t) => sum + t.usageCount, 0)
-  const categories = [...new Set(templates.map(t => t.category))]
+  const categories = Array.from(new Set(templates.map(t => t.category)))
 
   return (
     <div className="space-y-6">
