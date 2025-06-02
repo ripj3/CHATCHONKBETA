@@ -73,6 +73,9 @@ services:
     buildCommand: "npm install && npm run build" # Standard Next.js build command
     # publishDirectory: "frontend/out" # Only needed if `output: 'export'` is in next.config.js.
     # For standard Next.js (output: 'standalone' or default), Render's Node environment typically serves from .next/server and .next/static.
+    cache:
+      - path: frontend/node_modules
+      - path: frontend/.next/cache
     envVars: # Environment variables specific to the frontend build process
       - key: NEXT_PUBLIC_API_URL
         # IMPORTANT: Update this in the Render Dashboard after your API service is deployed.

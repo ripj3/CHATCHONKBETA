@@ -205,6 +205,7 @@ class Settings(BaseSettings):
     # LOGGING CONFIGURATION
     # ======================================================================
     LOG_LEVEL: LogLevel = Field(default=LogLevel.INFO, description="Logging level for the application.")
+    LOG_FILE: Optional[Path] = Field(default=None, description="Path to the log file. Set to None for stdout, or a path for file logging.")
 
     # ======================================================================
     # EMAIL SETTINGS (Optional, for future use like notifications, MFA)
@@ -312,28 +313,37 @@ class Settings(BaseSettings):
     # === Post-initialization for environment-specific paths ===
     def model_post_init(self, __context: Any) -> None:
         """Set environment-specific default paths and create directories if needed."""
-        # Always use cloud storage for UPLOAD_DIR, EXPORT_DIR, STORAGE_PATH
-        # These fields remain None and are expected to be handled by Supabase integration.
+        # UPLOAD_DIR, EXPORT_DIR, STORAGE_PATH are expected to be None if using cloud storage.
 
         if self.ENVIRONMENT in {Environment.DEVELOPMENT, Environment.TEST}:
             # Local development paths for temporary files and logs
-            self.TEMP_DIR = self.TEMP_DIR or Path("./tmp")
-            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("./ephemeral_storage")
-            self.LOG_FILE = self.LOG_FILE or Path("chatchonk.log")
+            self.TEMP_DIR = self.TEMP_DIR or Path("./tmp") # Default to ./tmp if not set by env
+            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("./ephemeral_storage") # Default if not set
 
-            # Create directories for local development/test
+            # LOG_FILE defaults to None (from Field definition).
+            # Only set a local file path if it's not already defined (e.g., by an env var)
+            # and we are in a dev/test environment.
+            if self.LOG_FILE is None:
+                self.LOG_FILE = Path("chatchonk.log")
+
+            # Create local directories if they are configured
             if self.TEMP_DIR:
                 self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
             if self.EPHEMERAL_STORAGE_PATH:
                 self.EPHEMERAL_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
-            if self.LOG_FILE:
-                self.LOG_FILE.parent.mkdir(parents=True, exist_ok=True) # Create parent dir for log file
+            if self.LOG_FILE: # If LOG_FILE is now set (e.g., to "chatchonk.log")
+                # Ensure parent directory for the log file exists for local file logging
+                self.LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
         elif self.ENVIRONMENT in {Environment.STAGING, Environment.PRODUCTION, Environment.PRODUCTION_BETA}:
-            # Cloud deployment paths for temporary files and logs
-            self.TEMP_DIR = self.TEMP_DIR or Path("/tmp")
-            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("/tmp/ephemeral_storage") # Use /tmp for ephemeral
-            self.LOG_FILE = None # Ensure logs go to stdout in production
-            # No need to create directories in /tmp as it's usually managed by the environment
+            # For cloud environments, TEMP_DIR and EPHEMERAL_STORAGE_PATH might use /tmp
+            self.TEMP_DIR = self.TEMP_DIR or Path("/tmp") # /tmp should exist
+            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("/tmp/ephemeral_storage")
+
+            # For production, LOG_FILE is already None by default (directing logs to stdout).
+            # If LOG_FILE is explicitly set via an environment variable to a path (e.g., /var/log/app.log),
+            # it's assumed that path is managed by the Docker image/environment, so no directory creation here.
+            pass # No specific LOG_FILE path assignment needed here, relies on default=None or env var.
 
     # === Validators ===
     @validator("ALLOWED_ORIGINS", "ALLOWED_HOSTS", "ALLOWED_IPS", pre=True, allow_reuse=True)
@@ -461,11 +471,177 @@ if __name__ == "__main__":
     print(f"  Raw HUGGINGFACE_API_KEY from os.getenv: {'Set' if hf_key_raw else 'Not Set'}")
     print(f"  Supabase URL: {settings.SUPABASE_URL or 'Not Set'}")
     print(f"  Allowed Origins: {settings.ALLOWED_ORIGINS}")
-    print(f"  Upload Directory: {settings.UPLOAD_DIR.resolve()}")
-    print(f"  Templates Directory: {settings.TEMPLATES_DIR.resolve()}")
+    # Ensure LOG_FILE is handled correctly, it might be None
+    log_file_path = "stdout"
+    if settings.LOG_FILE:
+        try:
+            log_file_path = str(settings.LOG_FILE.resolve())
+        except Exception: # Handle cases where resolve might fail (e.g. not a file path)
+            log_file_path = str(settings.LOG_FILE)
+    elif settings.LOG_FILE is None:
+        log_file_path = "None (stdout)"
+
+
+    print(f"  Log File: {log_file_path}")
+    
+    # Check UPLOAD_DIR, TEMP_DIR etc. safely as they can be None
+    upload_dir_path = "Not Set (Cloud Storage)"
+    if settings.UPLOAD_DIR:
+        try:
+            upload_dir_path = str(settings.UPLOAD_DIR.resolve())
+        except Exception:
+            upload_dir_path = str(settings.UPLOAD_DIR)
+    print(f"  Upload Directory: {upload_dir_path}")
+
+    templates_dir_path = "Not Set"
+    if settings.TEMPLATES_DIR:
+        try:
+            templates_dir_path = str(settings.TEMPLATES_DIR.resolve())
+        except Exception:
+            templates_dir_path = str(settings.TEMPLATES_DIR)
+    print(f"  Templates Directory: {templates_dir_path}")
+    
     print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
 
     if settings.REDIS_ENABLED:
         print(f"  Redis Enabled: Host={settings.REDIS_HOST}, Port={settings.REDIS_PORT}")
     else:
         print(f"  Redis Enabled: False")
+
+# Update the main section to correctly print LOG_FILE path
+if __name__ == "__main__":
+    # ... (previous print statements) ...
+    
+    # Correctly print LOG_FILE path, handling None
+    log_file_display = "None (stdout)"
+    if settings.LOG_FILE:
+        try:
+            # Attempt to resolve if it's a Path object and not None
+            log_file_display = str(settings.LOG_FILE.resolve())
+        except AttributeError: 
+            # Fallback if LOG_FILE is not a Path object (e.g. already a string, or if resolve fails)
+            log_file_display = str(settings.LOG_FILE)
+    print(f"  Log File: {log_file_display}")
+
+    # ... (other print statements like UPLOAD_DIR, TEMPLATES_DIR, etc.) ...
+    # Ensure UPLOAD_DIR is handled correctly if it's None
+    upload_dir_display = "None (Cloud Storage)"
+    if settings.UPLOAD_DIR:
+        try:
+            upload_dir_display = str(settings.UPLOAD_DIR.resolve())
+        except AttributeError:
+            upload_dir_display = str(settings.UPLOAD_DIR)
+    print(f"  Upload Directory: {upload_dir_display}")
+
+    # Ensure TEMPLATES_DIR is handled correctly
+    templates_dir_display = "Not Set"
+    if settings.TEMPLATES_DIR:
+        try:
+            templates_dir_display = str(settings.TEMPLATES_DIR.resolve())
+        except AttributeError:
+            templates_dir_display = str(settings.TEMPLATES_DIR)
+    print(f"  Templates Directory: {templates_dir_display}")
+    # ...
+    # (The rest of the __main__ block)
+    # ...
+    print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
+
+    if settings.REDIS_ENABLED:
+        print(f"  Redis Enabled: Host={settings.REDIS_HOST}, Port={settings.REDIS_PORT}")
+    else:
+        print(f"  Redis Enabled: False")
+
+# Final __main__ block for clarity, ensuring only one is active.
+# Remove previous __main__ if this is the intended one.
+if __name__ == "__main__":
+    # Example of how to access settings
+    print(f"ChatChonk Settings Loaded for Environment: {settings.ENVIRONMENT.value}")
+    print(f"  Project Name: {settings.PROJECT_NAME}")
+    print(f"  API URL (Dev): {settings.API_URL}")
+    print(f"  Production API URL: {settings.PRODUCTION_API_URL or 'Not Set'}")
+    print(f"  Debug Mode: {settings.DEBUG}")
+    print(f"  Log Level: {settings.LOG_LEVEL.value}")
+    
+    # Display LOG_FILE path
+    log_file_display = "None (stdout)"
+    if settings.LOG_FILE:
+        # Check if it's a Path object before calling resolve
+        if isinstance(settings.LOG_FILE, Path):
+            try:
+                log_file_display = str(settings.LOG_FILE.resolve())
+            except Exception as e: # Catch potential errors if path is invalid
+                log_file_display = f"Invalid Path ({settings.LOG_FILE}): {e}"
+        else: # If it's not a Path object (e.g. already a string)
+            log_file_display = str(settings.LOG_FILE)
+    print(f"  Log File: {log_file_display}")
+
+    print(f"  Default AI Provider: {settings.DEFAULT_AI_PROVIDER.value}")
+    if settings.HUGGINGFACE_API_KEY:
+        print(f"  HuggingFace API Key: Set (value redacted)")
+    else:
+        print(f"  HuggingFace API Key: Not Set")
+    
+    # Debugging: Print raw environment variable
+    hf_key_raw = os.getenv("HUGGINGFACE_API_KEY")
+    print(f"  Raw HUGGINGFACE_API_KEY from os.getenv: {'Set' if hf_key_raw else 'Not Set'}")
+    
+    print(f"  Supabase URL: {settings.SUPABASE_URL or 'Not Set'}")
+    print(f"  Allowed Origins: {settings.ALLOWED_ORIGINS}")
+
+    # Display UPLOAD_DIR path
+    upload_dir_display = "None (Cloud Storage)"
+    if settings.UPLOAD_DIR:
+        if isinstance(settings.UPLOAD_DIR, Path):
+            try:
+                upload_dir_display = str(settings.UPLOAD_DIR.resolve())
+            except Exception as e:
+                upload_dir_display = f"Invalid Path ({settings.UPLOAD_DIR}): {e}"
+        else:
+            upload_dir_display = str(settings.UPLOAD_DIR)
+    print(f"  Upload Directory: {upload_dir_display}")
+
+    # Display TEMPLATES_DIR path
+    templates_dir_display = "Not Set"
+    if settings.TEMPLATES_DIR:
+        if isinstance(settings.TEMPLATES_DIR, Path):
+            try:
+                templates_dir_display = str(settings.TEMPLATES_DIR.resolve())
+            except Exception as e:
+                templates_dir_display = f"Invalid Path ({settings.TEMPLATES_DIR}): {e}"
+        else:
+            templates_dir_display = str(settings.TEMPLATES_DIR)
+    print(f"  Templates Directory: {templates_dir_display}")
+    
+    print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
+
+    if settings.REDIS_ENABLED:
+        print(f"  Redis Enabled: Host={settings.REDIS_HOST}, Port={settings.REDIS_PORT}")
+    else:
+        print(f"  Redis Enabled: False")
+
+    # Example for EPHEMERAL_STORAGE_PATH
+    ephemeral_path_display = "Not Set"
+    if settings.EPHEMERAL_STORAGE_PATH:
+        if isinstance(settings.EPHEMERAL_STORAGE_PATH, Path):
+            try:
+                ephemeral_path_display = str(settings.EPHEMERAL_STORAGE_PATH.resolve())
+            except Exception as e:
+                ephemeral_path_display = f"Invalid Path ({settings.EPHEMERAL_STORAGE_PATH}): {e}"
+        else:
+            ephemeral_path_display = str(settings.EPHEMERAL_STORAGE_PATH)
+    print(f"  Ephemeral Storage Path: {ephemeral_path_display}")
+
+    print("\nTesting model_post_init behavior:")
+    print(f"  Environment: {settings.ENVIRONMENT.value}")
+    print(f"  TEMP_DIR: {settings.TEMP_DIR}")
+    print(f"  EPHEMERAL_STORAGE_PATH: {settings.EPHEMERAL_STORAGE_PATH}")
+    print(f"  LOG_FILE (after init): {settings.LOG_FILE}")
+
+    if settings.ENVIRONMENT in {Environment.DEVELOPMENT, Environment.TEST}:
+        if settings.TEMP_DIR: assert settings.TEMP_DIR.exists(), "TEMP_DIR should exist in dev/test"
+        if settings.EPHEMERAL_STORAGE_PATH: assert settings.EPHEMERAL_STORAGE_PATH.exists(), "EPHEMERAL_STORAGE_PATH should exist in dev/test"
+        if settings.LOG_FILE and settings.LOG_FILE.name == "chatchonk.log": 
+            assert settings.LOG_FILE.parent.exists(), "LOG_FILE parent should exist in dev/test if it's chatchonk.log"
+            print("  Local directory creation for TEMP, EPHEMERAL, LOG_FILE parent verified (if applicable).")
+
+    print("\nAll settings loaded and basic checks complete.")
