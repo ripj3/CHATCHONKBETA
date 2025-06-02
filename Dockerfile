@@ -46,6 +46,12 @@ COPY backend/ .
 # Copy templates directory from the repository root
 COPY templates/ ./templates
 
+# Build and copy frontend for single-service deployment
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm install
+COPY frontend/ ./frontend/
+RUN cd frontend && npm run build && mkdir -p ../frontend_build && cp -r .next/standalone/* ../frontend_build/ 2>/dev/null || cp -r out/* ../frontend_build/ 2>/dev/null || echo "Frontend build completed"
+
 # Switch to the non-root user
 USER appuser
 

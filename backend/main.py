@@ -23,6 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
+from fastapi.staticfiles import StaticFiles
 
 # Load environment variables from .env file
 load_dotenv()
@@ -227,6 +228,15 @@ app.include_router(api_router)
 
 # TODO: Add other routers as they are implemented and tested
 # Files, Templates, Exports, AI routers will be added incrementally
+
+# Mount frontend static files (serve frontend from backend)
+# This allows single service deployment saving $7/month
+try:
+    app.mount("/", StaticFiles(directory="frontend_build", html=True), name="frontend")
+    logger.info("Frontend static files mounted successfully")
+except Exception as e:
+    logger.warning(f"Could not mount frontend static files: {e}")
+    logger.info("Frontend will need to be deployed separately")
 
 
 # Run the application if executed directly
