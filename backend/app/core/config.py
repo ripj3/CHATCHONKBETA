@@ -42,6 +42,7 @@ class Environment(str, Enum):
     DEVELOPMENT = "development"
     STAGING = "staging"
     PRODUCTION = "production"
+    PRODUCTION_BETA = "production_beta"
     TEST = "test"
 
 
@@ -142,11 +143,11 @@ class Settings(BaseSettings):
     # ======================================================================
     # FILE PROCESSING & LOCAL STORAGE SETTINGS
     # ======================================================================
-    UPLOAD_DIR: Path = Field(default=Path("./uploads"), description="Directory for initial file uploads (before moving to Supabase or processing).")
-    TEMP_DIR: Path = Field(default=Path("./tmp"), description="Directory for temporary files during processing.")
-    EXPORT_DIR: Path = Field(default=Path("./exports"), description="Directory for storing generated export files locally (if not directly streamed or sent to cloud).")
-    STORAGE_PATH: Path = Field(default=Path("./storage"), description="General local storage path if not using cloud exclusively.")
-    EPHEMERAL_STORAGE_PATH: Path = Field(default=Path("./ephemeral_storage"), description="Path for temporary storage of files that need quick cleanup.")
+    UPLOAD_DIR: Optional[Path] = Field(default=None, description="Directory for initial file uploads (will be None if using cloud storage).")
+    TEMP_DIR: Optional[Path] = Field(default=None, description="Directory for temporary files during processing.")
+    EXPORT_DIR: Optional[Path] = Field(default=None, description="Directory for storing generated export files locally (will be None if directly streamed or sent to cloud).")
+    STORAGE_PATH: Optional[Path] = Field(default=None, description="General local storage path (will be None if using cloud exclusively).")
+    EPHEMERAL_STORAGE_PATH: Optional[Path] = Field(default=None, description="Path for temporary storage of files that need quick cleanup.")
     EPHEMERAL_MAX_AGE_SECONDS: int = Field(default=7200, description="Max age for files in ephemeral storage (2 hours).")
     EPHEMERAL_CLEANUP_INTERVAL: int = Field(default=600, description="Interval for cleaning up ephemeral storage (10 minutes).")
     EPHEMERAL_ENCRYPTION_ENABLED: bool = Field(default=True, description="Enable encryption for files in ephemeral storage.")
@@ -194,11 +195,6 @@ class Settings(BaseSettings):
     # ======================================================================
     # LOGGING CONFIGURATION
     # ======================================================================
-    LOG_LEVEL: LogLevel = Field(default=LogLevel.INFO, description="Logging level for the application.")
-    LOG_FORMAT: str = Field(default="%(asctime)s - %(name)s - %(levelname)s - %(message)s", description="Log format string.")
-    LOG_FILE: Optional[Path] = Field(default=Path("chatchonk.log"), description="Path to log file. If None, logs to stdout.")
-    LOG_ROTATION_DAYS: int = Field(default=90, description="Number of days to keep log files before rotation/deletion.")
-    ENABLE_AUDIT_LOGGING: bool = Field(default=True, description="Enable detailed audit logging for key actions.")
 
     # ======================================================================
     # EMAIL SETTINGS (Optional, for future use like notifications, MFA)
@@ -304,17 +300,38 @@ class Settings(BaseSettings):
 
 
     # === Validators ===
-    @validator("UPLOAD_DIR", "TEMP_DIR", "EXPORT_DIR", "TEMPLATES_DIR", "STORAGE_PATH", "EPHEMERAL_STORAGE_PATH", "LOG_FILE", pre=True, allow_reuse=True)
-    def _ensure_path_type_and_create(cls, v: Union[str, Path, None]) -> Optional[Path]:
-        """Ensure path variables are Path objects and create directories if they don't exist."""
-        if v is None: # Handles optional LOG_FILE
+    # === Post-initialization for environment-specific paths ===
+    def model_post_init(self, __context: Any) -> None:
+        """Set environment-specific default paths after initialization."""
+        # Always use cloud storage for UPLOAD_DIR, EXPORT_DIR, STORAGE_PATH
+        # These fields remain None and are expected to be handled by Supabase integration.
+
+        if self.ENVIRONMENT in {Environment.DEVELOPMENT, Environment.TEST}:
+            # Local development paths for temporary files and logs
+            self.TEMP_DIR = self.TEMP_DIR or Path("./tmp")
+            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("./ephemeral_storage")
+            self.LOG_FILE = self.LOG_FILE or Path("chatchonk.log")
+        elif self.ENVIRONMENT in {Environment.STAGING, Environment.PRODUCTION, Environment.PRODUCTION_BETA}:
+            # Cloud deployment paths for temporary files and logs
+            self.TEMP_DIR = self.TEMP_DIR or Path("/tmp")
+            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path("/tmp/ephemeral_storage") # Use /tmp for ephemeral
+            self.LOG_FILE = None # Ensure logs go to stdout in production
+
+    # === Validators ===
+    @validator("TEMP_DIR", "EPHEMERAL_STORAGE_PATH", "LOG_FILE", pre=True, allow_reuse=True)
+    def _ensure_path_type_and_create(cls, v: Union[str, Path, None], values: Dict[str, Any]) -> Optional[Path]:
+        """Ensure path variables are Path objects and create directories if they don't exist in dev/test."""
+        if v is None:
             return None
+        
         path = Path(v)
-        # For LOG_FILE, only create parent directory. For others, create the directory itself.
-        if str(v).endswith('.log'): # A bit heuristic, better if LOG_FILE was LOG_DIR
-            path.parent.mkdir(parents=True, exist_ok=True)
-        else:
-            path.mkdir(parents=True, exist_ok=True)
+        
+        # Only attempt to create directories if the environment is DEVELOPMENT or TEST
+        if values.get("ENVIRONMENT") in {Environment.DEVELOPMENT, Environment.TEST}:
+            if str(v).endswith('.log'): # For LOG_FILE, only create parent directory.
+                path.parent.mkdir(parents=True, exist_ok=True)
+            else:
+                path.mkdir(parents=True, exist_ok=True)
         return path
 
     @validator("ALLOWED_ORIGINS", "ALLOWED_HOSTS", "ALLOWED_IPS", pre=True, allow_reuse=True)
