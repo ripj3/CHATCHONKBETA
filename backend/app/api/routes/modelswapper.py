@@ -21,9 +21,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 from app.models.mswap_models import (
-    UserProviderConfig, ModelDefinition, ModelPerformance, TaskRoutingPreference, # Changed ProviderConfig to UserProviderConfig
-    UserApiUsage, UserTier, CreateProviderConfigRequest, UpdateProviderConfigRequest,
+    UserProviderConfig, UserTier, CreateProviderConfigRequest, UpdateProviderConfigRequest,
     ModelSelectionRequest, ModelSelectionResponse
+    # Removed: ModelDefinition, ModelPerformance, TaskRoutingPreference, UserApiUsage
 )
 from app.services.modelswapper_service import ModelSwapperService
 from app.automodel import TaskType, ProviderType
@@ -142,7 +142,7 @@ async def select_model(
         
         response = await modelswapper_service.select_best_model(request)
         
-        logger.info(f"Selected model {response.model_name} for user {user['user_id']}")
+        logger.info(f"Selected model {response.selected_model_name} for user {user['user_id']}")
         return response
         
     except ValueError as e:

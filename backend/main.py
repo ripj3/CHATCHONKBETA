@@ -93,26 +93,26 @@ async def lifespan(app: FastAPI):
             logger.error(f"Failed to start Discord bot: {e}")
     else:
         logger.info("Discord bot not configured - skipping Discord integration")
-    
+
     # Yield control to FastAPI
     yield
-    
+
     # Shutdown: Clean up resources
     logger.info(f"{settings.PROJECT_NAME} backend shutting down...")
-    
+
     # Clean up temporary files
     logger.info("Cleaning up temporary files...")
     # TODO: Implement cleanup logic using settings.TEMP_DIR, settings.UPLOAD_DIR, settings.EPHEMERAL_STORAGE_PATH
     # Consider using a background task for cleanup
-    
+
 # Initialize FastAPI app with metadata and lifespan
 app = FastAPI(
     title=settings.PROJECT_NAME + " API",
     description="""
     ChatChonk transforms AI chat conversations into structured, searchable knowledge bundles.
-    
+
     "Tame the Chatter. Find the Signal."
-    
+
     Designed for second-brain builders and neurodivergent thinkers.
     """,
     version=settings.APP_VERSION,
@@ -141,11 +141,11 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 async def log_and_metric_requests(request: Request, call_next: Callable) -> Response:
     """Log request information, timing, and collect basic metrics."""
     start_time = time.time()
-    
+
     # Generate request ID
     request_id = f"req_{int(start_time * 1000)}"
     logger.info(f"[{request_id}] {request.method} {request.url.path}")
-    
+
     # Increment total requests
     metrics["total_requests"] += 1
     metrics["request_counts_by_path"][request.url.path] += 1
@@ -154,7 +154,7 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-        
+
         metrics["total_processing_time"] += process_time
         metrics["status_code_counts"][response.status_code] += 1
 
@@ -169,7 +169,7 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
             logger.info(
                 f"[{request_id}] Completed: {response.status_code} ({process_time:.4f}s)"
             )
-        
+
         # Add timing header
         response.headers["X-Process-Time"] = f"{process_time:.4f}"
         return response

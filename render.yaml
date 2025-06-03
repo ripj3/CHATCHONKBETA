@@ -13,48 +13,48 @@ version: 1
 # Add SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY,
 # HUGGINGFACE_API_KEY, CHONK_SECRET_KEY, etc. to this group.
 envVarGroups:
-  - name: chatchonk-secrets # Replace with your actual env group name in Render
+  - name: NEWBETAKEYS1 # Replace with your actual env group name in Render
     envVars:
       # CHCH3 (Main Database) Configuration
       - key: SUPABASE_URL
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
       - key: SUPABASE_KEY # Typically refers to SUPABASE_ANON_KEY for client-side
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
       - key: SUPABASE_SERVICE_ROLE_KEY
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
 
       # MSWAP (ModelSwapper Database) Configuration
       - key: MSWAP_SUPABASE_URL
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
       - key: MSWAP_SUPABASE_ANON_KEY
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
       - key: MSWAP_SUPABASE_SERVICE_ROLE_KEY
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
 
       # AI Provider Keys
       - key: HUGGINGFACE_API_KEY
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
 
       # Security Keys
       - key: CHONK_SECRET_KEY
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
 
       # Cloudflare KV Cache Configuration
       - key: CLOUDFLARE_API_TOKEN
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
       - key: CLOUDFLARE_ACCOUNT_ID
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
       - key: CLOUDFLARE_KV_NAMESPACE_ID
-        fromGroup: chatchonk-secrets
+        fromGroup: NEWBETAKEYS1
 
       # Add other API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.) to the group as needed
       # Example:
       # - key: OPENAI_API_KEY
-      #   fromGroup: chatchonk-secrets
+      #   fromGroup: NEWBETAKEYS1
       # - key: STRIPE_RESTRICTED_KEY # Or STRIPE_SECRET_KEY
-      #   fromGroup: chatchonk-secrets
+      #   fromGroup: NEWBETAKEYS1
       # - key: STRIPE_WEBHOOK_SECRET
-      #   fromGroup: chatchonk-secrets
+      #   fromGroup: NEWBETAKEYS1
 
 services:
   # ---------------------------------------------------------------------------
@@ -82,14 +82,14 @@ services:
       - key: NODE_VERSION
         value: "18"
       # Add other NEXT_PUBLIC_ variables found in next.config.js
-      # These should ideally be in your 'chatchonk-secrets' env group if sensitive,
+      # These should ideally be in your 'NEWBETAKEYS1' env group if sensitive,
       # or have appropriate values set directly or via Render's dashboard.
       - key: NEXT_PUBLIC_APP_NAME
-        value: "ChatChonk" # Or fromGroup: chatchonk-secrets
+        value: "ChatChonk" # Or fromGroup: NEWBETAKEYS1
       - key: NEXT_PUBLIC_SUPABASE_URL
-        fromGroup: chatchonk-secrets # Assuming it's in your secrets group
+        fromGroup: NEWBETAKEYS1 # Assuming it's in your secrets group
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        fromGroup: chatchonk-secrets # Assuming it's in your secrets group
+        fromGroup: NEWBETAKEYS1 # Assuming it's in your secrets group
       - key: NEXT_PUBLIC_FRONTEND_URL
         value: "https://your-chatchonk-web-url.onrender.com" # Placeholder, Render will provide the actual URL
       # PORT is automatically provided by Render for web services.
@@ -113,7 +113,7 @@ services:
     plan: starter # Render's "Starter" plan (e.g., 512MB RAM, shared CPU, approx $7/month)
     healthCheckPath: /api/health # Health check endpoint (ensure API_V1_STR is prefixed if used in FastAPI)
     envVars:
-      - fromGroup: chatchonk-secrets # Pull secrets from the defined environment group
+      - fromGroup: NEWBETAKEYS1 # Pull secrets from the defined environment group
       - key: PORT
         value: "10000" # Render provides this PORT; Gunicorn in Dockerfile will use it.
       - key: PYTHON_VERSION
