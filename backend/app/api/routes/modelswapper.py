@@ -142,7 +142,7 @@ async def select_model(
         
         response = await modelswapper_service.select_best_model(request)
         
-        logger.info(f"Selected model {response.model_name} for user {user['user_id']}")
+        logger.info(f"Selected model {response.selected_model_name} for user {user['user_id']}")
         return response
         
     except ValueError as e:
