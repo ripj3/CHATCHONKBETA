@@ -5,7 +5,7 @@ const nextConfig = {
   swcMinify: true,
 
   // Output standalone build for optimal deployment on platforms like Render (Docker)
-  output: 'standalone',
+  output: 'export', // Changed from 'standalone' to 'export'
   // Image Optimization Configuration
   // https://nextjs.org/docs/pages/api-reference/components/image#remotepatterns
   // Add remote patterns for any external image sources you use (e.g., Supabase Storage)

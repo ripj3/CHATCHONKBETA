@@ -1,10 +1,10 @@
 # render.yaml
 # Blueprint for deploying ChatChonk on Render
-# Defines two services: a Next.js static site frontend and a FastAPI Docker backend.
+# Defines a single service: a FastAPI Docker backend that also serves the Next.js frontend.
 #
 # "Tame the Chatter. Find the Signal." - ChatChonk
 # Author: Rip Jonesy (with Factory AI assistance)
-# Version: 1.1.0
+# Version: 1.2.0 (Single Service)
 # Date: May 30, 2025
 
 version: 1
@@ -47,60 +47,33 @@ envVarGroups:
       - key: CLOUDFLARE_KV_NAMESPACE_ID
         fromGroup: NEWBETAKEYS1
 
-      # Add other API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.) to the group as needed
-      # Example:
-      # - key: OPENAI_API_KEY
-      #   fromGroup: NEWBETAKEYS1
-      # - key: STRIPE_RESTRICTED_KEY # Or STRIPE_SECRET_KEY
-      #   fromGroup: NEWBETAKEYS1
-      # - key: STRIPE_WEBHOOK_SECRET
-      #   fromGroup: NEWBETAKEYS1
+      # Public URLs needed by the frontend build process (now part of backend build)
+      # These are referenced in next.config.js and will be baked into the static export.
+      # Ensure the backend service URL from Render is used for these after first deployment.
+      - key: NEXT_PUBLIC_API_URL
+        # This should be the external URL of this 'chatchonk-api' service itself, suffixed with /api
+        # Example: https://chatchonk-api-xxxx.onrender.com/api
+        value: "https://<your-chatchonk-api-service-url>.onrender.com/api" # Placeholder - UPDATE THIS
+      - key: NEXT_PUBLIC_APP_NAME
+        value: "ChatChonk"
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        fromGroup: NEWBETAKEYS1
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        fromGroup: NEWBETAKEYS1
+      - key: NEXT_PUBLIC_FRONTEND_URL
+        # This should be the external URL of this 'chatchonk-api' service itself.
+        # Example: https://chatchonk-api-xxxx.onrender.com
+        value: "https://<your-chatchonk-api-service-url>.onrender.com" # Placeholder - UPDATE THIS
+
 
 services:
   # ---------------------------------------------------------------------------
-  # Frontend Service: Next.js Web Service (ChatChonk Web Interface)
-  # ---------------------------------------------------------------------------
-  - type: web # Changed from static
-    name: chatchonk-web
-    env: node
-    branch: main-beta
-    rootDir: frontend # Build command and start command will be relative to this
-    autoDeploy: true
-    buildFilter:
-      paths:
-        - "frontend/**"
-        - "render.yaml"
-    buildCommand: "npm install && npm run build"
-    startCommand: "node .next/standalone/server.js" # Command to start the Next.js standalone server
-    healthCheckPath: / # Optional: Basic health check
-    cache: # Cache paths are relative to the repository root
-      - path: frontend/node_modules
-      - path: frontend/.next/cache
-    envVars:
-      - key: NEXT_PUBLIC_API_URL
-        value: "https://your-chatchonk-api-url.onrender.com/api" # Placeholder - UPDATE THIS
-      - key: NODE_VERSION
-        value: "18"
-      # Add other NEXT_PUBLIC_ variables found in next.config.js
-      # These should ideally be in your 'NEWBETAKEYS1' env group if sensitive,
-      # or have appropriate values set directly or via Render's dashboard.
-      - key: NEXT_PUBLIC_APP_NAME
-        value: "ChatChonk" # Or fromGroup: NEWBETAKEYS1
-      - key: NEXT_PUBLIC_SUPABASE_URL
-        fromGroup: NEWBETAKEYS1 # Assuming it's in your secrets group
-      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        fromGroup: NEWBETAKEYS1 # Assuming it's in your secrets group
-      - key: NEXT_PUBLIC_FRONTEND_URL
-        value: "https://your-chatchonk-web-url.onrender.com" # Placeholder, Render will provide the actual URL
-      # PORT is automatically provided by Render for web services.
-      # The standalone server will listen on the port specified by Render.
-
-  # ---------------------------------------------------------------------------
   # Backend Service: FastAPI Application (ChatChonk API)
+  # Also builds and serves the Next.js frontend static assets.
   # ---------------------------------------------------------------------------
   - type: web # Render's web service type for applications that listen for HTTP requests
     name: chatchonk-api # Name of the service in Render
-    env: docker # Deploy using a Dockerfile
+    env: docker # Deploy using a Dockerfile that now includes frontend build
     branch: main-beta # Deploy from the 'main-beta' branch
     rootDir: . # Docker build context is the repository root
     # dockerfilePath: ./Dockerfile # Default location, no need to specify
@@ -108,10 +81,12 @@ services:
     buildFilter: # Optional: only build if changes are detected in these paths
       paths:
         - "backend/**"
-        - "templates/**" # If templates are baked into the image, rebuild if they change
-        - "render.yaml" # Rebuild if blueprint changes
+        - "frontend/**" # Added frontend path as it's now part of this service's build
+        - "templates/**"
+        - "render.yaml"
+        - "Dockerfile" # Rebuild if Dockerfile changes
     plan: starter # Render's "Starter" plan (e.g., 512MB RAM, shared CPU, approx $7/month)
-    healthCheckPath: /api/health # Health check endpoint (ensure API_V1_STR is prefixed if used in FastAPI)
+    healthCheckPath: /api/health # Health check endpoint for the backend API
     envVars:
       - fromGroup: NEWBETAKEYS1 # Pull secrets from the defined environment group
       - key: PORT
@@ -125,21 +100,21 @@ services:
       - key: RELOAD
         value: "False"
       # Paths below are inside the Docker container, assuming Dockerfile copies content to /app
-      - key: UPLOAD_DIR # Path inside the container
-        value: "/app/uploads" # Must match what the application expects
+      - key: UPLOAD_DIR
+        value: "/app/uploads"
       - key: TEMP_DIR
         value: "/app/tmp"
       - key: EXPORT_DIR
         value: "/app/exports"
-      - key: TEMPLATES_DIR # Path for templates inside the container
-        value: "/app/templates" # Assumes Dockerfile copies root `templates/` to `/app/templates`
+      - key: TEMPLATES_DIR
+        value: "/app/templates"
       - key: ALLOWED_ORIGINS
-        # IMPORTANT: Update this in the Render Dashboard after your web service is deployed.
-        # It should be the external URL of your 'chatchonk-web' service.
-        # Example: https://chatchonk-web-xxxx.onrender.com
+        # IMPORTANT: Update this in the Render Dashboard after your service is deployed.
+        # It should be the external URL of this 'chatchonk-api' service itself.
+        # Example: https://chatchonk-api-xxxx.onrender.com
         # For multiple origins, use a comma-separated string.
-        value: "https://your-chatchonk-web-url.onrender.com" # Placeholder - UPDATE THIS
-      - key: API_V1_STR # Ensure backend uses this for route prefixing
+        value: "https://<your-chatchonk-api-service-url>.onrender.com" # Placeholder - UPDATE THIS
+      - key: API_V1_STR
         value: "/api"
       - key: PROJECT_NAME
         value: "ChatChonk"
@@ -148,3 +123,9 @@ services:
     #   - name: chatchonk-data
     #     mountPath: /app/persistent_data # Example mount path inside container
     #     sizeGB: 10
+    cache: # Cache for backend (e.g. pip cache) and frontend (node_modules, .next/cache during build)
+      # Paths are relative to the repository root.
+      # These are used during the multi-stage Docker build.
+      - path: /root/.cache/pip # For Python dependencies in builder stage
+      - path: frontend/node_modules # For Node.js dependencies in frontend-builder stage
+      - path: frontend/.next/cache # For Next.js build cache in frontend-builder stage
