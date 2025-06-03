@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main-beta # Or your main/default branch
+      - main-beta
   pull_request:
     branches:
-      - main-beta # Or your main/default branch
+      - main-beta
 
 jobs:
   build_and_lint:
@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: '18' # Ensure this matches your project's Node version requirement
           cache: 'npm'
-          cache-dependency-path: frontend/package.json # Or frontend/package.json if no lock file
+          cache-dependency-path: frontend/package.json
 
       - name: Install frontend dependencies
         working-directory: ./frontend
