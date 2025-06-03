@@ -21,7 +21,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 from app.models.mswap_models import (
-    ProviderConfig, ModelDefinition, ModelPerformance, TaskRoutingPreference,
+    UserProviderConfig, ModelDefinition, ModelPerformance, TaskRoutingPreference, # Changed ProviderConfig to UserProviderConfig
     UserApiUsage, UserTier, CreateProviderConfigRequest, UpdateProviderConfigRequest,
     ModelSelectionRequest, ModelSelectionResponse
 )
@@ -159,7 +159,7 @@ async def select_model(
 
 
 # === Provider Configuration Endpoints (High-Tier Users) ===
-@router.get("/provider-configs", response_model=List[ProviderConfig])
+@router.get("/provider-configs", response_model=List[UserProviderConfig]) # Changed to UserProviderConfig
 async def get_provider_configs(
     user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
 ):
@@ -175,7 +175,7 @@ async def get_provider_configs(
         )
 
 
-@router.post("/provider-configs", response_model=ProviderConfig)
+@router.post("/provider-configs", response_model=UserProviderConfig) # Changed to UserProviderConfig
 async def create_provider_config(
     request: CreateProviderConfigRequest,
     user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
@@ -197,7 +197,7 @@ async def create_provider_config(
         )
 
 
-@router.put("/provider-configs/{config_id}", response_model=ProviderConfig)
+@router.put("/provider-configs/{config_id}", response_model=UserProviderConfig) # Changed to UserProviderConfig
 async def update_provider_config(
     config_id: str,
     request: UpdateProviderConfigRequest,

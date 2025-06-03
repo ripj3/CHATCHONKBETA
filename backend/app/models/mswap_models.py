@@ -97,7 +97,7 @@ class TaskPerformance(BaseModel):
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     task_type_id: str = Field(..., description="Reference to task type")
-    model_id: str = Field(..., description="Reference to model")
+    task_model_id: str = Field(..., description="Reference to model") # Renamed from model_id
     success_rate: Decimal = Field(default=Decimal("0"), description="Success rate (0-1)")
     avg_latency: int = Field(default=0, description="Average latency in milliseconds")
     avg_cost: Decimal = Field(default=Decimal("0"), description="Average cost per request")
@@ -115,7 +115,7 @@ class GlobalPerformance(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     task_type: str = Field(..., description="Task type name")
     provider_type: str = Field(..., description="Provider type")
-    model_name: str = Field(..., description="Model name")
+    global_model_name: str = Field(..., description="Model name") # Renamed from model_name
     success_rate: Decimal = Field(default=Decimal("0"), description="Success rate (0-1)")
     avg_latency: int = Field(default=0, description="Average latency in milliseconds")
     avg_cost: Decimal = Field(default=Decimal("0"), description="Average cost per request")
@@ -131,7 +131,7 @@ class UsageLog(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     user_id: Optional[str] = Field(None, description="User ID (nullable for anonymous usage)")
     provider_id: str = Field(..., description="Reference to provider")
-    model_id: str = Field(..., description="Reference to model")
+    usage_model_id: str = Field(..., description="Reference to model") # Renamed from model_id
     prompt_tokens: int = Field(..., description="Number of prompt tokens used")
     completion_tokens: int = Field(..., description="Number of completion tokens used")
     cost: Decimal = Field(..., description="Cost of the request")
@@ -287,9 +287,9 @@ class ModelSelectionResponse(BaseModel):
     """Response with selected model and security/cost information."""
 
     # Selected model
-    model_id: str = Field(..., description="Selected model ID")
+    selected_model_id: str = Field(..., description="Selected model ID") # Renamed from model_id
     provider_id: str = Field(..., description="Provider ID")
-    model_name: str = Field(..., description="Human-readable model name")
+    selected_model_name: str = Field(..., description="Human-readable model name") # Renamed from model_name
     provider_type: str = Field(..., description="Provider type")
 
     # Cost information
@@ -350,9 +350,3 @@ class UsageStatsResponse(BaseModel):
     cost_today: Decimal = Field(..., description="Cost incurred today")
     top_models: List[Dict[str, Any]] = Field(default_factory=list, description="Most used models")
     performance_summary: Dict[str, Any] = Field(default_factory=dict, description="Performance summary")
-
-
-
-
-
-
