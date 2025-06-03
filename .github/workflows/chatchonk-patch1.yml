@@ -36,7 +36,7 @@ jobs:
 
       - name: Run ESLint (Frontend)
         working-directory: ./frontend
-        run: npm run lint
+        run: npx eslint .
 
       - name: Run TypeScript type check (Frontend)
         working-directory: ./frontend
