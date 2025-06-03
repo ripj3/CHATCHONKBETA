@@ -1,6 +1,7 @@
 name: ChatChonk CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main-beta # Or your main/default branch
