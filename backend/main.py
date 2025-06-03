@@ -286,12 +286,12 @@ app.include_router(api_router)
 
 # Mount frontend static files (serve frontend from backend)
 # This allows single service deployment saving $7/month
-try:
-    app.mount("/", StaticFiles(directory="frontend_build", html=True), name="frontend")
-    logger.info("Frontend static files mounted successfully")
-except Exception as e:
-    logger.warning(f"Could not mount frontend static files: {e}")
-    logger.info("Frontend will need to be deployed separately")
+# try:
+#     app.mount("/", StaticFiles(directory="frontend_build", html=True), name="frontend")
+#     logger.info("Frontend static files mounted successfully")
+# except Exception as e:
+#     logger.warning(f"Could not mount frontend static files: {e}")
+#     logger.info("Frontend will need to be deployed separately")
 
 
 # Run the application if executed directly
