@@ -80,7 +80,7 @@ class Settings(BaseSettings):
     APP_VERSION: str = Field(default="0.1.0", description="Application version.")
     ENVIRONMENT: Environment = Field(default=Environment.DEVELOPMENT, description="Application environment (development, staging, production).")
     DEBUG: bool = Field(default=False, description="Enable debug mode. Overrides LOG_LEVEL to DEBUG if True.")
-    
+
     # ======================================================================
     # SERVER SETTINGS (FastAPI Backend)
     # ======================================================================
@@ -160,7 +160,7 @@ class Settings(BaseSettings):
     EPHEMERAL_MAX_AGE_SECONDS: int = Field(default=7200, description="Max age for files in ephemeral storage (2 hours).")
     EPHEMERAL_CLEANUP_INTERVAL: int = Field(default=600, description="Interval for cleaning up ephemeral storage (10 minutes).")
     EPHEMERAL_ENCRYPTION_ENABLED: bool = Field(default=True, description="Enable encryption for files in ephemeral storage.")
-    
+
     MAX_UPLOAD_SIZE: int = Field(default=2_147_483_648, description="Maximum upload size in bytes (2GB).") # 2GB
     CHUNK_SIZE: int = Field(default=1_048_576, description="Chunk size for streaming file uploads in bytes (1MB).")
     CLEANUP_INTERVAL: int = Field(default=3600, description="General interval for temporary file cleanup tasks (1 hour).")
@@ -174,7 +174,7 @@ class Settings(BaseSettings):
     # AI PROVIDER SETTINGS (AutoModel)
     # ======================================================================
     DEFAULT_AI_PROVIDER: AiProvider = Field(default=AiProvider.HUGGINGFACE, description="Default AI provider for processing if not specified.")
-    
+
     HUGGINGFACE_API_KEY: Optional[SecretStr] = Field(default=None, description="API key for Hugging Face Hub and Inference API.")
     HUGGINGFACE_DEFAULT_MODEL: str = Field(default="mistralai/Mistral-7B-Instruct-v0.2", description="Default Hugging Face model for general tasks.")
     HUGGINGFACE_SPACE: Optional[str] = Field(default=None, description="Identifier for a specific Hugging Face Space if used.")
@@ -182,7 +182,7 @@ class Settings(BaseSettings):
 
     OPENAI_API_KEY: Optional[SecretStr] = Field(default=None, description="API key for OpenAI.")
     OPENAI_DEFAULT_MODEL: str = Field(default="gpt-4o", description="Default OpenAI model.")
-    
+
     ANTHROPIC_API_KEY: Optional[SecretStr] = Field(default=None, description="API key for Anthropic (Claude).")
     ANTHROPIC_DEFAULT_MODEL: str = Field(default="claude-3-opus-20240229", description="Default Anthropic model.")
 
@@ -230,7 +230,7 @@ class Settings(BaseSettings):
     STRIPE_SECRET_KEY: Optional[SecretStr] = Field(default=None, alias="STRIPE_RESTRICTED_KEY", description="Stripe secret API key (sk_live_... or rk_live_...).") # Renamed for clarity
     STRIPE_SECRET_TEST_KEY: Optional[SecretStr] = Field(default=None, alias="STRIPE_RESTRICTED_TEST_KEY", description="Stripe secret test API key (sk_test_... or rk_test_...).")
     STRIPE_WEBHOOK_SECRET: Optional[SecretStr] = Field(default=None, description="Stripe webhook signing secret (whsec_...).")
-    
+
     STRIPE_PRICE_LILBEAN: Optional[str] = Field(default=None, description="Stripe Price ID for 'LilBean' tier.")
     STRIPE_PRICE_CLAWBACK: Optional[str] = Field(default=None, description="Stripe Price ID for 'Clawback' tier.")
     STRIPE_PRICE_BIGCHONK: Optional[str] = Field(default=None, description="Stripe Price ID for 'BigChonk' tier.")
@@ -335,7 +335,7 @@ class Settings(BaseSettings):
             if self.LOG_FILE: # If LOG_FILE is now set (e.g., to "chatchonk.log")
                 # Ensure parent directory for the log file exists for local file logging
                 self.LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
-        
+
         elif self.ENVIRONMENT in {Environment.STAGING, Environment.PRODUCTION, Environment.PRODUCTION_BETA}:
             # For cloud environments, TEMP_DIR and EPHEMERAL_STORAGE_PATH might use /tmp
             self.TEMP_DIR = self.TEMP_DIR or Path("/tmp") # /tmp should exist
@@ -353,7 +353,7 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             return [item.strip() for item in v.split(",") if item.strip()]
         return v
-    
+
     @validator("ALLOWED_FILE_TYPES", pre=True, allow_reuse=True)
     def _parse_allowed_file_types(cls, v: Union[str, List[str]]) -> str:
         """
@@ -375,7 +375,7 @@ class Settings(BaseSettings):
             values["LOG_LEVEL"] = LogLevel.DEBUG
             logging.warning("DEBUG mode enabled: Overriding LOG_LEVEL to DEBUG.")
         return v
-        
+
     @validator("DEFAULT_AI_PROVIDER", allow_reuse=True)
     def _validate_default_ai_provider_key(cls, v: AiProvider, values: Dict[str, Any]) -> AiProvider:
         """Validate that the API key for the default AI provider is set, or fall back."""
@@ -387,9 +387,9 @@ class Settings(BaseSettings):
             AiProvider.DEEPSEEK: "DEEPSEEK_API_KEY",
             AiProvider.QWEN: "QWEN_API_KEY",
         }
-        
+
         default_provider_key_env_var = key_name_map.get(v)
-        
+
         if default_provider_key_env_var and not values.get(default_provider_key_env_var):
             logging.warning(
                 f"API key for default provider '{v.value}' ({default_provider_key_env_var}) is not set. "
@@ -400,7 +400,7 @@ class Settings(BaseSettings):
                 if values.get(key_env_var):
                     logging.warning(f"Falling back to '{provider_enum.value}' as it has an API key.")
                     return provider_enum
-            
+
             logging.error(
                 f"No API key found for the default provider '{v.value}' or any alternative providers. "
                 "AI processing will likely fail. Please set at least one AI provider API key."
@@ -446,7 +446,7 @@ def get_settings() -> Settings:
             "SUPABASE_URL is set, but SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY is missing. "
             "Supabase integration may not function correctly."
         )
-    
+
     return settings
 
 # For easy access to settings throughout the application
@@ -465,7 +465,7 @@ if __name__ == "__main__":
         print(f"  HuggingFace API Key: Set (value redacted)")
     else:
         print(f"  HuggingFace API Key: Not Set")
-    
+
     # Debugging: Print raw environment variable to confirm it's seen by the process
     import os
     hf_key_raw = os.getenv("HUGGINGFACE_API_KEY")
@@ -484,7 +484,7 @@ if __name__ == "__main__":
 
 
     print(f"  Log File: {log_file_path}")
-    
+
     # Check UPLOAD_DIR, TEMP_DIR etc. safely as they can be None
     upload_dir_path = "Not Set (Cloud Storage)"
     if settings.UPLOAD_DIR:
@@ -501,7 +501,7 @@ if __name__ == "__main__":
         except Exception:
             templates_dir_path = str(settings.TEMPLATES_DIR)
     print(f"  Templates Directory: {templates_dir_path}")
-    
+
     print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
 
     if settings.REDIS_ENABLED:
@@ -512,14 +512,14 @@ if __name__ == "__main__":
 # Update the main section to correctly print LOG_FILE path
 if __name__ == "__main__":
     # ... (previous print statements) ...
-    
+
     # Correctly print LOG_FILE path, handling None
     log_file_display = "None (stdout)"
     if settings.LOG_FILE:
         try:
             # Attempt to resolve if it's a Path object and not None
             log_file_display = str(settings.LOG_FILE.resolve())
-        except AttributeError: 
+        except AttributeError:
             # Fallback if LOG_FILE is not a Path object (e.g. already a string, or if resolve fails)
             log_file_display = str(settings.LOG_FILE)
     print(f"  Log File: {log_file_display}")
@@ -562,7 +562,7 @@ if __name__ == "__main__":
     print(f"  Production API URL: {settings.PRODUCTION_API_URL or 'Not Set'}")
     print(f"  Debug Mode: {settings.DEBUG}")
     print(f"  Log Level: {settings.LOG_LEVEL.value}")
-    
+
     # Display LOG_FILE path
     log_file_display = "None (stdout)"
     if settings.LOG_FILE:
@@ -581,11 +581,11 @@ if __name__ == "__main__":
         print(f"  HuggingFace API Key: Set (value redacted)")
     else:
         print(f"  HuggingFace API Key: Not Set")
-    
+
     # Debugging: Print raw environment variable
     hf_key_raw = os.getenv("HUGGINGFACE_API_KEY")
     print(f"  Raw HUGGINGFACE_API_KEY from os.getenv: {'Set' if hf_key_raw else 'Not Set'}")
-    
+
     print(f"  Supabase URL: {settings.SUPABASE_URL or 'Not Set'}")
     print(f"  Allowed Origins: {settings.ALLOWED_ORIGINS}")
 
@@ -612,7 +612,7 @@ if __name__ == "__main__":
         else:
             templates_dir_display = str(settings.TEMPLATES_DIR)
     print(f"  Templates Directory: {templates_dir_display}")
-    
+
     print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
 
     if settings.REDIS_ENABLED:
@@ -641,7 +641,7 @@ if __name__ == "__main__":
     if settings.ENVIRONMENT in {Environment.DEVELOPMENT, Environment.TEST}:
         if settings.TEMP_DIR: assert settings.TEMP_DIR.exists(), "TEMP_DIR should exist in dev/test"
         if settings.EPHEMERAL_STORAGE_PATH: assert settings.EPHEMERAL_STORAGE_PATH.exists(), "EPHEMERAL_STORAGE_PATH should exist in dev/test"
-        if settings.LOG_FILE and settings.LOG_FILE.name == "chatchonk.log": 
+        if settings.LOG_FILE and settings.LOG_FILE.name == "chatchonk.log":
             assert settings.LOG_FILE.parent.exists(), "LOG_FILE parent should exist in dev/test if it's chatchonk.log"
             print("  Local directory creation for TEMP, EPHEMERAL, LOG_FILE parent verified (if applicable).")
 

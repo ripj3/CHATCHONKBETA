@@ -21,9 +21,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 from app.models.mswap_models import (
-    UserProviderConfig, ModelDefinition, ModelPerformance, TaskRoutingPreference, # Changed ProviderConfig to UserProviderConfig
-    UserApiUsage, UserTier, CreateProviderConfigRequest, UpdateProviderConfigRequest,
+    UserProviderConfig, UserTier, CreateProviderConfigRequest, UpdateProviderConfigRequest,
     ModelSelectionRequest, ModelSelectionResponse
+    # Removed: ModelDefinition, ModelPerformance, TaskRoutingPreference, UserApiUsage
 )
 from app.services.modelswapper_service import ModelSwapperService
 from app.automodel import TaskType, ProviderType
