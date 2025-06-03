@@ -76,7 +76,7 @@ const kpiData = [
     title: 'Avg Processing Time',
     value: '2.3s',
     change: '-8.2%',
-    changeType: 'positive' as const,
+    changeType: 'positive' as const, // Note: a decrease in processing time is positive
     icon: Clock,
     period: 'vs last month'
   }
@@ -184,7 +184,9 @@ export default function AnalyticsPage() {
       icon: Clock,
       period: 'since last restart'
     }
-  ];
+  ] // Semicolon removed here
+
+  // Ensure this line is blank or removed if it was just whitespace
 
   return (
     <div className="space-y-6">
