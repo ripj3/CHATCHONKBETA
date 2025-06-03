@@ -1,0 +1,67 @@
+# This is a basic workflow to help you get started with Actions
+
+name: ChatChonk CI
+
+on:
+  push:
+    branches:
+      - main-beta # Or your main/default branch
+  pull_request:
+    branches:
+      - main-beta # Or your main/default branch
+
+jobs:
+  build_and_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Frontend Checks
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Ensure this matches your project's Node version requirement
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json # Or frontend/package.json if no lock file
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci || npm install # npm ci is preferred if package-lock.json is reliable
+
+      - name: Run ESLint (Frontend)
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Run TypeScript type check (Frontend)
+        working-directory: ./frontend
+        run: npm run typecheck
+      
+      - name: Build frontend (Next.js)
+        working-directory: ./frontend
+        # If your Next.js build requires NEXT_PUBLIC_ environment variables to be set at build time,
+        # you may need to provide them here using the `env` key. For example:
+        # env:
+        #   NEXT_PUBLIC_API_URL: "http://localhost:8000/api" # Example placeholder for CI
+        #   NEXT_PUBLIC_SOME_OTHER_VAR: ${{ secrets.YOUR_CI_SECRET_FOR_THAT_VAR }}
+        run: npm run build
+
+      # Backend Checks
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Ensure this matches your project's Python version
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: pip install -r requirements.txt
+
+      - name: Run Ruff linter (Backend)
+        working-directory: ./backend 
+        run: ruff check .
+
+      - name: Run Black formatter check (Backend)
+        working-directory: ./backend
+        run: black --check .
