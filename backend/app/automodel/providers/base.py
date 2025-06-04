@@ -232,7 +232,7 @@ class BaseProvider(ABC):
                 return False
                 
             # Perform a minimal test request
-            response = await self.process(
+            await self.process(
                 task_type=TaskType.TEXT_GENERATION,
                 model_id=test_model.id,
                 content="Hello",

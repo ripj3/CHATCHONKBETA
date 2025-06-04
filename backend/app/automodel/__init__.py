@@ -30,6 +30,19 @@ Author: Rip Jonesy
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Union
 
+# Forward imports from submodules
+from .model_registry import ModelRegistry
+from .task_router import TaskRouter
+from .providers.base import BaseProvider
+from .providers.huggingface import HuggingFaceProvider
+from .providers.openai import OpenAIProvider
+from .providers.anthropic import AnthropicProvider
+from .providers.mistral import MistralProvider
+from .providers.deepseek import DeepseekProvider
+from .providers.qwen import QwenProvider
+from .providers.openrouter import OpenRouterProvider
+from .automodel import AutoModel
+
 # === Task Types ===
 class TaskType(str, Enum):
     """Types of AI tasks supported by the AutoModel system."""
@@ -97,20 +110,6 @@ class ProviderApiError(AutoModelError):
 class ProcessingError(AutoModelError):
     """Raised when there's an error during processing."""
     pass
-
-
-# Forward imports from submodules
-from .model_registry import ModelRegistry
-from .task_router import TaskRouter
-from .providers.base import BaseProvider
-from .providers.huggingface import HuggingFaceProvider
-from .providers.openai import OpenAIProvider
-from .providers.anthropic import AnthropicProvider
-from .providers.mistral import MistralProvider
-from .providers.deepseek import DeepseekProvider
-from .providers.qwen import QwenProvider
-from .providers.openrouter import OpenRouterProvider
-from .automodel import AutoModel
 
 # Export public API
 __all__ = [

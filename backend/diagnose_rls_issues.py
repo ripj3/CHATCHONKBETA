@@ -16,12 +16,12 @@ import logging
 import sys
 from pathlib import Path
 
+from app.services.database_service import get_database_service
+from app.core.config import get_settings
+
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
-
-from app.services.database_service import get_database_service
-from app.core.config import get_settings
 
 # Configure logging
 logging.basicConfig(

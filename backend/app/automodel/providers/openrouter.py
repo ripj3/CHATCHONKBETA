@@ -141,8 +141,6 @@ class OpenRouterProvider(BaseProvider):
         
         # Convert to lowercase for easier matching
         model_lower = model_id.lower()
-        name_lower = name.lower()
-        desc_lower = description.lower()
         
         # Most models support basic text generation and chat
         supported_tasks.add(TaskType.TEXT_GENERATION)

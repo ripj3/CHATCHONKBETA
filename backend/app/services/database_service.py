@@ -200,7 +200,6 @@ class DatabaseService:
             Query results as list of dictionaries
         """
         try:
-            client = self.mswap_client
             logger.debug(f"Executing MSWAP raw query: {query} with params: {params}")
 
             # Parse the SQL query and convert to Supabase operations
@@ -235,10 +234,10 @@ class DatabaseService:
             from_part = query[from_match + 5:].strip()
 
             # Extract table name (handle WHERE, ORDER BY, etc.)
-            table_name = from_part.split()[0].strip()
+            table_name_select = from_part.split()[0].strip()
 
             # Start building the Supabase query
-            supabase_query = self.mswap_client.table(table_name).select("*")
+            supabase_query = self.mswap_client.table(table_name_select).select("*")
 
             # Handle WHERE conditions
             if "where " in query_lower:
@@ -297,7 +296,7 @@ class DatabaseService:
                 raise ValueError("No INTO clause found in INSERT query")
 
             into_part = query[into_match + 5:].strip()
-            table_name = into_part.split()[0].strip()
+            table_name_insert = into_part.split()[0].strip()
 
             # For now, return empty list as INSERT parsing is complex
             # In production, you'd want to parse the VALUES clause
@@ -319,7 +318,7 @@ class DatabaseService:
                 raise ValueError("No UPDATE clause found")
 
             update_part = query[update_match + 7:].strip()
-            table_name = update_part.split()[0].strip()
+            table_name_update = update_part.split()[0].strip()
 
             # For now, return empty list as UPDATE parsing is complex
             logger.warning(f"UPDATE query parsing not fully implemented for: {query}")

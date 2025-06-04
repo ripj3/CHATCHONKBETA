@@ -467,7 +467,6 @@ if __name__ == "__main__":
         print(f"  HuggingFace API Key: Not Set")
 
     # Debugging: Print raw environment variable to confirm it's seen by the process
-    import os
     hf_key_raw = os.getenv("HUGGINGFACE_API_KEY")
     print(f"  Raw HUGGINGFACE_API_KEY from os.getenv: {'Set' if hf_key_raw else 'Not Set'}")
     print(f"  Supabase URL: {settings.SUPABASE_URL or 'Not Set'}")
@@ -639,8 +638,10 @@ if __name__ == "__main__":
     print(f"  LOG_FILE (after init): {settings.LOG_FILE}")
 
     if settings.ENVIRONMENT in {Environment.DEVELOPMENT, Environment.TEST}:
-        if settings.TEMP_DIR: assert settings.TEMP_DIR.exists(), "TEMP_DIR should exist in dev/test"
-        if settings.EPHEMERAL_STORAGE_PATH: assert settings.EPHEMERAL_STORAGE_PATH.exists(), "EPHEMERAL_STORAGE_PATH should exist in dev/test"
+        if settings.TEMP_DIR:
+            assert settings.TEMP_DIR.exists(), "TEMP_DIR should exist in dev/test"
+        if settings.EPHEMERAL_STORAGE_PATH:
+            assert settings.EPHEMERAL_STORAGE_PATH.exists(), "EPHEMERAL_STORAGE_PATH should exist in dev/test"
         if settings.LOG_FILE and settings.LOG_FILE.name == "chatchonk.log":
             assert settings.LOG_FILE.parent.exists(), "LOG_FILE parent should exist in dev/test if it's chatchonk.log"
             print("  Local directory creation for TEMP, EPHEMERAL, LOG_FILE parent verified (if applicable).")

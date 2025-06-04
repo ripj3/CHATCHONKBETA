@@ -949,9 +949,6 @@ class AutoModel:
             )
             
         except Exception as e:
-            # Calculate processing time for failed requests
-            processing_time = time.time() - start_time
-            
             # Log the error
             logger.error(f"Error processing media: {str(e)}", exc_info=True)
             
