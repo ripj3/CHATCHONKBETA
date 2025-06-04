@@ -433,8 +433,8 @@ export default function AnalyticsPage() {
               <Badge className="bg-green-100 text-green-800">
                 Excellent
               </Badge>
+           </div>
             </CardContent>
-          </CardContent>
         </Card>
       </div>
     </div>
