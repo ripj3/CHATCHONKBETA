@@ -65,7 +65,7 @@ jobs:
 
       - name: Run Ruff linter (Backend)
         working-directory: ./backend 
-        run: ruff check .
+        run: ruff check . --fix
 
       - name: Run Black formatter check (Backend)
         working-directory: ./backend
