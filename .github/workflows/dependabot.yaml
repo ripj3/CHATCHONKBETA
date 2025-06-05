@@ -1,0 +1,98 @@
+# .github/dependabot.yml
+# Enhanced free security monitoring - no GitHub Actions minutes used
+version: 2
+updates:
+  # Frontend (Node.js) dependencies - Daily security checks
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"        # Daily for security responsiveness
+      time: "11:00"           # 3 AM PST (11:00 UTC)
+    target-branch: "main-beta"
+    commit-message:
+      prefix: "deps(frontend)"
+      prefix-development: "deps-dev(frontend)"
+    # Security updates get individual PRs (immediate attention)
+    # Non-security updates grouped to reduce noise
+    groups:
+      frontend-production:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@types/*"          # Keep type updates separate
+          - "eslint*"           # Keep linting updates separate
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      frontend-development:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "@typescript-eslint/*"
+          - "prettier"
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    # Allow more PRs since we're grouping effectively
+    open-pull-requests-limit: 10
+    # Enhanced security - review dismissed PRs regularly
+    rebase-strategy: "auto"
+
+  # Backend (Python) dependencies - Daily security checks
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "daily"
+      time: "11:00"           # 3 AM PST (11:00 UTC)
+    target-branch: "main-beta"
+    commit-message:
+      prefix: "deps(backend)"
+    groups:
+      backend-security-tools:
+        patterns:
+          - "ruff"
+          - "black"
+          - "safety"
+          - "bandit"
+        update-types:
+          - "minor"
+          - "patch"
+      backend-core:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "ruff"
+          - "black" 
+          - "safety"
+          - "bandit"
+        update-types:
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+
+  # GitHub Actions dependencies - Keep your CI secure
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"       # Actions update less frequently
+      day: "monday"
+      time: "11:00"           # 3 AM PST (11:00 UTC)
+    target-branch: "main-beta"
+    commit-message:
+      prefix: "deps(actions)"
+    open-pull-requests-limit: 5
+
+  # Docker dependencies (if you use Docker in future)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "11:00"           # 3 AM PST (11:00 UTC)
+    target-branch: "main-beta"
+    commit-message:
+      prefix: "deps(docker)"
+    open-pull-requests-limit: 5
