@@ -1,4 +1,3 @@
-# This is a minor change to trigger the workflow.
 """
 Model Registry - Central Registry for AI Models and Providers
 
