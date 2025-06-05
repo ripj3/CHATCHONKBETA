@@ -23,11 +23,11 @@ logger = logging.getLogger("chatchonk.automodel.providers.openai")
 
 class OpenAIProvider(BaseProvider):
     """OpenAI provider implementation for the AutoModel system."""
-    
+
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         """
         Initialize the OpenAI provider.
-        
+
         Args:
             api_key: OpenAI API key
             **kwargs: Additional configuration options
@@ -36,25 +36,25 @@ class OpenAIProvider(BaseProvider):
         self.base_url = kwargs.get("base_url", "https://api.openai.com/v1")
         self.timeout = kwargs.get("timeout", 60)
         self._client: Optional[httpx.AsyncClient] = None
-    
+
     @property
     def provider_type(self) -> ProviderType:
         """Return the provider type."""
         return ProviderType.OPENAI
-    
+
     @property
     def name(self) -> str:
         """Return the human-readable name of the provider."""
         return "OpenAI"
-    
+
     async def initialize(self) -> None:
         """Initialize the OpenAI provider and load available models."""
         if self._is_initialized:
             return
-            
+
         if not self.api_key:
             raise ValueError("OpenAI API key is required")
-        
+
         # Initialize HTTP client
         self._client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -62,15 +62,15 @@ class OpenAIProvider(BaseProvider):
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             },
-            timeout=self.timeout
+            timeout=self.timeout,
         )
-        
+
         # Load available models
         await self._load_models()
-        
+
         self._is_initialized = True
         logger.info(f"OpenAI provider initialized with {len(self._models)} models")
-    
+
     async def _load_models(self) -> None:
         """Load available OpenAI models and their capabilities."""
         # Define OpenAI models with their capabilities
@@ -85,10 +85,16 @@ class OpenAIProvider(BaseProvider):
                 "cost_per_1k_tokens": 0.005,
                 "priority_score": 10.0,
                 "supported_tasks": {
-                    TaskType.TEXT_GENERATION, TaskType.SUMMARIZATION, TaskType.TOPIC_EXTRACTION,
-                    TaskType.CLASSIFICATION, TaskType.SENSEMAKING, TaskType.PLANNING,
-                    TaskType.MEDIA_ANALYSIS, TaskType.TRANSLATION, TaskType.CHAT
-                }
+                    TaskType.TEXT_GENERATION,
+                    TaskType.SUMMARIZATION,
+                    TaskType.TOPIC_EXTRACTION,
+                    TaskType.CLASSIFICATION,
+                    TaskType.SENSEMAKING,
+                    TaskType.PLANNING,
+                    TaskType.MEDIA_ANALYSIS,
+                    TaskType.TRANSLATION,
+                    TaskType.CHAT,
+                },
             },
             {
                 "id": "gpt-4-turbo",
@@ -99,10 +105,15 @@ class OpenAIProvider(BaseProvider):
                 "cost_per_1k_tokens": 0.01,
                 "priority_score": 9.0,
                 "supported_tasks": {
-                    TaskType.TEXT_GENERATION, TaskType.SUMMARIZATION, TaskType.TOPIC_EXTRACTION,
-                    TaskType.CLASSIFICATION, TaskType.SENSEMAKING, TaskType.PLANNING,
-                    TaskType.TRANSLATION, TaskType.CHAT
-                }
+                    TaskType.TEXT_GENERATION,
+                    TaskType.SUMMARIZATION,
+                    TaskType.TOPIC_EXTRACTION,
+                    TaskType.CLASSIFICATION,
+                    TaskType.SENSEMAKING,
+                    TaskType.PLANNING,
+                    TaskType.TRANSLATION,
+                    TaskType.CHAT,
+                },
             },
             {
                 "id": "gpt-3.5-turbo",
@@ -113,9 +124,13 @@ class OpenAIProvider(BaseProvider):
                 "cost_per_1k_tokens": 0.0015,
                 "priority_score": 7.0,
                 "supported_tasks": {
-                    TaskType.TEXT_GENERATION, TaskType.SUMMARIZATION, TaskType.TOPIC_EXTRACTION,
-                    TaskType.CLASSIFICATION, TaskType.TRANSLATION, TaskType.CHAT
-                }
+                    TaskType.TEXT_GENERATION,
+                    TaskType.SUMMARIZATION,
+                    TaskType.TOPIC_EXTRACTION,
+                    TaskType.CLASSIFICATION,
+                    TaskType.TRANSLATION,
+                    TaskType.CHAT,
+                },
             },
             {
                 "id": "text-embedding-3-large",
@@ -124,10 +139,10 @@ class OpenAIProvider(BaseProvider):
                 "max_tokens": 8191,
                 "cost_per_1k_tokens": 0.00013,
                 "priority_score": 9.0,
-                "supported_tasks": {TaskType.EMBEDDING}
-            }
+                "supported_tasks": {TaskType.EMBEDDING},
+            },
         ]
-        
+
         for config in model_configs:
             model = Model(
                 id=config["id"],
@@ -141,10 +156,10 @@ class OpenAIProvider(BaseProvider):
                 cost_per_1k_tokens=config["cost_per_1k_tokens"],
                 supported_tasks=config["supported_tasks"],
                 priority_score=config["priority_score"],
-                is_available=True
+                is_available=True,
             )
             self._models[model.id] = model
-    
+
     async def process(
         self,
         task_type: TaskType,
@@ -157,33 +172,43 @@ class OpenAIProvider(BaseProvider):
         presence_penalty: float = 0.0,
         stop_sequences: Optional[List[str]] = None,
         session_context: Optional[Dict[str, Any]] = None,
-        **kwargs
+        **kwargs,
     ) -> ProviderResponse:
         """Process content using OpenAI models."""
         if not self._is_initialized:
             await self.initialize()
-        
+
         model = self.get_model(model_id)
         if not model:
             raise ValueError(f"Model {model_id} not found")
-        
+
         if not self.supports_task(model_id, task_type):
             raise ValueError(f"Model {model_id} does not support task {task_type}")
-        
+
         try:
             if task_type == TaskType.EMBEDDING:
                 return await self._process_embedding(model_id, content)
             else:
                 return await self._process_chat_completion(
-                    model_id, task_type, content, max_tokens, temperature,
-                    top_p, frequency_penalty, presence_penalty, stop_sequences,
-                    session_context, **kwargs
+                    model_id,
+                    task_type,
+                    content,
+                    max_tokens,
+                    temperature,
+                    top_p,
+                    frequency_penalty,
+                    presence_penalty,
+                    stop_sequences,
+                    session_context,
+                    **kwargs,
                 )
         except Exception as e:
             self._set_error(f"Processing failed: {str(e)}")
             raise
-    
-    async def _process_embedding(self, model_id: str, content: Union[str, List[str]]) -> ProviderResponse:
+
+    async def _process_embedding(
+        self, model_id: str, content: Union[str, List[str]]
+    ) -> ProviderResponse:
         """Process embedding requests."""
         if isinstance(content, str):
             input_text = content
@@ -191,28 +216,24 @@ class OpenAIProvider(BaseProvider):
             input_text = " ".join(str(item) for item in content)
         else:
             input_text = str(content)
-        
-        payload = {
-            "model": model_id,
-            "input": input_text,
-            "encoding_format": "float"
-        }
-        
+
+        payload = {"model": model_id, "input": input_text, "encoding_format": "float"}
+
         response = await self._client.post("/embeddings", json=payload)
         response.raise_for_status()
-        
+
         result = response.json()
         embedding = result["data"][0]["embedding"]
         tokens_used = result["usage"]["total_tokens"]
-        
+
         return ProviderResponse(
             content=embedding,
             model_id=model_id,
             tokens_used=tokens_used,
             finish_reason="completed",
-            metadata={"embedding_dimension": len(embedding)}
+            metadata={"embedding_dimension": len(embedding)},
         )
-    
+
     async def _process_chat_completion(
         self,
         model_id: str,
@@ -225,12 +246,12 @@ class OpenAIProvider(BaseProvider):
         presence_penalty: float,
         stop_sequences: Optional[List[str]],
         session_context: Optional[Dict[str, Any]],
-        **kwargs
+        **kwargs,
     ) -> ProviderResponse:
         """Process chat completion requests."""
         # Convert content to messages format
         messages = self._prepare_messages(task_type, content, session_context)
-        
+
         payload = {
             "model": model_id,
             "messages": messages,
@@ -239,47 +260,47 @@ class OpenAIProvider(BaseProvider):
             "frequency_penalty": frequency_penalty,
             "presence_penalty": presence_penalty,
         }
-        
+
         if max_tokens:
             payload["max_tokens"] = max_tokens
         if stop_sequences:
             payload["stop"] = stop_sequences
-        
+
         response = await self._client.post("/chat/completions", json=payload)
         response.raise_for_status()
-        
+
         result = response.json()
         choice = result["choices"][0]
         message_content = choice["message"]["content"]
         tokens_used = result["usage"]["total_tokens"]
         finish_reason = choice["finish_reason"]
-        
+
         return ProviderResponse(
             content=message_content,
             model_id=model_id,
             tokens_used=tokens_used,
             finish_reason=finish_reason,
-            metadata={"prompt_tokens": result["usage"]["prompt_tokens"]}
+            metadata={"prompt_tokens": result["usage"]["prompt_tokens"]},
         )
-    
+
     def _prepare_messages(
         self,
         task_type: TaskType,
         content: Union[str, Dict[str, Any], List[Dict[str, Any]]],
-        session_context: Optional[Dict[str, Any]]
+        session_context: Optional[Dict[str, Any]],
     ) -> List[Dict[str, str]]:
         """Prepare messages for OpenAI chat completion format."""
         messages = []
-        
+
         # Add system message based on task type
         system_prompt = self._get_system_prompt(task_type)
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
-        
+
         # Add session context if available
         if session_context and "messages" in session_context:
             messages.extend(session_context["messages"])
-        
+
         # Add current content
         if isinstance(content, str):
             messages.append({"role": "user", "content": content})
@@ -293,9 +314,9 @@ class OpenAIProvider(BaseProvider):
                     messages.append({"role": "user", "content": str(item)})
         else:
             messages.append({"role": "user", "content": str(content)})
-        
+
         return messages
-    
+
     def _get_system_prompt(self, task_type: TaskType) -> Optional[str]:
         """Get system prompt for specific task types."""
         prompts = {
@@ -307,12 +328,12 @@ class OpenAIProvider(BaseProvider):
             TaskType.TRANSLATION: "You are an expert translator. Provide accurate, natural translations while preserving meaning and context.",
         }
         return prompts.get(task_type)
-    
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self.initialize()
         return self
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         if self._client:

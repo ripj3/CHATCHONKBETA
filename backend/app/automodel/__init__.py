@@ -7,13 +7,13 @@ management to make AI integration seamless throughout the application.
 
 Usage:
     from app.automodel import AutoModel, TaskType
-    
+
     # Basic usage with default settings
     result = await AutoModel.process(
         task_type=TaskType.SUMMARIZATION,
         content="Your long text to summarize...",
     )
-    
+
     # Advanced usage with specific model and parameters
     result = await AutoModel.process(
         task_type=TaskType.TOPIC_EXTRACTION,
@@ -43,10 +43,11 @@ from .providers.qwen import QwenProvider
 from .providers.openrouter import OpenRouterProvider
 from .automodel import AutoModel
 
+
 # === Task Types ===
 class TaskType(str, Enum):
     """Types of AI tasks supported by the AutoModel system."""
-    
+
     TEXT_GENERATION = "text_generation"
     SUMMARIZATION = "summarization"
     TOPIC_EXTRACTION = "topic_extraction"
@@ -74,7 +75,7 @@ class ProviderType(str, Enum):
 
 class ModelPriority(int, Enum):
     """Priority levels for model selection."""
-    
+
     LOW = 0
     MEDIUM = 1
     HIGH = 2
@@ -84,32 +85,39 @@ class ModelPriority(int, Enum):
 # === Exceptions ===
 class AutoModelError(Exception):
     """Base exception for all AutoModel errors."""
+
     pass
 
 
 class ProviderNotAvailableError(AutoModelError):
     """Raised when a requested provider is not available."""
+
     pass
 
 
 class ModelNotFoundError(AutoModelError):
     """Raised when a requested model is not found."""
+
     pass
 
 
 class TaskNotSupportedError(AutoModelError):
     """Raised when a task is not supported by the selected model."""
+
     pass
 
 
 class ProviderApiError(AutoModelError):
     """Raised when there's an error from the provider's API."""
+
     pass
 
 
 class ProcessingError(AutoModelError):
     """Raised when there's an error during processing."""
+
     pass
+
 
 # Export public API
 __all__ = [
@@ -118,7 +126,6 @@ __all__ = [
     "ModelRegistry",
     "TaskRouter",
     "BaseProvider",
-    
     # Provider implementations
     "HuggingFaceProvider",
     "OpenAIProvider",
@@ -127,12 +134,10 @@ __all__ = [
     "DeepseekProvider",
     "QwenProvider",
     "OpenRouterProvider",
-    
     # Enums
     "TaskType",
     "ProviderType",
     "ModelPriority",
-    
     # Exceptions
     "AutoModelError",
     "ProviderNotAvailableError",

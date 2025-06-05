@@ -1,7 +1,7 @@
 """
 Database Service - Supabase Connection Management for ChatChonk
 
-This service manages connections to both CHCH3 (main) and MSWAP (ModelSwapper) 
+This service manages connections to both CHCH3 (main) and MSWAP (ModelSwapper)
 Supabase databases with proper error handling and connection pooling.
 
 Author: Rip Jonesy
@@ -17,178 +17,194 @@ logger = logging.getLogger("chatchonk.database")
 
 class DatabaseService:
     """Manages Supabase database connections for ChatChonk."""
-    
+
     def __init__(self):
         """Initialize database connections."""
         self.settings = get_settings()
         self._chch3_client: Optional[Client] = None
         self._mswap_client: Optional[Client] = None
-        
+
     @property
     def chch3_client(self) -> Client:
         """Get or create CHCH3 (main) database client."""
         if self._chch3_client is None:
-            if not self.settings.SUPABASE_URL or not self.settings.SUPABASE_SERVICE_ROLE_KEY:
-                raise ValueError("CHCH3 Supabase configuration missing: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required")
-            
+            if (
+                not self.settings.SUPABASE_URL
+                or not self.settings.SUPABASE_SERVICE_ROLE_KEY
+            ):
+                raise ValueError(
+                    "CHCH3 Supabase configuration missing: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required"
+                )
+
             self._chch3_client = create_client(
                 str(self.settings.SUPABASE_URL),
-                self.settings.SUPABASE_SERVICE_ROLE_KEY.get_secret_value()
+                self.settings.SUPABASE_SERVICE_ROLE_KEY.get_secret_value(),
             )
             logger.info("CHCH3 Supabase client initialized")
-        
+
         return self._chch3_client
-    
+
     @property
     def mswap_client(self) -> Client:
         """Get or create MSWAP (ModelSwapper) database client."""
         if self._mswap_client is None:
-            if not self.settings.MSWAP_SUPABASE_URL or not self.settings.MSWAP_SUPABASE_SERVICE_ROLE_KEY:
-                raise ValueError("MSWAP Supabase configuration missing: MSWAP_SUPABASE_URL and MSWAP_SUPABASE_SERVICE_ROLE_KEY required")
-            
+            if (
+                not self.settings.MSWAP_SUPABASE_URL
+                or not self.settings.MSWAP_SUPABASE_SERVICE_ROLE_KEY
+            ):
+                raise ValueError(
+                    "MSWAP Supabase configuration missing: MSWAP_SUPABASE_URL and MSWAP_SUPABASE_SERVICE_ROLE_KEY required"
+                )
+
             self._mswap_client = create_client(
                 str(self.settings.MSWAP_SUPABASE_URL),
-                self.settings.MSWAP_SUPABASE_SERVICE_ROLE_KEY.get_secret_value()
+                self.settings.MSWAP_SUPABASE_SERVICE_ROLE_KEY.get_secret_value(),
             )
             logger.info("MSWAP Supabase client initialized")
-        
+
         return self._mswap_client
-    
-    async def execute_chch3_query(self, table: str, operation: str = "select", **kwargs) -> List[Dict[str, Any]]:
+
+    async def execute_chch3_query(
+        self, table: str, operation: str = "select", **kwargs
+    ) -> List[Dict[str, Any]]:
         """
         Execute a query on the CHCH3 database.
-        
+
         Args:
             table: Table name to query
             operation: Operation type (select, insert, update, delete)
             **kwargs: Additional parameters for the query
-            
+
         Returns:
             Query results as list of dictionaries
         """
         try:
             client = self.chch3_client
-            
+
             if operation == "select":
                 query = client.table(table).select(kwargs.get("columns", "*"))
-                
+
                 # Add filters if provided
                 if "filters" in kwargs:
                     for filter_item in kwargs["filters"]:
                         query = query.eq(filter_item["column"], filter_item["value"])
-                
+
                 # Add ordering if provided
                 if "order" in kwargs:
                     query = query.order(kwargs["order"])
-                
+
                 # Add limit if provided
                 if "limit" in kwargs:
                     query = query.limit(kwargs["limit"])
-                
+
                 response = query.execute()
                 return response.data
-                
+
             elif operation == "insert":
                 response = client.table(table).insert(kwargs.get("data", {})).execute()
                 return response.data
-                
+
             elif operation == "update":
                 query = client.table(table).update(kwargs.get("data", {}))
-                
+
                 # Add filters for update
                 if "filters" in kwargs:
                     for filter_item in kwargs["filters"]:
                         query = query.eq(filter_item["column"], filter_item["value"])
-                
+
                 response = query.execute()
                 return response.data
-                
+
             elif operation == "delete":
                 query = client.table(table)
-                
+
                 # Add filters for delete
                 if "filters" in kwargs:
                     for filter_item in kwargs["filters"]:
                         query = query.eq(filter_item["column"], filter_item["value"])
-                
+
                 response = query.delete().execute()
                 return response.data
-                
+
             else:
                 raise ValueError(f"Unsupported operation: {operation}")
-                
+
         except Exception as e:
             logger.error(f"CHCH3 database error in {operation} on {table}: {e}")
             raise
-    
-    async def execute_mswap_query(self, table: str, operation: str = "select", **kwargs) -> List[Dict[str, Any]]:
+
+    async def execute_mswap_query(
+        self, table: str, operation: str = "select", **kwargs
+    ) -> List[Dict[str, Any]]:
         """
         Execute a query on the MSWAP database.
-        
+
         Args:
             table: Table name to query
             operation: Operation type (select, insert, update, delete)
             **kwargs: Additional parameters for the query
-            
+
         Returns:
             Query results as list of dictionaries
         """
         try:
             client = self.mswap_client
-            
+
             if operation == "select":
                 query = client.table(table).select(kwargs.get("columns", "*"))
-                
+
                 # Add filters if provided
                 if "filters" in kwargs:
                     for filter_item in kwargs["filters"]:
                         query = query.eq(filter_item["column"], filter_item["value"])
-                
+
                 # Add ordering if provided
                 if "order" in kwargs:
                     query = query.order(kwargs["order"])
-                
+
                 # Add limit if provided
                 if "limit" in kwargs:
                     query = query.limit(kwargs["limit"])
-                
+
                 response = query.execute()
                 return response.data
-                
+
             elif operation == "insert":
                 response = client.table(table).insert(kwargs.get("data", {})).execute()
                 return response.data
-                
+
             elif operation == "update":
                 query = client.table(table).update(kwargs.get("data", {}))
-                
+
                 # Add filters for update
                 if "filters" in kwargs:
                     for filter_item in kwargs["filters"]:
                         query = query.eq(filter_item["column"], filter_item["value"])
-                
+
                 response = query.execute()
                 return response.data
-                
+
             elif operation == "delete":
                 query = client.table(table)
-                
+
                 # Add filters for delete
                 if "filters" in kwargs:
                     for filter_item in kwargs["filters"]:
                         query = query.eq(filter_item["column"], filter_item["value"])
-                
+
                 response = query.delete().execute()
                 return response.data
-                
+
             else:
                 raise ValueError(f"Unsupported operation: {operation}")
-                
+
         except Exception as e:
             logger.error(f"MSWAP database error in {operation} on {table}: {e}")
             raise
-    
-    async def execute_mswap_raw_query(self, query: str, params: Optional[List] = None) -> List[Dict[str, Any]]:
+
+    async def execute_mswap_raw_query(
+        self, query: str, params: Optional[List] = None
+    ) -> List[Dict[str, Any]]:
         """
         Execute a raw SQL query on the MSWAP database.
 
@@ -211,7 +227,9 @@ class DatabaseService:
                 return await self._parse_and_execute_update(query, params)
             else:
                 # For complex queries, try to use Supabase RPC if available
-                logger.warning(f"Complex query detected, attempting direct execution: {query}")
+                logger.warning(
+                    f"Complex query detected, attempting direct execution: {query}"
+                )
                 # This would require a custom RPC function in Supabase
                 # For now, return empty results
                 return []
@@ -219,8 +237,10 @@ class DatabaseService:
         except Exception as e:
             logger.error(f"MSWAP raw query error: {e}")
             raise
-    
-    async def _parse_and_execute_select(self, query: str, params: Optional[List] = None) -> List[Dict[str, Any]]:
+
+    async def _parse_and_execute_select(
+        self, query: str, params: Optional[List] = None
+    ) -> List[Dict[str, Any]]:
         """Parse and execute a SELECT query using Supabase client."""
         try:
             query_lower = query.lower().strip()
@@ -231,7 +251,7 @@ class DatabaseService:
                 raise ValueError("No FROM clause found in SELECT query")
 
             # Get the part after FROM
-            from_part = query[from_match + 5:].strip()
+            from_part = query[from_match + 5 :].strip()
 
             # Extract table name (handle WHERE, ORDER BY, etc.)
             table_name_select = from_part.split()[0].strip()
@@ -285,7 +305,9 @@ class DatabaseService:
             logger.error(f"Error parsing SELECT query: {e}")
             return []
 
-    async def _parse_and_execute_insert(self, query: str, params: Optional[List] = None) -> List[Dict[str, Any]]:
+    async def _parse_and_execute_insert(
+        self, query: str, params: Optional[List] = None
+    ) -> List[Dict[str, Any]]:
         """Parse and execute an INSERT query using Supabase client."""
         try:
             query_lower = query.lower().strip()
@@ -294,7 +316,6 @@ class DatabaseService:
             into_match = query_lower.find("into ")
             if into_match == -1:
                 raise ValueError("No INTO clause found in INSERT query")
-
 
             # For now, return empty list as INSERT parsing is complex
             # In production, you'd want to parse the VALUES clause
@@ -305,7 +326,9 @@ class DatabaseService:
             logger.error(f"Error parsing INSERT query: {e}")
             return []
 
-    async def _parse_and_execute_update(self, query: str, params: Optional[List] = None) -> List[Dict[str, Any]]:
+    async def _parse_and_execute_update(
+        self, query: str, params: Optional[List] = None
+    ) -> List[Dict[str, Any]]:
         """Parse and execute an UPDATE query using Supabase client."""
         try:
             query_lower = query.lower().strip()
@@ -315,7 +338,6 @@ class DatabaseService:
             if update_match == -1:
                 raise ValueError("No UPDATE clause found")
 
-
             # For now, return empty list as UPDATE parsing is complex
             logger.warning(f"UPDATE query parsing not fully implemented for: {query}")
             return []
@@ -323,14 +345,14 @@ class DatabaseService:
         except Exception as e:
             logger.error(f"Error parsing UPDATE query: {e}")
             return []
-    
+
     async def health_check(self) -> Dict[str, Any]:
         """Check health of both database connections."""
         health_status = {
             "chch3": {"status": "unknown", "error": None},
-            "mswap": {"status": "unknown", "error": None}
+            "mswap": {"status": "unknown", "error": None},
         }
-        
+
         # Test CHCH3 connection
         try:
             await self.execute_chch3_query("profiles", limit=1)
@@ -338,7 +360,7 @@ class DatabaseService:
         except Exception as e:
             health_status["chch3"]["status"] = "unhealthy"
             health_status["chch3"]["error"] = str(e)
-        
+
         # Test MSWAP connection
         try:
             await self.execute_mswap_query("providers", limit=1)
@@ -346,7 +368,7 @@ class DatabaseService:
         except Exception as e:
             health_status["mswap"]["status"] = "unhealthy"
             health_status["mswap"]["error"] = str(e)
-        
+
         return health_status
 
 

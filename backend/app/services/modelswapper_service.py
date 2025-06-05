@@ -28,9 +28,19 @@ from decimal import Decimal
 from typing import Any, Dict, List, Optional, Tuple
 
 from app.models.mswap_models import (
-    Provider, Model, TaskType, TaskPerformance, GlobalPerformance, UsageLog,
-    UserTier, ModelPriority, SecurityLevel, UserSpendingLimits, UserProviderConfig,
-    ModelSelectionRequest, ModelSelectionResponse
+    Provider,
+    Model,
+    TaskType,
+    TaskPerformance,
+    GlobalPerformance,
+    UsageLog,
+    UserTier,
+    ModelPriority,
+    SecurityLevel,
+    UserSpendingLimits,
+    UserProviderConfig,
+    ModelSelectionRequest,
+    ModelSelectionResponse,
 )
 from app.core.config import get_settings
 
@@ -39,11 +49,13 @@ logger = logging.getLogger("chatchonk.modelswapper")
 
 class SecurityException(Exception):
     """Security-related exceptions."""
+
     pass
 
 
 class CostLimitException(Exception):
     """Cost limit exceeded exceptions."""
+
     pass
 
 
@@ -66,7 +78,9 @@ class ModelSwapperService:
         self.emergency_requests_per_hour = 10000  # Emergency stop at 10k requests/hour
 
     # === Database Access Methods ===
-    async def _execute_mswap_query(self, query: str, params: Optional[List] = None) -> List[Dict]:
+    async def _execute_mswap_query(
+        self, query: str, params: Optional[List] = None
+    ) -> List[Dict]:
         """Execute a query against the MSWAP database with proper error handling."""
         try:
             from app.services.database_service import get_database_service
@@ -79,6 +93,7 @@ class ModelSwapperService:
             cached_result = await cache.get(cache_key)
             if cached_result:
                 import json
+
                 return json.loads(cached_result)
 
             # Execute query using the database service
@@ -88,6 +103,7 @@ class ModelSwapperService:
 
             # Cache results
             import json
+
             await cache.set(cache_key, json.dumps(results), ttl=300)
 
             return results
@@ -106,7 +122,9 @@ class ModelSwapperService:
         results = await self._execute_mswap_query(query)
         return [Provider(**row) for row in results]
 
-    async def _get_models_for_task(self, task_type: str, user_tier: UserTier) -> List[Model]:
+    async def _get_models_for_task(
+        self, task_type: str, user_tier: UserTier
+    ) -> List[Model]:
         """Get models suitable for a specific task type and user tier."""
         # Get models that support the required capabilities for this task type
         query = """
@@ -124,7 +142,7 @@ class ModelSwapperService:
             "chat_conversation": ["chat"],
             "creative_writing": ["completion", "chat"],
             "content_generation": ["completion"],
-            "email_composition": ["completion", "chat"]
+            "email_composition": ["completion", "chat"],
         }
 
         required_caps = task_capabilities.get(task_type, ["completion"])
@@ -135,15 +153,17 @@ class ModelSwapperService:
         # Filter by user tier (implement tier-based model access)
         return self._filter_models_by_tier(models, user_tier)
 
-    def _filter_models_by_tier(self, models: List[Model], user_tier: UserTier) -> List[Model]:
+    def _filter_models_by_tier(
+        self, models: List[Model], user_tier: UserTier
+    ) -> List[Model]:
         """Filter models based on user tier access levels."""
         # Define which models each tier can access based on cost
         tier_cost_limits = {
-            UserTier.FREE: Decimal("0.001"),      # Very cheap models only
-            UserTier.LILBEAN: Decimal("0.005"),   # Low-cost models
+            UserTier.FREE: Decimal("0.001"),  # Very cheap models only
+            UserTier.LILBEAN: Decimal("0.005"),  # Low-cost models
             UserTier.CLAWBACK: Decimal("0.020"),  # Mid-range models
             UserTier.BIGCHONK: Decimal("0.100"),  # High-end models
-            UserTier.MEOWTRIX: Decimal("1.000")   # Premium models
+            UserTier.MEOWTRIX: Decimal("1.000"),  # Premium models
         }
 
         max_cost = tier_cost_limits.get(user_tier, Decimal("0.001"))
@@ -151,14 +171,18 @@ class ModelSwapperService:
         filtered_models = []
         for model in models:
             # Use the higher of prompt or completion token cost
-            model_cost = max(model.cost_per_1k_prompt_tokens, model.cost_per_1k_completion_tokens)
+            model_cost = max(
+                model.cost_per_1k_prompt_tokens, model.cost_per_1k_completion_tokens
+            )
             if model_cost <= max_cost:
                 filtered_models.append(model)
 
         return filtered_models
-    
+
     # === Security and Cost Control Methods ===
-    async def _check_user_spending_limits(self, user_id: str, user_tier: UserTier, estimated_cost: Decimal) -> None:
+    async def _check_user_spending_limits(
+        self, user_id: str, user_tier: UserTier, estimated_cost: Decimal
+    ) -> None:
         """Check if user has exceeded spending limits."""
         # Get user's current spending limits
         limits = UserSpendingLimits.get_tier_defaults(user_tier)
@@ -192,14 +216,18 @@ class ModelSwapperService:
                 f"Request cost ${estimated_cost} exceeds emergency threshold of ${self.emergency_cost_threshold}"
             )
 
-    def _calculate_cost(self, model: Model, estimated_tokens: int) -> Tuple[Decimal, Dict[str, Decimal]]:
+    def _calculate_cost(
+        self, model: Model, estimated_tokens: int
+    ) -> Tuple[Decimal, Dict[str, Decimal]]:
         """Calculate detailed cost breakdown for a model and token count."""
         # Assume 70% prompt tokens, 30% completion tokens (typical ratio)
         prompt_tokens = int(estimated_tokens * 0.7)
         completion_tokens = int(estimated_tokens * 0.3)
 
         prompt_cost = (prompt_tokens / 1000) * model.cost_per_1k_prompt_tokens
-        completion_cost = (completion_tokens / 1000) * model.cost_per_1k_completion_tokens
+        completion_cost = (
+            completion_tokens / 1000
+        ) * model.cost_per_1k_completion_tokens
         total_cost = prompt_cost + completion_cost
 
         breakdown = {
@@ -207,13 +235,15 @@ class ModelSwapperService:
             "completion_tokens": Decimal(str(completion_tokens)),
             "prompt_cost": prompt_cost,
             "completion_cost": completion_cost,
-            "total_cost": total_cost
+            "total_cost": total_cost,
         }
 
         return total_cost, breakdown
 
     # === Model Selection ===
-    async def select_best_model(self, request: ModelSelectionRequest) -> ModelSelectionResponse:
+    async def select_best_model(
+        self, request: ModelSelectionRequest
+    ) -> ModelSelectionResponse:
         """
         Select the best model with comprehensive security and cost controls.
 
@@ -224,17 +254,25 @@ class ModelSwapperService:
         4. Cost estimation and approval
         5. Intelligent model selection
         """
-        logger.info(f"Selecting model for user {request.user_id}, task {request.task_type}, tier: {request.user_tier}")
+        logger.info(
+            f"Selecting model for user {request.user_id}, task {request.task_type}, tier: {request.user_tier}"
+        )
 
         try:
             # Step 1: Get available models for this task and user tier
-            available_models = await self._get_models_for_task(request.task_type, request.user_tier)
+            available_models = await self._get_models_for_task(
+                request.task_type, request.user_tier
+            )
 
             if not available_models:
-                raise ValueError(f"No models available for task {request.task_type} and tier {request.user_tier}")
+                raise ValueError(
+                    f"No models available for task {request.task_type} and tier {request.user_tier}"
+                )
 
             # Step 2: Filter models based on user preferences and requirements
-            filtered_models = self._filter_models_by_requirements(available_models, request)
+            filtered_models = self._filter_models_by_requirements(
+                available_models, request
+            )
 
             if not filtered_models:
                 raise ValueError("No models match the specified requirements")
@@ -244,13 +282,21 @@ class ModelSwapperService:
 
             # Step 4: Select best model and calculate costs
             best_model = scored_models[0]
-            estimated_cost, cost_breakdown = self._calculate_cost(best_model, request.estimated_tokens)
+            estimated_cost, cost_breakdown = self._calculate_cost(
+                best_model, request.estimated_tokens
+            )
 
             # Step 5: Check spending limits BEFORE proceeding
-            await self._check_user_spending_limits(request.user_id, request.user_tier, estimated_cost)
+            await self._check_user_spending_limits(
+                request.user_id, request.user_tier, estimated_cost
+            )
 
             # Step 6: Check if user wants to use their own API keys
-            using_user_keys = request.use_user_keys and request.user_tier in [UserTier.CLAWBACK, UserTier.BIGCHONK, UserTier.MEOWTRIX]
+            using_user_keys = request.use_user_keys and request.user_tier in [
+                UserTier.CLAWBACK,
+                UserTier.BIGCHONK,
+                UserTier.MEOWTRIX,
+            ]
 
             # Step 7: Generate warnings if needed
             cost_warning = None
@@ -270,11 +316,13 @@ class ModelSwapperService:
                 estimated_cost=estimated_cost,
                 cost_breakdown=cost_breakdown,
                 using_user_keys=using_user_keys,
-                security_level=SecurityLevel.USER if using_user_keys else SecurityLevel.SYSTEM,
+                security_level=(
+                    SecurityLevel.USER if using_user_keys else SecurityLevel.SYSTEM
+                ),
                 reasoning=self._generate_selection_reasoning(best_model, request),
                 fallback_models=[m.id for m in scored_models[1:3]],
                 cost_warning=cost_warning,
-                security_warning=security_warning
+                security_warning=security_warning,
             )
 
         except (CostLimitException, SecurityException) as e:
@@ -284,28 +332,40 @@ class ModelSwapperService:
             logger.error(f"Model selection failed for user {request.user_id}: {e}")
             raise ValueError(f"Model selection failed: {e}")
 
-    def _filter_models_by_requirements(self, models: List[Model], request: ModelSelectionRequest) -> List[Model]:
+    def _filter_models_by_requirements(
+        self, models: List[Model], request: ModelSelectionRequest
+    ) -> List[Model]:
         """Filter models based on specific requirements."""
         filtered = []
 
         for model in models:
             # Check context length requirement
-            if request.min_context_length and model.context_length < request.min_context_length:
+            if (
+                request.min_context_length
+                and model.context_length < request.min_context_length
+            ):
                 continue
 
             # Check required capabilities
             if request.required_capabilities:
-                if not all(cap in model.capabilities for cap in request.required_capabilities):
+                if not all(
+                    cap in model.capabilities for cap in request.required_capabilities
+                ):
                     continue
 
             # Check provider preferences
             provider_type = model.metadata.get("provider_type", "")
-            if request.excluded_providers and provider_type in request.excluded_providers:
+            if (
+                request.excluded_providers
+                and provider_type in request.excluded_providers
+            ):
                 continue
 
             # Check cost limits
             if request.max_cost:
-                estimated_cost, _ = self._calculate_cost(model, request.estimated_tokens)
+                estimated_cost, _ = self._calculate_cost(
+                    model, request.estimated_tokens
+                )
                 if estimated_cost > request.max_cost:
                     continue
 
@@ -313,7 +373,9 @@ class ModelSwapperService:
 
         return filtered
 
-    def _score_models_by_criteria(self, models: List[Model], request: ModelSelectionRequest) -> List[Model]:
+    def _score_models_by_criteria(
+        self, models: List[Model], request: ModelSelectionRequest
+    ) -> List[Model]:
         """Score and rank models based on multiple criteria."""
         scored_models = []
 
@@ -354,7 +416,9 @@ class ModelSwapperService:
         results = await self._execute_mswap_query(query, [provider_id])
         return results[0]["provider_type"] if results else "unknown"
 
-    def _generate_selection_reasoning(self, model: Model, request: ModelSelectionRequest) -> str:
+    def _generate_selection_reasoning(
+        self, model: Model, request: ModelSelectionRequest
+    ) -> str:
         """Generate human-readable reasoning for model selection."""
         reasons = []
 
@@ -371,7 +435,7 @@ class ModelSwapperService:
             reasons.append("optimized for cost efficiency")
 
         return "; ".join(reasons)
-    
+
     # === Usage Tracking and Analytics ===
     async def record_model_usage(
         self,
@@ -383,7 +447,7 @@ class ModelSwapperService:
         prompt_tokens: int,
         completion_tokens: int,
         cost: Decimal,
-        error: Optional[str] = None
+        error: Optional[str] = None,
     ) -> None:
         """Record model usage in the MSWAP database."""
         try:
@@ -397,8 +461,12 @@ class ModelSwapperService:
 
             # Get provider_id for the model
             provider_query = "SELECT provider_id FROM models WHERE id = %s"
-            provider_results = await self._execute_mswap_query(provider_query, [model_id])
-            provider_id = provider_results[0]["provider_id"] if provider_results else None
+            provider_results = await self._execute_mswap_query(
+                provider_query, [model_id]
+            )
+            provider_id = (
+                provider_results[0]["provider_id"] if provider_results else None
+            )
 
             # Get task_type_id
             task_query = "SELECT id FROM task_types WHERE name = %s"
@@ -407,18 +475,34 @@ class ModelSwapperService:
 
             metadata = {
                 "timestamp": datetime.now().isoformat(),
-                "total_tokens": prompt_tokens + completion_tokens
+                "total_tokens": prompt_tokens + completion_tokens,
             }
 
-            await self._execute_mswap_query(query, [
-                user_id, provider_id, model_id, prompt_tokens, completion_tokens,
-                float(cost), response_time, success, error, task_type_id, metadata
-            ])
+            await self._execute_mswap_query(
+                query,
+                [
+                    user_id,
+                    provider_id,
+                    model_id,
+                    prompt_tokens,
+                    completion_tokens,
+                    float(cost),
+                    response_time,
+                    success,
+                    error,
+                    task_type_id,
+                    metadata,
+                ],
+            )
 
             # Update performance metrics
-            await self._update_performance_metrics(model_id, task_type, success, response_time, cost)
+            await self._update_performance_metrics(
+                model_id, task_type, success, response_time, cost
+            )
 
-            logger.info(f"Recorded usage: user={user_id}, model={model_id}, cost=${cost}")
+            logger.info(
+                f"Recorded usage: user={user_id}, model={model_id}, cost=${cost}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to record usage: {e}")
@@ -429,7 +513,7 @@ class ModelSwapperService:
         task_type: str,
         success: bool,
         response_time: int,
-        cost: Decimal
+        cost: Decimal,
     ) -> None:
         """Update performance metrics in task_performance table."""
         try:
@@ -446,9 +530,15 @@ class ModelSwapperService:
                 # Update existing record
                 perf = results[0]
                 new_sample_size = perf["sample_size"] + 1
-                new_success_rate = ((perf["success_rate"] * perf["sample_size"]) + (1 if success else 0)) / new_sample_size
-                new_avg_latency = ((perf["avg_latency"] * perf["sample_size"]) + response_time) / new_sample_size
-                new_avg_cost = ((perf["avg_cost"] * perf["sample_size"]) + float(cost)) / new_sample_size
+                new_success_rate = (
+                    (perf["success_rate"] * perf["sample_size"]) + (1 if success else 0)
+                ) / new_sample_size
+                new_avg_latency = (
+                    (perf["avg_latency"] * perf["sample_size"]) + response_time
+                ) / new_sample_size
+                new_avg_cost = (
+                    (perf["avg_cost"] * perf["sample_size"]) + float(cost)
+                ) / new_sample_size
 
                 update_query = """
                 UPDATE task_performance
@@ -457,11 +547,20 @@ class ModelSwapperService:
                 WHERE id = %s
                 """
 
-                last_success = datetime.now() if success else perf.get("last_success_at")
-                await self._execute_mswap_query(update_query, [
-                    new_success_rate, new_avg_latency, new_avg_cost,
-                    new_sample_size, last_success, perf["id"]
-                ])
+                last_success = (
+                    datetime.now() if success else perf.get("last_success_at")
+                )
+                await self._execute_mswap_query(
+                    update_query,
+                    [
+                        new_success_rate,
+                        new_avg_latency,
+                        new_avg_cost,
+                        new_sample_size,
+                        last_success,
+                        perf["id"],
+                    ],
+                )
             else:
                 # Create new record
                 task_query = "SELECT id FROM task_types WHERE name = %s"
@@ -478,10 +577,19 @@ class ModelSwapperService:
                 metadata = {"created_from": "modelswapper_service"}
                 last_success = datetime.now() if success else None
 
-                await self._execute_mswap_query(insert_query, [
-                    task_type_id, model_id, 1 if success else 0, response_time,
-                    float(cost), 1, last_success, metadata
-                ])
+                await self._execute_mswap_query(
+                    insert_query,
+                    [
+                        task_type_id,
+                        model_id,
+                        1 if success else 0,
+                        response_time,
+                        float(cost),
+                        1,
+                        last_success,
+                        metadata,
+                    ],
+                )
 
         except Exception as e:
             logger.error(f"Failed to update performance metrics: {e}")
@@ -492,7 +600,7 @@ class ModelSwapperService:
         user_id: str,
         provider_type: str,
         api_key: str,
-        organization_id: Optional[str] = None
+        organization_id: Optional[str] = None,
     ) -> str:
         """Create a user-specific provider configuration for high-tier users."""
         try:
@@ -509,16 +617,27 @@ class ModelSwapperService:
             metadata = {
                 "user_id": user_id,
                 "user_managed": True,
-                "created_by": "modelswapper_service"
+                "created_by": "modelswapper_service",
             }
 
-            results = await self._execute_mswap_query(query, [
-                name, provider_type, api_key, organization_id, True, 100,
-                [], metadata
-            ])
+            results = await self._execute_mswap_query(
+                query,
+                [
+                    name,
+                    provider_type,
+                    api_key,
+                    organization_id,
+                    True,
+                    100,
+                    [],
+                    metadata,
+                ],
+            )
 
             provider_id = results[0]["id"] if results else None
-            logger.info(f"Created user provider config: {provider_id} for user {user_id}")
+            logger.info(
+                f"Created user provider config: {provider_id} for user {user_id}"
+            )
             return provider_id
 
         except Exception as e:
@@ -557,12 +676,12 @@ class ModelSwapperService:
                 "database_connection": "ok",
                 "active_providers": provider_count,
                 "cache_size": len(self._cache),
-                "emergency_threshold": str(self.emergency_cost_threshold)
+                "emergency_threshold": str(self.emergency_cost_threshold),
             }
         except Exception as e:
             logger.error(f"Health check failed: {e}")
             return {
                 "status": "unhealthy",
                 "timestamp": datetime.now().isoformat(),
-                "error": str(e)
+                "error": str(e),
             }

@@ -22,11 +22,11 @@ logger = logging.getLogger("chatchonk.automodel.providers.huggingface")
 
 class HuggingFaceProvider(BaseProvider):
     """HuggingFace provider implementation for the AutoModel system."""
-    
+
     def __init__(self, api_key: Optional[str] = None, **kwargs):
         """
         Initialize the HuggingFace provider.
-        
+
         Args:
             api_key: HuggingFace API token
             **kwargs: Additional configuration options
@@ -35,25 +35,25 @@ class HuggingFaceProvider(BaseProvider):
         self.base_url = kwargs.get("base_url", "https://api-inference.huggingface.co")
         self.timeout = kwargs.get("timeout", 60)
         self._client: Optional[httpx.AsyncClient] = None
-    
+
     @property
     def provider_type(self) -> ProviderType:
         """Return the provider type."""
         return ProviderType.HUGGINGFACE
-    
+
     @property
     def name(self) -> str:
         """Return the human-readable name of the provider."""
         return "HuggingFace"
-    
+
     async def initialize(self) -> None:
         """Initialize the HuggingFace provider and load available models."""
         if self._is_initialized:
             return
-            
+
         if not self.api_key:
             raise ValueError("HuggingFace API token is required")
-        
+
         # Initialize HTTP client
         self._client = httpx.AsyncClient(
             base_url=self.base_url,
@@ -61,15 +61,15 @@ class HuggingFaceProvider(BaseProvider):
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             },
-            timeout=self.timeout
+            timeout=self.timeout,
         )
-        
+
         # Load available models
         await self._load_models()
-        
+
         self._is_initialized = True
         logger.info(f"HuggingFace provider initialized with {len(self._models)} models")
-    
+
     async def _load_models(self) -> None:
         """Load available HuggingFace models and their capabilities."""
         # Define HuggingFace models with their capabilities
@@ -82,7 +82,7 @@ class HuggingFaceProvider(BaseProvider):
                 "max_tokens": 1024,
                 "cost_per_1k_tokens": 0.0,  # Free tier
                 "priority_score": 6.0,
-                "supported_tasks": {TaskType.TEXT_GENERATION, TaskType.CHAT}
+                "supported_tasks": {TaskType.TEXT_GENERATION, TaskType.CHAT},
             },
             {
                 "id": "google/flan-t5-large",
@@ -92,11 +92,12 @@ class HuggingFaceProvider(BaseProvider):
                 "cost_per_1k_tokens": 0.0,
                 "priority_score": 7.0,
                 "supported_tasks": {
-                    TaskType.TEXT_GENERATION, TaskType.SUMMARIZATION, 
-                    TaskType.TRANSLATION, TaskType.CLASSIFICATION
-                }
+                    TaskType.TEXT_GENERATION,
+                    TaskType.SUMMARIZATION,
+                    TaskType.TRANSLATION,
+                    TaskType.CLASSIFICATION,
+                },
             },
-            
             # Embedding Models
             {
                 "id": "sentence-transformers/all-MiniLM-L6-v2",
@@ -105,7 +106,7 @@ class HuggingFaceProvider(BaseProvider):
                 "max_tokens": 256,
                 "cost_per_1k_tokens": 0.0,
                 "priority_score": 8.0,
-                "supported_tasks": {TaskType.EMBEDDING}
+                "supported_tasks": {TaskType.EMBEDDING},
             },
             {
                 "id": "sentence-transformers/all-mpnet-base-v2",
@@ -114,9 +115,8 @@ class HuggingFaceProvider(BaseProvider):
                 "max_tokens": 384,
                 "cost_per_1k_tokens": 0.0,
                 "priority_score": 8.5,
-                "supported_tasks": {TaskType.EMBEDDING}
+                "supported_tasks": {TaskType.EMBEDDING},
             },
-            
             # Classification Models
             {
                 "id": "cardiffnlp/twitter-roberta-base-sentiment-latest",
@@ -125,7 +125,7 @@ class HuggingFaceProvider(BaseProvider):
                 "max_tokens": 512,
                 "cost_per_1k_tokens": 0.0,
                 "priority_score": 7.5,
-                "supported_tasks": {TaskType.CLASSIFICATION}
+                "supported_tasks": {TaskType.CLASSIFICATION},
             },
             {
                 "id": "facebook/bart-large-mnli",
@@ -134,9 +134,8 @@ class HuggingFaceProvider(BaseProvider):
                 "max_tokens": 1024,
                 "cost_per_1k_tokens": 0.0,
                 "priority_score": 8.0,
-                "supported_tasks": {TaskType.CLASSIFICATION, TaskType.TOPIC_EXTRACTION}
+                "supported_tasks": {TaskType.CLASSIFICATION, TaskType.TOPIC_EXTRACTION},
             },
-            
             # Summarization Models
             {
                 "id": "facebook/bart-large-cnn",
@@ -145,7 +144,7 @@ class HuggingFaceProvider(BaseProvider):
                 "max_tokens": 1024,
                 "cost_per_1k_tokens": 0.0,
                 "priority_score": 7.5,
-                "supported_tasks": {TaskType.SUMMARIZATION}
+                "supported_tasks": {TaskType.SUMMARIZATION},
             },
             {
                 "id": "google/pegasus-xsum",
@@ -154,10 +153,10 @@ class HuggingFaceProvider(BaseProvider):
                 "max_tokens": 512,
                 "cost_per_1k_tokens": 0.0,
                 "priority_score": 7.0,
-                "supported_tasks": {TaskType.SUMMARIZATION}
-            }
+                "supported_tasks": {TaskType.SUMMARIZATION},
+            },
         ]
-        
+
         for config in model_configs:
             model = Model(
                 id=config["id"],
@@ -171,10 +170,10 @@ class HuggingFaceProvider(BaseProvider):
                 cost_per_1k_tokens=config["cost_per_1k_tokens"],
                 supported_tasks=config["supported_tasks"],
                 priority_score=config["priority_score"],
-                is_available=True
+                is_available=True,
             )
             self._models[model.id] = model
-    
+
     async def process(
         self,
         task_type: TaskType,
@@ -187,19 +186,19 @@ class HuggingFaceProvider(BaseProvider):
         presence_penalty: float = 0.0,
         stop_sequences: Optional[List[str]] = None,
         session_context: Optional[Dict[str, Any]] = None,
-        **kwargs
+        **kwargs,
     ) -> ProviderResponse:
         """Process content using HuggingFace models."""
         if not self._is_initialized:
             await self.initialize()
-        
+
         model = self.get_model(model_id)
         if not model:
             raise ValueError(f"Model {model_id} not found")
-        
+
         if not self.supports_task(model_id, task_type):
             raise ValueError(f"Model {model_id} does not support task {task_type}")
-        
+
         try:
             if task_type == TaskType.EMBEDDING:
                 return await self._process_embedding(model_id, content)
@@ -208,15 +207,21 @@ class HuggingFaceProvider(BaseProvider):
             elif task_type == TaskType.SUMMARIZATION:
                 return await self._process_summarization(model_id, content, max_tokens)
             elif task_type in [TaskType.TEXT_GENERATION, TaskType.CHAT]:
-                return await self._process_text_generation(model_id, content, max_tokens, temperature)
+                return await self._process_text_generation(
+                    model_id, content, max_tokens, temperature
+                )
             else:
                 # Default to text generation for other tasks
-                return await self._process_text_generation(model_id, content, max_tokens, temperature)
+                return await self._process_text_generation(
+                    model_id, content, max_tokens, temperature
+                )
         except Exception as e:
             self._set_error(f"Processing failed: {str(e)}")
             raise
-    
-    async def _process_embedding(self, model_id: str, content: Union[str, List[str]]) -> ProviderResponse:
+
+    async def _process_embedding(
+        self, model_id: str, content: Union[str, List[str]]
+    ) -> ProviderResponse:
         """Process embedding requests."""
         if isinstance(content, str):
             inputs = [content]
@@ -224,127 +229,131 @@ class HuggingFaceProvider(BaseProvider):
             inputs = [str(item) for item in content]
         else:
             inputs = [str(content)]
-        
+
         payload = {"inputs": inputs}
-        
+
         response = await self._client.post(f"/models/{model_id}", json=payload)
         response.raise_for_status()
-        
+
         result = response.json()
-        
+
         # HuggingFace returns embeddings as nested arrays
         if isinstance(result, list) and len(result) > 0:
             embedding = result[0] if isinstance(result[0], list) else result
         else:
             embedding = result
-        
+
         return ProviderResponse(
             content=embedding,
             model_id=model_id,
             tokens_used=None,  # HF doesn't provide token counts
             finish_reason="completed",
-            metadata={"embedding_dimension": len(embedding) if isinstance(embedding, list) else None}
+            metadata={
+                "embedding_dimension": (
+                    len(embedding) if isinstance(embedding, list) else None
+                )
+            },
         )
-    
-    async def _process_classification(self, model_id: str, content: str, **kwargs) -> ProviderResponse:
+
+    async def _process_classification(
+        self, model_id: str, content: str, **kwargs
+    ) -> ProviderResponse:
         """Process classification requests."""
-        candidate_labels = kwargs.get("candidate_labels", ["positive", "negative", "neutral"])
-        
+        candidate_labels = kwargs.get(
+            "candidate_labels", ["positive", "negative", "neutral"]
+        )
+
         if "mnli" in model_id.lower():
             # Zero-shot classification
             payload = {
                 "inputs": content,
-                "parameters": {"candidate_labels": candidate_labels}
+                "parameters": {"candidate_labels": candidate_labels},
             }
         else:
             # Regular classification
             payload = {"inputs": content}
-        
+
         response = await self._client.post(f"/models/{model_id}", json=payload)
         response.raise_for_status()
-        
+
         result = response.json()
-        
+
         return ProviderResponse(
             content=result,
             model_id=model_id,
             tokens_used=None,
             finish_reason="completed",
-            metadata={"classification_type": "zero_shot" if "mnli" in model_id.lower() else "standard"}
+            metadata={
+                "classification_type": (
+                    "zero_shot" if "mnli" in model_id.lower() else "standard"
+                )
+            },
         )
-    
-    async def _process_summarization(self, model_id: str, content: str, max_tokens: Optional[int]) -> ProviderResponse:
+
+    async def _process_summarization(
+        self, model_id: str, content: str, max_tokens: Optional[int]
+    ) -> ProviderResponse:
         """Process summarization requests."""
-        payload = {
-            "inputs": content,
-            "parameters": {}
-        }
-        
+        payload = {"inputs": content, "parameters": {}}
+
         if max_tokens:
             payload["parameters"]["max_length"] = max_tokens
-        
+
         response = await self._client.post(f"/models/{model_id}", json=payload)
         response.raise_for_status()
-        
+
         result = response.json()
-        
+
         # Extract summary text
         if isinstance(result, list) and len(result) > 0:
             summary = result[0].get("summary_text", str(result[0]))
         else:
             summary = str(result)
-        
+
         return ProviderResponse(
             content=summary,
             model_id=model_id,
             tokens_used=None,
             finish_reason="completed",
-            metadata={"task": "summarization"}
+            metadata={"task": "summarization"},
         )
-    
+
     async def _process_text_generation(
-        self, 
-        model_id: str, 
-        content: str, 
-        max_tokens: Optional[int], 
-        temperature: float
+        self, model_id: str, content: str, max_tokens: Optional[int], temperature: float
     ) -> ProviderResponse:
         """Process text generation requests."""
         payload = {
             "inputs": content,
-            "parameters": {
-                "temperature": temperature,
-                "return_full_text": False
-            }
+            "parameters": {"temperature": temperature, "return_full_text": False},
         }
-        
+
         if max_tokens:
             payload["parameters"]["max_new_tokens"] = max_tokens
-        
+
         response = await self._client.post(f"/models/{model_id}", json=payload)
         response.raise_for_status()
-        
+
         result = response.json()
-        
+
         # Extract generated text
         if isinstance(result, list) and len(result) > 0:
             generated_text = result[0].get("generated_text", str(result[0]))
         else:
             generated_text = str(result)
-        
+
         return ProviderResponse(
             content=generated_text,
             model_id=model_id,
             tokens_used=None,
             finish_reason="completed",
-            metadata={"task": "text_generation"}
+            metadata={"task": "text_generation"},
         )
-    
+
     async def __aenter__(self):
         """Async context manager entry."""
         await self.initialize()
         return self
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         if self._client:

@@ -24,6 +24,7 @@ logger = logging.getLogger("chatchonk")
 
 # Directory creation will be handled in startup event
 
+
 # App lifecycle management
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +33,7 @@ async def lifespan(app: FastAPI):
     logger.info("Minimal mode - skipping directory creation")
     yield
     logger.info("ChatChonk backend shutting down...")
+
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -56,6 +58,7 @@ app.add_middleware(
 # Add GZip compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+
 # Request logging middleware
 @app.middleware("http")
 async def log_requests(request: Request, call_next) -> Response:
@@ -63,22 +66,26 @@ async def log_requests(request: Request, call_next) -> Response:
     start_time = time.time()
     request_id = f"req_{int(start_time * 1000)}"
     logger.info(f"[{request_id}] {request.method} {request.url.path}")
-    
+
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-        logger.info(f"[{request_id}] Completed: {response.status_code} ({process_time:.4f}s)")
+        logger.info(
+            f"[{request_id}] Completed: {response.status_code} ({process_time:.4f}s)"
+        )
         response.headers["X-Process-Time"] = f"{process_time:.4f}"
         return response
     except Exception as e:
         logger.error(f"[{request_id}] Request failed: {str(e)}")
         raise
 
+
 # Root endpoint
 @app.get("/")
 async def root():
     """Root endpoint."""
     return {"message": "ChatChonk API is running", "status": "ok"}
+
 
 # Health check endpoint
 @app.get("/health")
@@ -91,13 +98,16 @@ async def health_check():
         "environment": "production",
     }
 
+
 # API router
 api_router = APIRouter(prefix="/api", tags=["API"])
+
 
 @api_router.get("/status")
 async def api_status():
     """API status endpoint."""
     return {"status": "ok", "message": "ChatChonk API is operational"}
+
 
 @api_router.get("/info")
 async def api_info():
@@ -110,11 +120,13 @@ async def api_info():
             "health": "/health",
             "status": "/api/status",
             "docs": "/api/docs",
-            "redoc": "/api/redoc"
-        }
+            "redoc": "/api/redoc",
+        },
     }
 
+
 app.include_router(api_router)
+
 
 # Exception handlers
 @app.exception_handler(Exception)
@@ -126,8 +138,10 @@ async def general_exception_handler(request: Request, exc: Exception):
         content={"detail": "An unexpected error occurred. Please try again later."},
     )
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         "main_minimal:app",
         host="0.0.0.0",

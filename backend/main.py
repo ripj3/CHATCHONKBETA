@@ -46,6 +46,7 @@ metrics = {
     "status_code_counts": defaultdict(int),
 }
 
+
 # App lifecycle management
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -79,7 +80,7 @@ async def lifespan(app: FastAPI):
                 meowtrix_role_id=settings.DISCORD_MEOWTRIX_ROLE_ID,
                 admin_role_id=settings.DISCORD_ADMIN_ROLE_ID,
                 moderator_role_id=settings.DISCORD_MODERATOR_ROLE_ID,
-                support_role_id=settings.DISCORD_SUPPORT_ROLE_ID
+                support_role_id=settings.DISCORD_SUPPORT_ROLE_ID,
             )
 
             discord_service = get_discord_service()
@@ -105,6 +106,7 @@ async def lifespan(app: FastAPI):
     # TODO: Implement cleanup logic using settings.TEMP_DIR, settings.UPLOAD_DIR, settings.EPHEMERAL_STORAGE_PATH
     # Consider using a background task for cleanup
 
+
 # Initialize FastAPI app with metadata and lifespan
 app = FastAPI(
     title=settings.PROJECT_NAME + " API",
@@ -120,7 +122,7 @@ app = FastAPI(
     redoc_url=f"{settings.API_V1_STR}/redoc",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     lifespan=lifespan,
-    root_path=settings.ROOT_PATH, # Apply root path if configured
+    root_path=settings.ROOT_PATH,  # Apply root path if configured
 )
 
 # Configure CORS
@@ -184,7 +186,7 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle validation errors with user-friendly messages."""
-    metrics["error_requests"] += 1 # Count validation errors as errors
+    metrics["error_requests"] += 1  # Count validation errors as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][status.HTTP_422_UNPROCESSABLE_ENTITY] += 1
     return JSONResponse(
@@ -199,7 +201,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Custom HTTP exception handler with consistent format."""
-    metrics["error_requests"] += 1 # Count HTTP exceptions as errors
+    metrics["error_requests"] += 1  # Count HTTP exceptions as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][exc.status_code] += 1
     return JSONResponse(
@@ -211,7 +213,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle unexpected errors gracefully."""
-    metrics["error_requests"] += 1 # Count general exceptions as errors
+    metrics["error_requests"] += 1  # Count general exceptions as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][status.HTTP_500_INTERNAL_SERVER_ERROR] += 1
     logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
@@ -233,6 +235,7 @@ async def health_check():
         "debug_mode": False,
     }
 
+
 # Simple root endpoint
 @app.get("/", tags=["System"])
 async def root():
@@ -244,6 +247,7 @@ async def root():
 try:
     # ModelSwapper router - handles model configuration and selection
     from app.api.routes.modelswapper import router as modelswapper_router
+
     app.include_router(modelswapper_router, prefix=settings.API_V1_STR)
     logger.info("ModelSwapper router loaded successfully")
 except Exception as e:
@@ -252,10 +256,12 @@ except Exception as e:
 # Simple API router for basic endpoints
 api_router = APIRouter(prefix="/api", tags=["API"])
 
+
 @api_router.get("/status")
 async def api_status():
     """API status endpoint."""
     return {"status": "ok", "message": "ChatChonk API is operational"}
+
 
 @api_router.get("/metrics", tags=["System"])
 async def get_metrics():
@@ -278,6 +284,7 @@ async def get_metrics():
         "error_counts_by_path": dict(metrics["error_counts_by_path"]),
         "status_code_counts": dict(metrics["status_code_counts"]),
     }
+
 
 app.include_router(api_router)
 

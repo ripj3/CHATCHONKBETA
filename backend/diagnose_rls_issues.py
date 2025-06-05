@@ -25,8 +25,7 @@ sys.path.insert(0, str(backend_dir))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -34,10 +33,10 @@ logger = logging.getLogger(__name__)
 async def diagnose_chch3_policies():
     """Diagnose RLS policy issues in CHCH3 database."""
     logger.info("🔍 Diagnosing CHCH3 RLS policies...")
-    
+
     try:
         db_service = get_database_service()
-        
+
         # Query to find tables with multiple permissive policies
         query = """
         SELECT 
@@ -51,19 +50,23 @@ async def diagnose_chch3_policies():
         HAVING COUNT(CASE WHEN permissive = 'PERMISSIVE' THEN 1 END) > 1
         ORDER BY permissive_policies DESC;
         """
-        
+
         results = await db_service.execute_chch3_raw_query(query)
-        
+
         if results:
-            logger.error(f"❌ CHCH3 has {len(results)} tables with multiple permissive policies:")
+            logger.error(
+                f"❌ CHCH3 has {len(results)} tables with multiple permissive policies:"
+            )
             for row in results:
-                logger.error(f"   📋 {row['tablename']}: {row['permissive_policies']} permissive policies")
+                logger.error(
+                    f"   📋 {row['tablename']}: {row['permissive_policies']} permissive policies"
+                )
                 logger.error(f"      Policies: {row['policy_names']}")
         else:
             logger.info("✅ CHCH3 has no tables with multiple permissive policies")
-        
+
         return len(results) == 0
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to diagnose CHCH3 policies: {e}")
         return False
@@ -72,10 +75,10 @@ async def diagnose_chch3_policies():
 async def diagnose_mswap_policies():
     """Diagnose RLS policy issues in MSWAP database."""
     logger.info("🔍 Diagnosing MSWAP RLS policies...")
-    
+
     try:
         db_service = get_database_service()
-        
+
         # Query to find tables with multiple permissive policies
         query = """
         SELECT 
@@ -89,19 +92,23 @@ async def diagnose_mswap_policies():
         HAVING COUNT(CASE WHEN permissive = 'PERMISSIVE' THEN 1 END) > 1
         ORDER BY permissive_policies DESC;
         """
-        
+
         results = await db_service.execute_mswap_raw_query(query)
-        
+
         if results:
-            logger.error(f"❌ MSWAP has {len(results)} tables with multiple permissive policies:")
+            logger.error(
+                f"❌ MSWAP has {len(results)} tables with multiple permissive policies:"
+            )
             for row in results:
-                logger.error(f"   📋 {row['tablename']}: {row['permissive_policies']} permissive policies")
+                logger.error(
+                    f"   📋 {row['tablename']}: {row['permissive_policies']} permissive policies"
+                )
                 logger.error(f"      Policies: {row['policy_names']}")
         else:
             logger.info("✅ MSWAP has no tables with multiple permissive policies")
-        
+
         return len(results) == 0
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to diagnose MSWAP policies: {e}")
         return False
@@ -110,10 +117,10 @@ async def diagnose_mswap_policies():
 async def list_all_policies():
     """List all RLS policies for both databases."""
     logger.info("📋 Listing all RLS policies...")
-    
+
     try:
         db_service = get_database_service()
-        
+
         # Query to list all policies
         query = """
         SELECT 
@@ -129,19 +136,23 @@ async def list_all_policies():
         WHERE schemaname = 'public'
         ORDER BY tablename, policyname;
         """
-        
+
         logger.info("📋 CHCH3 Policies:")
         chch3_results = await db_service.execute_chch3_raw_query(query)
         for row in chch3_results:
-            logger.info(f"   {row['tablename']}.{row['policyname']} ({row['permissive']}) - {row['cmd']}")
-        
+            logger.info(
+                f"   {row['tablename']}.{row['policyname']} ({row['permissive']}) - {row['cmd']}"
+            )
+
         logger.info("📋 MSWAP Policies:")
         mswap_results = await db_service.execute_mswap_raw_query(query)
         for row in mswap_results:
-            logger.info(f"   {row['tablename']}.{row['policyname']} ({row['permissive']}) - {row['cmd']}")
-        
+            logger.info(
+                f"   {row['tablename']}.{row['policyname']} ({row['permissive']}) - {row['cmd']}"
+            )
+
         return True
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to list policies: {e}")
         return False
@@ -150,8 +161,9 @@ async def list_all_policies():
 async def suggest_fixes():
     """Suggest fixes for common RLS policy issues."""
     logger.info("💡 Suggested fixes:")
-    
-    print("""
+
+    print(
+        """
 🔧 QUICK FIXES FOR MULTIPLE PERMISSIVE POLICIES:
 
 1. **Run the SQL fix script:**
@@ -176,42 +188,45 @@ async def suggest_fixes():
    - Test database connections with: python test_database_connections.py
 
 📝 The 'fix_rls_policies.sql' file contains all the SQL commands needed.
-""")
+"""
+    )
 
 
 async def main():
     """Run RLS policy diagnosis."""
     logger.info("🚀 Starting RLS Policy Diagnosis")
     logger.info("=" * 60)
-    
+
     # Test environment variables
     settings = get_settings()
     if not settings.SUPABASE_URL or not settings.MSWAP_SUPABASE_URL:
         logger.error("❌ Database URLs not configured properly")
         return False
-    
+
     # Diagnose both databases
     chch3_ok = await diagnose_chch3_policies()
     logger.info("-" * 30)
-    
+
     mswap_ok = await diagnose_mswap_policies()
     logger.info("-" * 30)
-    
+
     # List all policies for reference
     await list_all_policies()
     logger.info("-" * 30)
-    
+
     # Provide suggestions
     await suggest_fixes()
-    
+
     logger.info("=" * 60)
-    
+
     if chch3_ok and mswap_ok:
         logger.info("🎉 No RLS policy conflicts found! Your databases are ready.")
         return True
     else:
         logger.error("❌ RLS policy conflicts detected. Please run the fix script.")
-        logger.error("📝 Use the SQL commands in 'fix_rls_policies.sql' to resolve these issues.")
+        logger.error(
+            "📝 Use the SQL commands in 'fix_rls_policies.sql' to resolve these issues."
+        )
         return False
 
 

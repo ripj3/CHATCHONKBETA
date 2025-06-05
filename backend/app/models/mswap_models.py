@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field, SecretStr, validator
 # === User Tier Enums ===
 class UserTier(str, Enum):
     """User subscription tiers that determine AI model access and spending limits."""
+
     FREE = "free"
     LILBEAN = "lilbean"
     CLAWBACK = "clawback"
@@ -31,6 +32,7 @@ class UserTier(str, Enum):
 
 class ModelPriority(str, Enum):
     """Model selection priority levels."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -39,8 +41,9 @@ class ModelPriority(str, Enum):
 
 class SecurityLevel(str, Enum):
     """Security levels for API access."""
+
     SYSTEM = "system"  # System-managed keys
-    USER = "user"      # User-provided keys
+    USER = "user"  # User-provided keys
     RESTRICTED = "restricted"  # Limited access
 
 
@@ -50,14 +53,20 @@ class Provider(BaseModel):
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str = Field(..., description="Human-readable provider name")
-    provider_type: str = Field(..., description="Provider type (openai, anthropic, etc.)")
+    provider_type: str = Field(
+        ..., description="Provider type (openai, anthropic, etc.)"
+    )
     api_key: str = Field(..., description="API key for this provider")
     base_url: Optional[str] = Field(None, description="Custom API endpoint URL")
-    organization_id: Optional[str] = Field(None, description="Organization ID for the provider")
+    organization_id: Optional[str] = Field(
+        None, description="Organization ID for the provider"
+    )
     enabled: bool = Field(default=True, description="Whether this provider is enabled")
     priority: int = Field(default=0, description="Priority for provider selection")
     regions: List[str] = Field(default_factory=list, description="Supported regions")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional provider metadata")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional provider metadata"
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -70,13 +79,21 @@ class Model(BaseModel):
     name: str = Field(..., description="Model name/identifier")
     capabilities: List[str] = Field(..., description="Model capabilities")
     context_length: int = Field(..., description="Maximum context length")
-    cost_per_1k_prompt_tokens: Decimal = Field(..., description="Cost per 1K prompt tokens")
-    cost_per_1k_completion_tokens: Decimal = Field(..., description="Cost per 1K completion tokens")
+    cost_per_1k_prompt_tokens: Decimal = Field(
+        ..., description="Cost per 1K prompt tokens"
+    )
+    cost_per_1k_completion_tokens: Decimal = Field(
+        ..., description="Cost per 1K completion tokens"
+    )
     regions: List[str] = Field(default_factory=list, description="Supported regions")
     enabled: bool = Field(default=True, description="Whether this model is enabled")
-    reliability: Decimal = Field(default=Decimal("0.99"), description="Model reliability score")
+    reliability: Decimal = Field(
+        default=Decimal("0.99"), description="Model reliability score"
+    )
     avg_latency: int = Field(default=0, description="Average latency in milliseconds")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional model metadata")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional model metadata"
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -87,7 +104,9 @@ class TaskType(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str = Field(..., description="Task type name")
     description: Optional[str] = Field(None, description="Task type description")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional task type metadata")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional task type metadata"
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -97,14 +116,26 @@ class TaskPerformance(BaseModel):
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     task_type_id: str = Field(..., description="Reference to task type")
-    task_model_id: str = Field(..., description="Reference to model") # Renamed from model_id
-    success_rate: Decimal = Field(default=Decimal("0"), description="Success rate (0-1)")
+    task_model_id: str = Field(
+        ..., description="Reference to model"
+    )  # Renamed from model_id
+    success_rate: Decimal = Field(
+        default=Decimal("0"), description="Success rate (0-1)"
+    )
     avg_latency: int = Field(default=0, description="Average latency in milliseconds")
-    avg_cost: Decimal = Field(default=Decimal("0"), description="Average cost per request")
+    avg_cost: Decimal = Field(
+        default=Decimal("0"), description="Average cost per request"
+    )
     sample_size: int = Field(default=0, description="Number of samples")
-    last_success_at: Optional[datetime] = Field(None, description="Last successful execution")
-    last_failure_at: Optional[datetime] = Field(None, description="Last failed execution")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional performance metadata")
+    last_success_at: Optional[datetime] = Field(
+        None, description="Last successful execution"
+    )
+    last_failure_at: Optional[datetime] = Field(
+        None, description="Last failed execution"
+    )
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional performance metadata"
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -115,31 +146,49 @@ class GlobalPerformance(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     task_type: str = Field(..., description="Task type name")
     provider_type: str = Field(..., description="Provider type")
-    global_model_name: str = Field(..., description="Model name") # Renamed from model_name
-    success_rate: Decimal = Field(default=Decimal("0"), description="Success rate (0-1)")
+    global_model_name: str = Field(
+        ..., description="Model name"
+    )  # Renamed from model_name
+    success_rate: Decimal = Field(
+        default=Decimal("0"), description="Success rate (0-1)"
+    )
     avg_latency: int = Field(default=0, description="Average latency in milliseconds")
-    avg_cost: Decimal = Field(default=Decimal("0"), description="Average cost per request")
+    avg_cost: Decimal = Field(
+        default=Decimal("0"), description="Average cost per request"
+    )
     sample_size: int = Field(default=0, description="Number of samples")
-    installations: int = Field(default=1, description="Number of installations using this combination")
+    installations: int = Field(
+        default=1, description="Number of installations using this combination"
+    )
     last_updated: datetime = Field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional global performance metadata")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional global performance metadata"
+    )
 
 
 class UsageLog(BaseModel):
     """Usage log from the existing usage_logs table."""
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    user_id: Optional[str] = Field(None, description="User ID (nullable for anonymous usage)")
+    user_id: Optional[str] = Field(
+        None, description="User ID (nullable for anonymous usage)"
+    )
     provider_id: str = Field(..., description="Reference to provider")
-    usage_model_id: str = Field(..., description="Reference to model") # Renamed from model_id
+    usage_model_id: str = Field(
+        ..., description="Reference to model"
+    )  # Renamed from model_id
     prompt_tokens: int = Field(..., description="Number of prompt tokens used")
     completion_tokens: int = Field(..., description="Number of completion tokens used")
     cost: Decimal = Field(..., description="Cost of the request")
     latency: int = Field(..., description="Request latency in milliseconds")
-    success: bool = Field(default=True, description="Whether the request was successful")
+    success: bool = Field(
+        default=True, description="Whether the request was successful"
+    )
     error: Optional[str] = Field(None, description="Error message if failed")
     task_type_id: Optional[str] = Field(None, description="Reference to task type")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional usage metadata")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional usage metadata"
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -160,7 +209,9 @@ class UserSpendingLimits(BaseModel):
     hourly_request_limit: int = Field(..., description="Maximum hourly requests")
 
     # Per-request limits
-    max_cost_per_request: Decimal = Field(..., description="Maximum cost per single request")
+    max_cost_per_request: Decimal = Field(
+        ..., description="Maximum cost per single request"
+    )
     max_tokens_per_request: int = Field(..., description="Maximum tokens per request")
 
     # Current usage
@@ -185,7 +236,7 @@ class UserSpendingLimits(BaseModel):
                 "hourly_cost_limit": Decimal("0.25"),
                 "hourly_request_limit": 15,
                 "max_cost_per_request": Decimal("0.10"),
-                "max_tokens_per_request": 2000
+                "max_tokens_per_request": 2000,
             },
             UserTier.LILBEAN: {
                 "daily_cost_limit": Decimal("5.00"),
@@ -194,7 +245,7 @@ class UserSpendingLimits(BaseModel):
                 "hourly_cost_limit": Decimal("1.00"),
                 "hourly_request_limit": 50,
                 "max_cost_per_request": Decimal("0.50"),
-                "max_tokens_per_request": 4000
+                "max_tokens_per_request": 4000,
             },
             UserTier.CLAWBACK: {
                 "daily_cost_limit": Decimal("25.00"),
@@ -203,7 +254,7 @@ class UserSpendingLimits(BaseModel):
                 "hourly_cost_limit": Decimal("5.00"),
                 "hourly_request_limit": 200,
                 "max_cost_per_request": Decimal("2.00"),
-                "max_tokens_per_request": 8000
+                "max_tokens_per_request": 8000,
             },
             UserTier.BIGCHONK: {
                 "daily_cost_limit": Decimal("100.00"),
@@ -212,7 +263,7 @@ class UserSpendingLimits(BaseModel):
                 "hourly_cost_limit": Decimal("20.00"),
                 "hourly_request_limit": 500,
                 "max_cost_per_request": Decimal("10.00"),
-                "max_tokens_per_request": 16000
+                "max_tokens_per_request": 16000,
             },
             UserTier.MEOWTRIX: {
                 "daily_cost_limit": Decimal("500.00"),
@@ -221,8 +272,8 @@ class UserSpendingLimits(BaseModel):
                 "hourly_cost_limit": Decimal("100.00"),
                 "hourly_request_limit": 2000,
                 "max_cost_per_request": Decimal("50.00"),
-                "max_tokens_per_request": 32000
-            }
+                "max_tokens_per_request": 32000,
+            },
         }
         return limits.get(tier, limits[UserTier.FREE])
 
@@ -240,15 +291,21 @@ class UserProviderConfig(BaseModel):
 
     # Security settings
     security_level: SecurityLevel = Field(default=SecurityLevel.USER)
-    allowed_models: List[str] = Field(default_factory=list, description="Specific models user can access")
-    blocked_models: List[str] = Field(default_factory=list, description="Models user cannot access")
+    allowed_models: List[str] = Field(
+        default_factory=list, description="Specific models user can access"
+    )
+    blocked_models: List[str] = Field(
+        default_factory=list, description="Models user cannot access"
+    )
 
     # Cost controls
     spending_limits: UserSpendingLimits
 
     # Status
     is_active: bool = Field(default=True)
-    is_verified: bool = Field(default=False, description="Whether API key has been verified")
+    is_verified: bool = Field(
+        default=False, description="Whether API key has been verified"
+    )
     last_verified_at: Optional[datetime] = Field(None)
 
     # Metadata
@@ -265,36 +322,56 @@ class ModelSelectionRequest(BaseModel):
     user_tier: UserTier = Field(..., description="User subscription tier")
 
     # Content details
-    estimated_tokens: int = Field(..., description="Estimated token count for cost calculation")
+    estimated_tokens: int = Field(
+        ..., description="Estimated token count for cost calculation"
+    )
     priority: ModelPriority = Field(default=ModelPriority.MEDIUM)
 
     # Cost controls
-    max_cost: Optional[Decimal] = Field(None, description="Maximum acceptable cost override")
+    max_cost: Optional[Decimal] = Field(
+        None, description="Maximum acceptable cost override"
+    )
 
     # Model preferences
-    preferred_providers: List[str] = Field(default_factory=list, description="Preferred provider types")
-    excluded_providers: List[str] = Field(default_factory=list, description="Excluded provider types")
+    preferred_providers: List[str] = Field(
+        default_factory=list, description="Preferred provider types"
+    )
+    excluded_providers: List[str] = Field(
+        default_factory=list, description="Excluded provider types"
+    )
 
     # Requirements
-    min_context_length: Optional[int] = Field(None, description="Minimum context length required")
-    required_capabilities: List[str] = Field(default_factory=list, description="Required model capabilities")
+    min_context_length: Optional[int] = Field(
+        None, description="Minimum context length required"
+    )
+    required_capabilities: List[str] = Field(
+        default_factory=list, description="Required model capabilities"
+    )
 
     # Security context
-    use_user_keys: bool = Field(default=False, description="Use user's own API keys if available")
+    use_user_keys: bool = Field(
+        default=False, description="Use user's own API keys if available"
+    )
 
 
 class ModelSelectionResponse(BaseModel):
     """Response with selected model and security/cost information."""
 
     # Selected model
-    selected_model_id: str = Field(..., description="Selected model ID") # Renamed from model_id
+    selected_model_id: str = Field(
+        ..., description="Selected model ID"
+    )  # Renamed from model_id
     provider_id: str = Field(..., description="Provider ID")
-    selected_model_name: str = Field(..., description="Human-readable model name") # Renamed from model_name
+    selected_model_name: str = Field(
+        ..., description="Human-readable model name"
+    )  # Renamed from model_name
     provider_type: str = Field(..., description="Provider type")
 
     # Cost information
     estimated_cost: Decimal = Field(..., description="Estimated cost for the request")
-    cost_breakdown: Dict[str, Decimal] = Field(..., description="Detailed cost breakdown")
+    cost_breakdown: Dict[str, Decimal] = Field(
+        ..., description="Detailed cost breakdown"
+    )
 
     # Security information
     using_user_keys: bool = Field(..., description="Whether using user's API keys")
@@ -302,14 +379,21 @@ class ModelSelectionResponse(BaseModel):
 
     # Selection reasoning
     reasoning: str = Field(..., description="Why this model was selected")
-    fallback_models: List[str] = Field(default_factory=list, description="Alternative models if primary fails")
+    fallback_models: List[str] = Field(
+        default_factory=list, description="Alternative models if primary fails"
+    )
 
     # Usage tracking
-    request_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Unique request ID for tracking")
+    request_id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="Unique request ID for tracking",
+    )
 
     # Warnings
     cost_warning: Optional[str] = Field(None, description="Cost-related warnings")
-    security_warning: Optional[str] = Field(None, description="Security-related warnings")
+    security_warning: Optional[str] = Field(
+        None, description="Security-related warnings"
+    )
 
 
 class CreateProviderRequest(BaseModel):
@@ -321,7 +405,9 @@ class CreateProviderRequest(BaseModel):
     base_url: Optional[str] = Field(None, description="Custom API endpoint URL")
     organization_id: Optional[str] = Field(None, description="Organization ID")
     regions: List[str] = Field(default_factory=list, description="Supported regions")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
 
 
 class UpdateProviderRequest(BaseModel):
@@ -348,5 +434,9 @@ class UsageStatsResponse(BaseModel):
     requests_today: int = Field(..., description="Requests made today")
     tokens_today: int = Field(..., description="Tokens used today")
     cost_today: Decimal = Field(..., description="Cost incurred today")
-    top_models: List[Dict[str, Any]] = Field(default_factory=list, description="Most used models")
-    performance_summary: Dict[str, Any] = Field(default_factory=dict, description="Performance summary")
+    top_models: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Most used models"
+    )
+    performance_summary: Dict[str, Any] = Field(
+        default_factory=dict, description="Performance summary"
+    )

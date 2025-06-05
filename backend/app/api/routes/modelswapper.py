@@ -21,8 +21,12 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 from app.models.mswap_models import (
-    UserProviderConfig, UserTier, CreateProviderConfigRequest, UpdateProviderConfigRequest,
-    ModelSelectionRequest, ModelSelectionResponse
+    UserProviderConfig,
+    UserTier,
+    CreateProviderConfigRequest,
+    UpdateProviderConfigRequest,
+    ModelSelectionRequest,
+    ModelSelectionResponse,
     # Removed: ModelDefinition, ModelPerformance, TaskRoutingPreference, UserApiUsage
 )
 from app.services.modelswapper_service import ModelSwapperService
@@ -37,53 +41,57 @@ modelswapper_service = ModelSwapperService()
 
 
 # === Authentication & Authorization ===
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> Dict[str, Any]:
     """
     Extract user information from JWT token.
-    
+
     TODO: Implement proper JWT validation with Supabase
     For now, returns mock user data.
     """
     # TODO: Validate JWT token with Supabase
     # TODO: Extract user_id, tier, and other claims
-    
+
     # Mock user data for development
     return {
         "user_id": "mock-user-123",
         "email": "user@example.com",
         "tier": UserTier.BIGCHONK,
-        "is_active": True
+        "is_active": True,
     }
 
 
 async def require_tier(min_tier: UserTier):
     """Dependency to require minimum user tier."""
+
     def _check_tier(user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
         user_tier = UserTier(user.get("tier", UserTier.FREE))
-        
+
         # Define tier hierarchy
         tier_levels = {
             UserTier.FREE: 0,
             UserTier.LILBEAN: 1,
             UserTier.CLAWBACK: 2,
             UserTier.BIGCHONK: 3,
-            UserTier.MEOWTRIX: 4
+            UserTier.MEOWTRIX: 4,
         }
-        
+
         if tier_levels.get(user_tier, 0) < tier_levels.get(min_tier, 0):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"This feature requires {min_tier.value} tier or higher"
+                detail=f"This feature requires {min_tier.value} tier or higher",
             )
-        
+
         return user
-    
+
     return _check_tier
 
 
 # === Response Models ===
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str
     timestamp: str
     details: Dict[str, Any]
@@ -91,6 +99,7 @@ class HealthResponse(BaseModel):
 
 class UsageStatsResponse(BaseModel):
     """User usage statistics response."""
+
     user_id: str
     current_tier: UserTier
     usage_today: Dict[str, int]
@@ -107,27 +116,24 @@ async def health_check():
     try:
         health_data = await modelswapper_service.health_check()
         return HealthResponse(
-            status="healthy",
-            timestamp=health_data["timestamp"],
-            details=health_data
+            status="healthy", timestamp=health_data["timestamp"], details=health_data
         )
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="ModelSwapper service is unhealthy"
+            detail="ModelSwapper service is unhealthy",
         )
 
 
 # === Model Selection Endpoints ===
 @router.post("/select-model", response_model=ModelSelectionResponse)
 async def select_model(
-    request: ModelSelectionRequest,
-    user: Dict[str, Any] = Depends(get_current_user)
+    request: ModelSelectionRequest, user: Dict[str, Any] = Depends(get_current_user)
 ):
     """
     Select the best AI model for a given task.
-    
+
     This endpoint uses intelligent routing to select the optimal model based on:
     - Task type and requirements
     - User tier and preferences
@@ -139,29 +145,30 @@ async def select_model(
         # Set user context in request
         request.user_id = user["user_id"]
         request.user_tier = UserTier(user.get("tier", UserTier.FREE))
-        
+
         response = await modelswapper_service.select_best_model(request)
-        
-        logger.info(f"Selected model {response.selected_model_name} for user {user['user_id']}")
-        return response
-        
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+
+        logger.info(
+            f"Selected model {response.selected_model_name} for user {user['user_id']}"
         )
+        return response
+
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Model selection failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to select model"
+            detail="Failed to select model",
         )
 
 
 # === Provider Configuration Endpoints (High-Tier Users) ===
-@router.get("/provider-configs", response_model=List[UserProviderConfig]) # Changed to UserProviderConfig
+@router.get(
+    "/provider-configs", response_model=List[UserProviderConfig]
+)  # Changed to UserProviderConfig
 async def get_provider_configs(
-    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
+    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK)),
 ):
     """Get user's provider configurations (Clawback tier and above)."""
     try:
@@ -171,95 +178,98 @@ async def get_provider_configs(
         logger.error(f"Failed to get provider configs: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve provider configurations"
+            detail="Failed to retrieve provider configurations",
         )
 
 
-@router.post("/provider-configs", response_model=UserProviderConfig) # Changed to UserProviderConfig
+@router.post(
+    "/provider-configs", response_model=UserProviderConfig
+)  # Changed to UserProviderConfig
 async def create_provider_config(
     request: CreateProviderConfigRequest,
-    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
+    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK)),
 ):
     """Create a new provider configuration with user's API key."""
     try:
         config = await modelswapper_service.create_user_provider_config(
             user["user_id"], request
         )
-        
-        logger.info(f"Created provider config for {request.provider_type} by user {user['user_id']}")
+
+        logger.info(
+            f"Created provider config for {request.provider_type} by user {user['user_id']}"
+        )
         return config
-        
+
     except Exception as e:
         logger.error(f"Failed to create provider config: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create provider configuration"
+            detail="Failed to create provider configuration",
         )
 
 
-@router.put("/provider-configs/{config_id}", response_model=UserProviderConfig) # Changed to UserProviderConfig
+@router.put(
+    "/provider-configs/{config_id}", response_model=UserProviderConfig
+)  # Changed to UserProviderConfig
 async def update_provider_config(
     config_id: str,
     request: UpdateProviderConfigRequest,
-    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
+    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK)),
 ):
     """Update an existing provider configuration."""
     try:
         config = await modelswapper_service.update_user_provider_config(
             user["user_id"], config_id, request
         )
-        
+
         logger.info(f"Updated provider config {config_id} by user {user['user_id']}")
         return config
-        
+
     except Exception as e:
         logger.error(f"Failed to update provider config: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update provider configuration"
+            detail="Failed to update provider configuration",
         )
 
 
 @router.delete("/provider-configs/{config_id}")
 async def delete_provider_config(
-    config_id: str,
-    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
+    config_id: str, user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
 ):
     """Delete a provider configuration."""
     try:
         success = await modelswapper_service.delete_user_provider_config(
             user["user_id"], config_id
         )
-        
+
         if not success:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Provider configuration not found"
+                detail="Provider configuration not found",
             )
-        
+
         logger.info(f"Deleted provider config {config_id} by user {user['user_id']}")
         return {"message": "Provider configuration deleted successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to delete provider config: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete provider configuration"
+            detail="Failed to delete provider configuration",
         )
 
 
 # === Usage & Analytics Endpoints ===
 @router.get("/usage", response_model=UsageStatsResponse)
-async def get_usage_stats(
-    user: Dict[str, Any] = Depends(get_current_user)
-):
+async def get_usage_stats(user: Dict[str, Any] = Depends(get_current_user)):
     """Get user's API usage statistics and rate limits."""
     try:
         # TODO: Implement usage statistics retrieval
         # This would query UserApiUsage table and aggregate data
-        
+
         # Mock response for now
         return UsageStatsResponse(
             user_id=user["user_id"],
@@ -271,15 +281,15 @@ async def get_usage_stats(
             rate_limits={
                 "requests_per_hour": 100,
                 "tokens_per_day": 50000,
-                "remaining_today": 37500
-            }
+                "remaining_today": 37500,
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Failed to get usage stats: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve usage statistics"
+            detail="Failed to retrieve usage statistics",
         )
 
 
@@ -287,13 +297,13 @@ async def get_usage_stats(
 @router.get("/models/performance")
 async def get_model_performance(
     task_type: Optional[TaskType] = None,
-    user: Dict[str, Any] = Depends(get_current_user)
+    user: Dict[str, Any] = Depends(get_current_user),
 ):
     """Get model performance statistics for the user."""
     try:
         # TODO: Implement performance data retrieval
         # Query ModelPerformance table for user's models
-        
+
         # Mock response
         return {
             "user_id": user["user_id"],
@@ -304,7 +314,7 @@ async def get_model_performance(
                     "success_rate": 98.5,
                     "avg_response_time": 2.3,
                     "total_requests": 156,
-                    "avg_quality_score": 4.7
+                    "avg_quality_score": 4.7,
                 },
                 {
                     "model_name": "Claude 3.5 Sonnet",
@@ -312,14 +322,14 @@ async def get_model_performance(
                     "success_rate": 99.2,
                     "avg_response_time": 1.8,
                     "total_requests": 89,
-                    "avg_quality_score": 4.8
-                }
-            ]
+                    "avg_quality_score": 4.8,
+                },
+            ],
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to get model performance: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve model performance data"
+            detail="Failed to retrieve model performance data",
         )
