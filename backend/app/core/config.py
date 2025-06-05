@@ -1,5 +1,5 @@
 """
-ChatChonk Configuration Module
+ChatChonk Configuration Module - adjusted for pipeline error
 
 This module defines all configuration settings for the ChatChonk application.
 It uses Pydantic's BaseSettings for automatic environment variable loading and validation.
