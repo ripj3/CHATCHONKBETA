@@ -931,7 +931,6 @@ class AutoModel:
         await cls.ensure_initialized()
         
         # Start timing
-        start_time = time.time()
         
         try:
             # Create content object with media data

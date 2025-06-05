@@ -296,7 +296,6 @@ class DatabaseService:
                 raise ValueError("No INTO clause found in INSERT query")
 
             into_part = query[into_match + 5:].strip()
-            table_name_insert = into_part.split()[0].strip()
 
             # For now, return empty list as INSERT parsing is complex
             # In production, you'd want to parse the VALUES clause
@@ -318,7 +317,6 @@ class DatabaseService:
                 raise ValueError("No UPDATE clause found")
 
             update_part = query[update_match + 7:].strip()
-            table_name_update = update_part.split()[0].strip()
 
             # For now, return empty list as UPDATE parsing is complex
             logger.warning(f"UPDATE query parsing not fully implemented for: {query}")
