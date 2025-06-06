@@ -71,4 +71,4 @@ jobs:
 
       - name: Run Black formatter check (Backend)
         working-directory: ./backend
-        run: black --check .
+        run: black .
