@@ -5,7 +5,7 @@ const nextConfig = {
   swcMinify: true,
 
   // Output standalone build for optimal deployment on platforms like Render (Docker)
-  output: 'export', // Changed from 'standalone' to 'export'
+  output: 'export', // Use static export for Render.com single-service deployment
   // Image Optimization Configuration
   // https://nextjs.org/docs/pages/api-reference/components/image#remotepatterns
   // Add remote patterns for any external image sources you use (e.g., Supabase Storage)
@@ -122,14 +122,8 @@ const nextConfig = {
   // Useful for proxying API requests in development or cleaner URLs.
   // Example (proxying to backend in development, using your actual port 8080):
   async rewrites() {
-    return process.env.NODE_ENV === 'development'
-      ? [
-          {
-            source: '/api/:path*',
-            destination: 'http://localhost:8080/api/:path*', // Your actual FastAPI backend URL
-          },
-        ]
-      : [];
+    // No rewrites needed for static export; API requests go to the same origin
+    return [];
   },
 
   // CORS Configuration for Next.js API Routes (if you use them)

@@ -25,8 +25,8 @@ from pydantic import (
     PostgresDsn,  # Not directly used but good for reference if direct DB DSN needed
     SecretStr,
     validator,
+    BaseSettings,  # <-- Add this import here
 )
-from pydantic_settings import BaseSettings
 
 
 class LogLevel(str, Enum):
@@ -146,15 +146,12 @@ class Settings(BaseSettings):
         alias="CHONK_SECRET_KEY",  # Alias to match .env.example
         description="Secret key for signing tokens, cookies, etc. CRITICAL for production.",
     )
-    ALLOWED_ORIGINS: List[str] = Field(
-        default=[
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-        ],  # Default for local Next.js dev
+    ALLOWED_ORIGINS: str = Field(
+        default="",
         description="Comma-separated list of allowed CORS origins.",
     )
-    ALLOWED_HOSTS: List[str] = Field(
-        default=["localhost", "127.0.0.1"],
+    ALLOWED_HOSTS: str = Field(
+        default="",
         description="Comma-separated list of allowed host headers.",
     )
     API_KEY: Optional[SecretStr] = Field(
@@ -502,147 +499,136 @@ class Settings(BaseSettings):
         default=None, description="Moderator role ID."
     )
     DISCORD_SUPPORT_ROLE_ID: Optional[int] = Field(
-        default=None, description="Support team role ID."
+        default=None, description="Support role ID."
     )
 
     # ======================================================================
-    # CLOUDFLARE KV CACHING (Recommended)
+    # CLOUDFLARE KV CACHING (RECOMMENDED – Free 1GB tier)
     # ======================================================================
     CLOUDFLARE_API_TOKEN: Optional[SecretStr] = Field(
-        default=None, description="Cloudflare API token for KV access."
+        default=None, description="Cloudflare API Token for KV access."
     )
     CLOUDFLARE_ACCOUNT_ID: Optional[str] = Field(
-        default=None, description="Cloudflare account ID."
+        default=None, description="Cloudflare Account ID."
     )
     CLOUDFLARE_KV_NAMESPACE_ID: Optional[str] = Field(
-        default=None, description="Cloudflare KV namespace ID for caching."
+        default=None, description="Cloudflare KV Namespace ID for caching."
     )
 
     # ======================================================================
-    # REDIS CACHING (Optional - Deprecated in favor of Cloudflare KV)
+    # REDIS CACHING (OPTIONAL – Deprecated in favor of Cloudflare KV)
     # ======================================================================
-    REDIS_HOST: str = Field(default="localhost", description="Redis server host.")
-    REDIS_PORT: int = Field(default=6379, description="Redis server port.")
+    REDIS_HOST: str = Field(default="localhost", description="Redis host.")
+    REDIS_PORT: int = Field(default=6379, description="Redis port.")
     REDIS_PASSWORD: Optional[SecretStr] = Field(
-        default=None, description="Redis password (if any)."
+        default=None, description="Redis password."
     )
     REDIS_ENABLED: bool = Field(
-        default=False, description="Enable Redis for caching and other tasks."
-    )  # Added to control usage
-
-    # ======================================================================
-    # ADVANCED SECURITY & VALIDATION
-    # ======================================================================
-    RATE_LIMIT_ENABLED: bool = Field(
-        default=False, description="Enable rate limiting for API endpoints."
-    )
-    RATE_LIMIT_REQUESTS: int = Field(
-        default=100, description="Default rate limit requests count."
-    )  # Renamed from user list for clarity
-    RATE_LIMIT_WINDOW_MINUTES: int = Field(
-        default=60, description="Default rate limit window in minutes."
-    )  # Renamed
-    RATE_LIMIT_REQUESTS_PER_MINUTE: int = Field(
-        default=1000,
-        description="Alternative rate limit: requests per minute (used if RATE_LIMIT_WINDOW_MINUTES is not primary).",
+        default=False, description="Enable or disable Redis caching."
     )
 
+    # ======================================================================
+    # MONITORING & OBSERVABILITY
+    # ======================================================================
+    SENTRY_DSN: Optional[SecretStr] = Field(
+        default=None, description="Sentry DSN for error tracking."
+    )
+    ENABLE_AUDIT_LOGGING: bool = Field(
+        default=True, description="Enable detailed audit logging."
+    )
+    LOG_ROTATION_DAYS: int = Field(
+        default=90, description="Number of days to retain log files before rotation."
+    )
+
+    # ======================================================================
+    # SECURITY & VALIDATION SETTINGS (Backend)
+    # ======================================================================
     ENABLE_INPUT_VALIDATION: bool = Field(
-        default=True, description="Enable strict input validation for API requests."
+        default=True, description="Enable validation for API request payloads."
     )
     ENABLE_CONTENT_VALIDATION: bool = Field(
-        default=True, description="Enable validation of content within uploaded files."
+        default=True, description="Enable content validation (e.g., PII checks) for uploaded files."
     )
     ENABLE_REQUEST_SIGNING: bool = Field(
-        default=False,
-        description="Enable request signing for specific sensitive operations (advanced).",
+        default=True, description="Enable request signing for inter-service communication."
     )
     REQUEST_SIGNATURE_EXPIRY_SECONDS: int = Field(
-        default=300, description="Expiry time for request signatures (5 minutes)."
+        default=300, description="Expiry time for request signatures in seconds."
     )
     ENABLE_IP_FILTERING: bool = Field(
-        default=False, description="Enable IP address filtering for API access."
+        default=False, description="Enable IP filtering for API access."
     )
-    ALLOWED_IPS: List[str] = Field(
-        default=[],
-        description="Comma-separated list of allowed IP addresses or CIDR blocks if IP filtering is enabled.",
+    ALLOWED_IPS: str = Field(
+        default="", description="Comma-separated list of allowed IP addresses or CIDR blocks if IP filtering is enabled."
     )
 
     # ======================================================================
-    # PROMPT & OUTPUT SAFETY (Content Filtering)
+    # RATE LIMITING CONFIGURATION (Backend)
+    # ======================================================================
+    RATE_LIMIT_ENABLED: bool = Field(
+        default=False, description="Enable global API rate limiting."
+    )
+    RATE_LIMIT_REQUESTS: int = Field(
+        default=100, description="Default number of requests allowed within the rate limit window."
+    )
+    RATE_LIMIT_WINDOW_MINUTES: int = Field(
+        default=60, description="Default rate limit window in minutes."
+    )
+    RATE_LIMIT_REQUESTS_PER_MINUTE: int = Field(
+        default=1000, description="Requests per minute for general rate limiting."
+    )
+
+    # ======================================================================
+    # PROMPT & OUTPUT SAFETY FILTERS (Backend - AutoModel)
     # ======================================================================
     ENABLE_PROMPT_FILTERING: bool = Field(
-        default=True,
-        description="Enable filtering of prompts sent to AI models for safety.",
+        default=True, description="Enable safety filtering for user prompts."
     )
     PROMPT_FILTER_LEVEL: str = Field(
-        default="medium",
-        description="Severity level for prompt filtering (e.g., low, medium, high).",
+        default="medium", description="Level of prompt filtering (low, medium, high)."
     )
     ENABLE_OUTPUT_FILTERING: bool = Field(
-        default=True,
-        description="Enable filtering of outputs received from AI models for safety.",
+        default=True, description="Enable safety filtering for model outputs."
     )
     OUTPUT_FILTER_LEVEL: str = Field(
-        default="medium", description="Severity level for output filtering."
+        default="medium", description="Level of output filtering (low, medium, high)."
     )
 
     # ======================================================================
-    # TESTING & MOCKING (Development/Test environments only)
+    # API ACCESS CONTROL (Backend)
+    # ======================================================================
+    # REQUIRE_API_KEY is defined under SECURITY SETTINGS
+    # API_KEY_EXPIRY_DAYS is defined under SECURITY SETTINGS
+    # MAX_API_KEYS_PER_USER is defined under SECURITY SETTINGS
+
+    # ======================================================================
+    # TESTING / MOCK TOGGLES (Mainly for local development and testing)
     # ======================================================================
     ENABLE_MOCK_AUTH: bool = Field(
-        default=False, description="Enable mock authentication for testing purposes."
+        default=False, description="If true, bypasses real authentication for testing."
     )
     ENABLE_MOCK_SUPABASE: bool = Field(
-        default=False, description="Enable mock Supabase client for testing purposes."
+        default=False, description="If true, uses mock Supabase client for testing."
     )
 
-    # === Post-initialization for environment-specific paths ===
-    def model_post_init(self, __context: Any) -> None:
-        """Set environment-specific default paths and create directories if needed."""
-        # UPLOAD_DIR, EXPORT_DIR, STORAGE_PATH are expected to be None if using cloud storage.
+    # ======================================================================
+    # FRONTEND SPECIFIC (Next.js - these are prefixed with NEXT_PUBLIC_)
+    # These are built into the frontend bundle and are publicly accessible.
+    # ======================================================================
+    NEXT_PUBLIC_APP_NAME: str = Field(
+        default="ChatChonk", description="Public application name for frontend."
+    )
+    NEXT_PUBLIC_API_URL: AnyHttpUrl = Field(
+        default="http://localhost:8080/api",
+        description="Public API URL for frontend to connect to.",
+    )
+    NEXT_PUBLIC_SUPABASE_URL: Optional[AnyHttpUrl] = Field(
+        default=None, description="Public Supabase URL for frontend."
+    )
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: Optional[SecretStr] = Field(
+        default=None, description="Public Supabase anonymous key for frontend."
+    )
 
-        if self.ENVIRONMENT in {Environment.DEVELOPMENT, Environment.TEST}:
-            # Local development paths for temporary files and logs
-            self.TEMP_DIR = self.TEMP_DIR or Path(
-                "./tmp"
-            )  # Default to ./tmp if not set by env
-            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path(
-                "./ephemeral_storage"
-            )  # Default if not set
-
-            # LOG_FILE defaults to None (from Field definition).
-            # Only set a local file path if it's not already defined (e.g., by an env var)
-            # and we are in a dev/test environment.
-            if self.LOG_FILE is None:
-                self.LOG_FILE = Path("chatchonk.log")
-
-            # Create local directories if they are configured
-            if self.TEMP_DIR:
-                self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
-            if self.EPHEMERAL_STORAGE_PATH:
-                self.EPHEMERAL_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
-            if self.LOG_FILE:  # If LOG_FILE is now set (e.g., to "chatchonk.log")
-                # Ensure parent directory for the log file exists for local file logging
-                self.LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
-
-        elif self.ENVIRONMENT in {
-            Environment.STAGING,
-            Environment.PRODUCTION,
-            Environment.PRODUCTION_BETA,
-        }:
-            # For cloud environments, TEMP_DIR and EPHEMERAL_STORAGE_PATH might use /tmp
-            self.TEMP_DIR = self.TEMP_DIR or Path("/tmp")  # /tmp should exist
-            self.EPHEMERAL_STORAGE_PATH = self.EPHEMERAL_STORAGE_PATH or Path(
-                "/tmp/ephemeral_storage"
-            )
-
-            # For production, LOG_FILE is already None by default (directing logs to stdout).
-            # If LOG_FILE is explicitly set via an environment variable to a path (e.g., /var/log/app.log),
-            # it's assumed that path is managed by the Docker image/environment, so no directory creation here.
-            pass  # No specific LOG_FILE path assignment needed here, relies on default=None or env var.
-
-    # === Validators ===
     @validator(
         "ALLOWED_ORIGINS", "ALLOWED_HOSTS", "ALLOWED_IPS", pre=True, allow_reuse=True
     )
@@ -654,340 +640,143 @@ class Settings(BaseSettings):
 
     @validator("ALLOWED_FILE_TYPES", pre=True, allow_reuse=True)
     def _parse_allowed_file_types(cls, v: Union[str, List[str]]) -> str:
-        """
-        Ensure ALLOWED_FILE_TYPES is a comma-separated string.
-        If a list or set is provided, convert it to a comma-separated string.
-        """
-        if isinstance(v, (list, set)):
-            # Convert list/set to comma-separated string
-            return ",".join(
-                [
-                    item.strip().lower().lstrip(".")
-                    for item in v
-                    if isinstance(item, str) and item.strip()
-                ]
-            )
-        elif isinstance(v, str):
-            # Ensure it's a clean comma-separated string without extra spaces or leading dots
-            return ",".join(
-                [
-                    item.strip().lower().lstrip(".")
-                    for item in v.split(",")
-                    if item.strip()
-                ]
-            )
-        raise ValueError(
-            "ALLOWED_FILE_TYPES must be a comma-separated string, list, or set."
-        )
-
-    @validator("DEBUG", allow_reuse=True)
-    def _debug_implies_log_level_debug(cls, v: bool, values: Dict[str, Any]) -> bool:
-        """If DEBUG is True, set LOG_LEVEL to DEBUG unless already more verbose."""
-        if v and values.get("LOG_LEVEL") not in [LogLevel.DEBUG]:
-            values["LOG_LEVEL"] = LogLevel.DEBUG
-            logging.warning("DEBUG mode enabled: Overriding LOG_LEVEL to DEBUG.")
-        return v
-
-    @validator("DEFAULT_AI_PROVIDER", allow_reuse=True)
-    def _validate_default_ai_provider_key(
-        cls, v: AiProvider, values: Dict[str, Any]
-    ) -> AiProvider:
-        """Validate that the API key for the default AI provider is set, or fall back."""
-        key_name_map = {
-            AiProvider.HUGGINGFACE: "HUGGINGFACE_API_KEY",
-            AiProvider.OPENAI: "OPENAI_API_KEY",
-            AiProvider.ANTHROPIC: "ANTHROPIC_API_KEY",
-            AiProvider.MISTRAL: "MISTRAL_API_KEY",
-            AiProvider.DEEPSEEK: "DEEPSEEK_API_KEY",
-            AiProvider.QWEN: "QWEN_API_KEY",
-        }
-
-        default_provider_key_env_var = key_name_map.get(v)
-
-        if default_provider_key_env_var and not values.get(
-            default_provider_key_env_var
-        ):
-            logging.warning(
-                f"API key for default provider '{v.value}' ({default_provider_key_env_var}) is not set. "
-                "Attempting to find an alternative provider with a set API key."
-            )
-            # Try to find any available provider with a key
-            for provider_enum, key_env_var in key_name_map.items():
-                if values.get(key_env_var):
-                    logging.warning(
-                        f"Falling back to '{provider_enum.value}' as it has an API key."
-                    )
-                    return provider_enum
-
-            logging.error(
-                f"No API key found for the default provider '{v.value}' or any alternative providers. "
-                "AI processing will likely fail. Please set at least one AI provider API key."
-            )
+        """Ensure ALLOWED_FILE_TYPES is a comma-separated string."""
+        if isinstance(v, list):
+            return ",".join(v)
         return v
 
     class Config:
-        env_file = ".env"
+        """Pydantic configuration for Settings."""
+
+        env_file = ".env.local"  # Load from .env.local for local development
         env_file_encoding = "utf-8"
-        case_sensitive = (
-            False  # Typically env vars are case-insensitive, but can be True if needed
-        )
-        validate_assignment = True  # Ensure type hints are respected on assignment
-
-        # Custom section for ChatChonk-specific metadata (not loaded from env)
-        chatchonk_settings = {
-            "app_tagline": "Tame the Chatter. Find the Signal.",
-            "app_audience": "Second-brain builders and neurodivergent thinkers",
-            "app_creator": "Rip Jonesy",
-            "app_creation_date": "May 2025",
-        }
+        case_sensitive = True
+        extra = "ignore"  # Ignore extra environment variables not defined in Settings
+        populate_by_name = True  # Allow fields to be populated by their alias
+        protected_namespaces = ("model_")  # Protect pydantic's internal model_ prefix
 
 
+# Move get_settings outside the class
 @lru_cache()
-def get_settings() -> Settings:
+def get_settings() -> "Settings":
     """
-    Get cached application settings.
-    This function ensures that settings are loaded only once.
+    Get application settings.
+    Uses lru_cache to ensure settings are loaded only once.
     """
-    logging.info("Loading application settings...")
     settings = Settings()
-    if settings.DEBUG:  # Re-check after full load
-        logging.getLogger().setLevel(logging.DEBUG)
-        for handler in logging.getLogger().handlers:
-            handler.setLevel(logging.DEBUG)
-        logging.debug("Debug mode is ON. Logging level set to DEBUG.")
-    else:
-        logging.getLogger().setLevel(settings.LOG_LEVEL.value)
-        for handler in logging.getLogger().handlers:
-            handler.setLevel(settings.LOG_LEVEL.value)
-
-    # Ensure Supabase keys are present if URL is set
-    if settings.SUPABASE_URL and (
-        not settings.SUPABASE_KEY or not settings.SUPABASE_SERVICE_ROLE_KEY
-    ):
-        logging.warning(
-            "SUPABASE_URL is set, but SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY is missing. "
-            "Supabase integration may not function correctly."
-        )
-
     return settings
 
 
-# For easy access to settings throughout the application
+# Initialize settings
 settings = get_settings()
 
-if __name__ == "__main__":
-    # Example of how to access settings
-    print(f"ChatChonk Settings Loaded for Environment: {settings.ENVIRONMENT.value}")
-    print(f"  Project Name: {settings.PROJECT_NAME}")
-    print(f"  API URL (Dev): {settings.API_URL}")
-    print(f"  Production API URL: {settings.PRODUCTION_API_URL or 'Not Set'}")
-    print(f"  Debug Mode: {settings.DEBUG}")
-    print(f"  Log Level: {settings.LOG_LEVEL.value}")
-    print(f"  Default AI Provider: {settings.DEFAULT_AI_PROVIDER.value}")
-    if settings.HUGGINGFACE_API_KEY:
-        print(f"  HuggingFace API Key: Set (value redacted)")
-    else:
-        print(f"  HuggingFace API Key: Not Set")
+# Configure logging based on settings
 
-    # Debugging: Print raw environment variable to confirm it's seen by the process
-    hf_key_raw = os.getenv("HUGGINGFACE_API_KEY")
-    print(
-        f"  Raw HUGGINGFACE_API_KEY from os.getenv: {'Set' if hf_key_raw else 'Not Set'}"
-    )
-    print(f"  Supabase URL: {settings.SUPABASE_URL or 'Not Set'}")
-    print(f"  Allowed Origins: {settings.ALLOWED_ORIGINS}")
-    # Ensure LOG_FILE is handled correctly, it might be None
-    log_file_path = "stdout"
-    if settings.LOG_FILE:
-        try:
-            log_file_path = str(settings.LOG_FILE.resolve())
-        except (
-            Exception
-        ):  # Handle cases where resolve might fail (e.g. not a file path)
-            log_file_path = str(settings.LOG_FILE)
-    elif settings.LOG_FILE is None:
-        log_file_path = "None (stdout)"
+# Apply debug mode override for logging
+logging.getLogger(__name__).setLevel(logging.DEBUG)
+logging.getLogger("uvicorn").setLevel(logging.DEBUG)
+logging.getLogger("uvicorn.access").setLevel(logging.DEBUG)
+logging.getLogger("uvicorn.error").setLevel(logging.DEBUG)
+logging.getLogger("fastapi").setLevel(logging.DEBUG)
+logging.getLogger("httpx").setLevel(logging.DEBUG)
+logging.getLogger("httpcore").setLevel(logging.DEBUG)
+logging.getLogger("supabase").setLevel(logging.DEBUG)
+logging.getLogger("postgrest").setLevel(logging.DEBUG)
+logging.getLogger("pydantic_settings").setLevel(logging.DEBUG)
+logging.getLogger("app").setLevel(logging.DEBUG)
 
-    print(f"  Log File: {log_file_path}")
+# Ensure local directories exist if specified
+if settings.UPLOAD_DIR:
+    settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+if settings.TEMP_DIR:
+    settings.TEMP_DIR.mkdir(parents=True, exist_ok=True)
+if settings.EXPORT_DIR:
+    settings.EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+if settings.STORAGE_PATH:
+    settings.STORAGE_PATH.mkdir(parents=True, exist_ok=True)
+if settings.EPHEMERAL_STORAGE_PATH:
+    settings.EPHEMERAL_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 
-    # Check UPLOAD_DIR, TEMP_DIR etc. safely as they can be None
-    upload_dir_path = "Not Set (Cloud Storage)"
-    if settings.UPLOAD_DIR:
-        try:
-            upload_dir_path = str(settings.UPLOAD_DIR.resolve())
-        except Exception:
-            upload_dir_path = str(settings.UPLOAD_DIR)
-    print(f"  Upload Directory: {upload_dir_path}")
+# Ensure templates directory exists
+settings.TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
 
-    templates_dir_path = "Not Set"
-    if settings.TEMPLATES_DIR:
-        try:
-            templates_dir_path = str(settings.TEMPLATES_DIR.resolve())
-        except Exception:
-            templates_dir_path = str(settings.TEMPLATES_DIR)
-    print(f"  Templates Directory: {templates_dir_path}")
+# Log key settings (excluding sensitive ones)
+logging.info(f"Project Name: {settings.PROJECT_NAME}")
+logging.info(f"Environment: {settings.ENVIRONMENT.value}")
+logging.info(f"Debug Mode: {settings.DEBUG}")
+logging.info(f"API URL: {settings.API_URL}")
+logging.info(f"Frontend URL: {settings.FRONTEND_URL}")
+logging.info(f"Allowed Origins: {settings.ALLOWED_ORIGINS}")
+logging.info(f"Log Level: {settings.LOG_LEVEL.value}")
+logging.info(f"Templates Directory: {settings.TEMPLATES_DIR.resolve()}")
 
-    print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
+# Conditional logging for Supabase
+if settings.SUPABASE_URL:
+    logging.info(f"Supabase URL: {settings.SUPABASE_URL}")
+else:
+    logging.warning("Supabase URL is not set. Database features may be limited.")
 
-    if settings.REDIS_ENABLED:
-        print(
-            f"  Redis Enabled: Host={settings.REDIS_HOST}, Port={settings.REDIS_PORT}"
-        )
-    else:
-        print(f"  Redis Enabled: False")
-
-# Update the main section to correctly print LOG_FILE path
-if __name__ == "__main__":
-    # ... (previous print statements) ...
-
-    # Correctly print LOG_FILE path, handling None
-    log_file_display = "None (stdout)"
-    if settings.LOG_FILE:
-        try:
-            # Attempt to resolve if it's a Path object and not None
-            log_file_display = str(settings.LOG_FILE.resolve())
-        except AttributeError:
-            # Fallback if LOG_FILE is not a Path object (e.g. already a string, or if resolve fails)
-            log_file_display = str(settings.LOG_FILE)
-    print(f"  Log File: {log_file_display}")
-
-    # ... (other print statements like UPLOAD_DIR, TEMPLATES_DIR, etc.) ...
-    # Ensure UPLOAD_DIR is handled correctly if it's None
-    upload_dir_display = "None (Cloud Storage)"
-    if settings.UPLOAD_DIR:
-        try:
-            upload_dir_display = str(settings.UPLOAD_DIR.resolve())
-        except AttributeError:
-            upload_dir_display = str(settings.UPLOAD_DIR)
-    print(f"  Upload Directory: {upload_dir_display}")
-
-    # Ensure TEMPLATES_DIR is handled correctly
-    templates_dir_display = "Not Set"
-    if settings.TEMPLATES_DIR:
-        try:
-            templates_dir_display = str(settings.TEMPLATES_DIR.resolve())
-        except AttributeError:
-            templates_dir_display = str(settings.TEMPLATES_DIR)
-    print(f"  Templates Directory: {templates_dir_display}")
-    # ...
-    # (The rest of the __main__ block)
-    # ...
-    print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
-
-    if settings.REDIS_ENABLED:
-        print(
-            f"  Redis Enabled: Host={settings.REDIS_HOST}, Port={settings.REDIS_PORT}"
-        )
-    else:
-        print(f"  Redis Enabled: False")
-
-# Final __main__ block for clarity, ensuring only one is active.
-# Remove previous __main__ if this is the intended one.
-if __name__ == "__main__":
-    # Example of how to access settings
-    print(f"ChatChonk Settings Loaded for Environment: {settings.ENVIRONMENT.value}")
-    print(f"  Project Name: {settings.PROJECT_NAME}")
-    print(f"  API URL (Dev): {settings.API_URL}")
-    print(f"  Production API URL: {settings.PRODUCTION_API_URL or 'Not Set'}")
-    print(f"  Debug Mode: {settings.DEBUG}")
-    print(f"  Log Level: {settings.LOG_LEVEL.value}")
-
-    # Display LOG_FILE path
-    log_file_display = "None (stdout)"
-    if settings.LOG_FILE:
-        # Check if it's a Path object before calling resolve
-        if isinstance(settings.LOG_FILE, Path):
-            try:
-                log_file_display = str(settings.LOG_FILE.resolve())
-            except Exception as e:  # Catch potential errors if path is invalid
-                log_file_display = f"Invalid Path ({settings.LOG_FILE}): {e}"
-        else:  # If it's not a Path object (e.g. already a string)
-            log_file_display = str(settings.LOG_FILE)
-    print(f"  Log File: {log_file_display}")
-
-    print(f"  Default AI Provider: {settings.DEFAULT_AI_PROVIDER.value}")
-    if settings.HUGGINGFACE_API_KEY:
-        print(f"  HuggingFace API Key: Set (value redacted)")
-    else:
-        print(f"  HuggingFace API Key: Not Set")
-
-    # Debugging: Print raw environment variable
-    hf_key_raw = os.getenv("HUGGINGFACE_API_KEY")
-    print(
-        f"  Raw HUGGINGFACE_API_KEY from os.getenv: {'Set' if hf_key_raw else 'Not Set'}"
+# Conditional logging for MSWAP Supabase
+if settings.MSWAP_SUPABASE_URL:
+    logging.info(f"MSWAP Supabase URL: {settings.MSWAP_SUPABASE_URL}")
+else:
+    logging.warning(
+        "MSWAP Supabase URL is not set. ModelSwapper features may be limited."
     )
 
-    print(f"  Supabase URL: {settings.SUPABASE_URL or 'Not Set'}")
-    print(f"  Allowed Origins: {settings.ALLOWED_ORIGINS}")
+# Conditional logging for Cloudflare KV
+if settings.CLOUDFLARE_API_TOKEN and settings.CLOUDFLARE_ACCOUNT_ID:
+    logging.info("Cloudflare KV caching is configured.")
+else:
+    logging.warning("Cloudflare KV caching is not fully configured.")
 
-    # Display UPLOAD_DIR path
-    upload_dir_display = "None (Cloud Storage)"
-    if settings.UPLOAD_DIR:
-        if isinstance(settings.UPLOAD_DIR, Path):
-            try:
-                upload_dir_display = str(settings.UPLOAD_DIR.resolve())
-            except Exception as e:
-                upload_dir_display = f"Invalid Path ({settings.UPLOAD_DIR}): {e}"
-        else:
-            upload_dir_display = str(settings.UPLOAD_DIR)
-    print(f"  Upload Directory: {upload_dir_display}")
+# Conditional logging for AI Providers
+if settings.HUGGINGFACE_API_KEY:
+    logging.info("Hugging Face API key is set.")
+if settings.OPENAI_API_KEY:
+    logging.info("OpenAI API key is set.")
+if settings.ANTHROPIC_API_KEY:
+    logging.info("Anthropic API key is set.")
+if settings.MISTRAL_API_KEY:
+    logging.info("Mistral AI API key is set.")
+if settings.DEEPSEEK_API_KEY:
+    logging.info("DeepSeek API key is set.")
+if settings.QWEN_API_KEY:
+    logging.info("Qwen API key is set.")
 
-    # Display TEMPLATES_DIR path
-    templates_dir_display = "Not Set"
-    if settings.TEMPLATES_DIR:
-        if isinstance(settings.TEMPLATES_DIR, Path):
-            try:
-                templates_dir_display = str(settings.TEMPLATES_DIR.resolve())
-            except Exception as e:
-                templates_dir_display = f"Invalid Path ({settings.TEMPLATES_DIR}): {e}"
-        else:
-            templates_dir_display = str(settings.TEMPLATES_DIR)
-    print(f"  Templates Directory: {templates_dir_display}")
+# Conditional logging for Discord
+if settings.DISCORD_BOT_TOKEN:
+    logging.info("Discord integration is configured.")
+else:
+    logging.warning("Discord integration is not configured.")
 
-    print(f"  Custom Tagline: {settings.Config.chatchonk_settings['app_tagline']}")
+# Conditional logging for Stripe
+if settings.USE_STRIPE_PLANS:
+    logging.info("Stripe billing is enabled.")
+    if not settings.STRIPE_PUBLISHABLE_KEY or not settings.STRIPE_SECRET_KEY:
+        logging.warning("Stripe keys are not fully configured for billing.")
+else:
+    logging.info("Stripe billing is disabled.")
 
-    if settings.REDIS_ENABLED:
-        print(
-            f"  Redis Enabled: Host={settings.REDIS_HOST}, Port={settings.REDIS_PORT}"
-        )
-    else:
-        print(f"  Redis Enabled: False")
+# Conditional logging for IP filtering
+if settings.ENABLE_IP_FILTERING:
+    logging.info(f"IP Filtering Enabled. Allowed IPs: {settings.ALLOWED_IPS}")
+else:
+    logging.info("IP Filtering Disabled.")
 
-    # Example for EPHEMERAL_STORAGE_PATH
-    ephemeral_path_display = "Not Set"
-    if settings.EPHEMERAL_STORAGE_PATH:
-        if isinstance(settings.EPHEMERAL_STORAGE_PATH, Path):
-            try:
-                ephemeral_path_display = str(settings.EPHEMERAL_STORAGE_PATH.resolve())
-            except Exception as e:
-                ephemeral_path_display = (
-                    f"Invalid Path ({settings.EPHEMERAL_STORAGE_PATH}): {e}"
-                )
-        else:
-            ephemeral_path_display = str(settings.EPHEMERAL_STORAGE_PATH)
-    print(f"  Ephemeral Storage Path: {ephemeral_path_display}")
+# Conditional logging for Rate Limiting
+if settings.RATE_LIMIT_ENABLED:
+    logging.info(
+        f"Rate Limiting Enabled: {settings.RATE_LIMIT_REQUESTS_PER_MINUTE} req/min."
+    )
+else:
+    logging.info("Rate Limiting Disabled.")
 
-    print("\nTesting model_post_init behavior:")
-    print(f"  Environment: {settings.ENVIRONMENT.value}")
-    print(f"  TEMP_DIR: {settings.TEMP_DIR}")
-    print(f"  EPHEMERAL_STORAGE_PATH: {settings.EPHEMERAL_STORAGE_PATH}")
-    print(f"  LOG_FILE (after init): {settings.LOG_FILE}")
+# Conditional logging for Mock Toggles
+if settings.ENABLE_MOCK_AUTH:
+    logging.warning("Mock Authentication is ENABLED.")
+if settings.ENABLE_MOCK_SUPABASE:
+    logging.warning("Mock Supabase is ENABLED.")
 
-    if settings.ENVIRONMENT in {Environment.DEVELOPMENT, Environment.TEST}:
-        if settings.TEMP_DIR:
-            assert settings.TEMP_DIR.exists(), "TEMP_DIR should exist in dev/test"
-        if settings.EPHEMERAL_STORAGE_PATH:
-            assert (
-                settings.EPHEMERAL_STORAGE_PATH.exists()
-            ), "EPHEMERAL_STORAGE_PATH should exist in dev/test"
-        if settings.LOG_FILE and settings.LOG_FILE.name == "chatchonk.log":
-            assert (
-                settings.LOG_FILE.parent.exists()
-            ), "LOG_FILE parent should exist in dev/test if it's chatchonk.log"
-            print(
-                "  Local directory creation for TEMP, EPHEMERAL, LOG_FILE parent verified (if applicable)."
-            )
 
-    print("\nAll settings loaded and basic checks complete.")
 
-# Minor change to trigger workflow

@@ -25,13 +25,13 @@ from fastapi.staticfiles import StaticFiles
 from collections import defaultdict
 
 # Import application settings
-from app.core.config import settings
-
-# Configure logging
+from backend.app.core.config import settings
 logging.basicConfig(
     level=settings.LOG_LEVEL.value,
     format=settings.LOG_FORMAT,
 )
+
+# Configure logging
 logger = logging.getLogger("chatchonk")
 
 # In-memory metrics storage (for demonstration purposes)
@@ -292,7 +292,6 @@ app.include_router(api_router)
 # Files, Templates, Exports, AI routers will be added incrementally
 
 # Mount frontend static files (serve frontend from backend)
-# This allows single service deployment saving $7/month
 try:
     app.mount("/", StaticFiles(directory="frontend_build", html=True), name="frontend")
     logger.info("Frontend static files mounted successfully")

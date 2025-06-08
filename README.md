@@ -213,31 +213,33 @@ ChatChonk is optimized for **Render.com** deployment with the included `render.y
 3. **Configure user tiers** and spending limits
 4. **Set up monitoring** for cost controls
 
-### **Alternative: Traditional VPS Deployment**
+## 🛠️ Combined Deployment on Render.com (Single Service)
 
-For self-hosted deployment on Ubuntu 22.04+ VPS:
+To run both the FastAPI backend and the static Next.js frontend from a single Render.com service:
 
-```bash
-# System setup
-sudo apt update && sudo apt install python3.11-venv nodejs npm nginx git
+1. **Build and Copy Frontend**
+   - Use the provided PowerShell script:
+     ```pwsh
+     ./build_and_copy_frontend.ps1
+     ```
+   - This will build the frontend, export static files, and copy them to `frontend_build/` for FastAPI to serve.
 
-# Clone and build
-git clone https://github.com/ripj3/CHATCHONKBETA.git /opt/chatchonk
-cd /opt/chatchonk
+2. **Start the Backend**
+   - On Render, set the start command to:
+     ```pwsh
+     python -m uvicorn backend.main:app --host 0.0.0.0 --port $env:PORT
+     ```
 
-# Backend
-python3.11 -m venv .venv && source .venv/bin/activate
-pip install -r backend/requirements.txt
+3. **Environment Variables**
+   - Set all required backend and frontend (`NEXT_PUBLIC_...`) variables in the Render dashboard.
+   - Set `ALLOWED_ORIGINS` to your Render service URL (e.g., `https://your-app.onrender.com`).
+   - Set `NEXT_PUBLIC_API_URL` to `/api` (relative path) for single-origin deployment.
 
-# Frontend
-cd frontend && npm ci && npm run build
+4. **render.yaml**
+   - The service is already configured for Docker-based deployment and will use the static files in `frontend_build/`.
 
-# Process management with PM2
-sudo npm i -g pm2
-pm2 start "uvicorn backend.main:app --host 0.0.0.0 --port 8000" --name chatchonk-api
-pm2 start "npm start" --name chatchonk-frontend --cwd frontend
-pm2 save && pm2 startup
-```
+5. **CORS**
+   - No special CORS config is needed for single-origin. If you split services later, update `ALLOWED_ORIGINS` accordingly.
 
 ---
 

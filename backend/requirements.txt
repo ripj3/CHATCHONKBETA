@@ -85,8 +85,6 @@ ruff==0.1.3  # Fast linter
 
 # === Production Server Tools ===
 gunicorn==21.2.0  # WSGI HTTP Server
-uvloop==0.19.0  # Fast event loop
-httptools==0.6.1  # Fast HTTP parsing
 watchfiles==0.21.0  # File watching
 
 # === Monitoring and Logging ===

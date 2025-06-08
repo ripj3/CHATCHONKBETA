@@ -7,7 +7,7 @@
 # Version: 1.2.0 (Single Service)
 # Date: May 30, 2025
 
-version: 1
+version: "1"
 
 # Environment Group for shared secrets (create this in Render Dashboard)
 # Add SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY,
@@ -17,35 +17,24 @@ envVarGroups:
     envVars:
       # CHCH3 (Main Database) Configuration
       - key: SUPABASE_URL
-        fromGroup: NEWBETAKEYS1
       - key: SUPABASE_KEY # Typically refers to SUPABASE_ANON_KEY for client-side
-        fromGroup: NEWBETAKEYS1
       - key: SUPABASE_SERVICE_ROLE_KEY
-        fromGroup: NEWBETAKEYS1
 
       # MSWAP (ModelSwapper Database) Configuration
       - key: MSWAP_SUPABASE_URL
-        fromGroup: NEWBETAKEYS1
       - key: MSWAP_SUPABASE_ANON_KEY
-        fromGroup: NEWBETAKEYS1
       - key: MSWAP_SUPABASE_SERVICE_ROLE_KEY
-        fromGroup: NEWBETAKEYS1
 
       # AI Provider Keys
       - key: HUGGINGFACE_API_KEY
-        fromGroup: NEWBETAKEYS1
 
       # Security Keys
       - key: CHONK_SECRET_KEY
-        fromGroup: NEWBETAKEYS1
 
       # Cloudflare KV Cache Configuration
       - key: CLOUDFLARE_API_TOKEN
-        fromGroup: NEWBETAKEYS1
       - key: CLOUDFLARE_ACCOUNT_ID
-        fromGroup: NEWBETAKEYS1
       - key: CLOUDFLARE_KV_NAMESPACE_ID
-        fromGroup: NEWBETAKEYS1
 
       # Public URLs needed by the frontend build process (now part of backend build)
       # These are referenced in next.config.js and will be baked into the static export.
@@ -57,9 +46,7 @@ envVarGroups:
       - key: NEXT_PUBLIC_APP_NAME
         value: "ChatChonk"
       - key: NEXT_PUBLIC_SUPABASE_URL
-        fromGroup: NEWBETAKEYS1
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        fromGroup: NEWBETAKEYS1
       - key: NEXT_PUBLIC_FRONTEND_URL
         # This should be the external URL of this 'chatchonk-api' service itself.
         # Example: https://chatchonk-api-xxxx.onrender.com
@@ -73,11 +60,11 @@ services:
   # ---------------------------------------------------------------------------
   - type: web # Render's web service type for applications that listen for HTTP requests
     name: chatchonk-api # Name of the service in Render
-    env: docker # Deploy using a Dockerfile that now includes frontend build
+    runtime: docker # Deploy using a Dockerfile that now includes frontend build
     branch: main-beta # Deploy from the 'main-beta' branch
     rootDir: . # Docker build context is the repository root
     # dockerfilePath: ./Dockerfile # Default location, no need to specify
-    autoDeploy: true # Automatically deploy on push to the specified branch
+    autoDeploy: false # Set to false to enable manual deploys during debugging
     buildFilter: # Optional: only build if changes are detected in these paths
       paths:
         - "backend/**"
@@ -123,9 +110,3 @@ services:
     #   - name: chatchonk-data
     #     mountPath: /app/persistent_data # Example mount path inside container
     #     sizeGB: 10
-    cache: # Cache for backend (e.g. pip cache) and frontend (node_modules, .next/cache during build)
-      # Paths are relative to the repository root.
-      # These are used during the multi-stage Docker build.
-      - path: /root/.cache/pip # For Python dependencies in builder stage
-      - path: frontend/node_modules # For Node.js dependencies in frontend-builder stage
-      - path: frontend/.next/cache # For Next.js build cache in frontend-builder stage

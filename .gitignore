@@ -94,3 +94,10 @@ DEPLOYMENT_CHECKLIST.md
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Static frontend build output (served by FastAPI)
+frontend_build/
+
+# PowerShell and batch scripts (optional, for local-only scripts)
+*.ps1
+*.bat
