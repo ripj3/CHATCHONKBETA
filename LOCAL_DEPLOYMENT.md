@@ -45,6 +45,9 @@ Start the FastAPI backend (serves both API and frontend):
 ```pwsh
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8080
 ```
+
+> **Tip:** If you see an error that the command is not recognized, make sure you are using `./build_and_copy_frontend.ps1` (with `./` or `.\`) to run the build script, not just the filename. PowerShell does not run scripts from the current directory by default.
+
 - The app will be available at: http://localhost:8080
 - API docs: http://localhost:8080/api/docs
 - Frontend: http://localhost:8080
