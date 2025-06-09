@@ -414,16 +414,6 @@ async def health_check():
 # Simple API router for basic endpoints
 api_router = APIRouter(prefix="/api", tags=["API"])
 
-@api_router.get("/health")
-async def health_check():
-    """Health check endpoint for monitoring."""
-    return {
-        "status": "ok",
-        "service": "chatchonk-api",
-        "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT,
-    }
-
 @api_router.get("/status")
 async def api_status():
     """API status endpoint."""
