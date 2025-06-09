@@ -1,5 +1,5 @@
 """
-ChatChonk - Main FastAPI Application Entry Point
+ChatChonk -- Main FastAPI Application Entry Point
 
 This module initializes the FastAPI application with all necessary middleware,
 routers, and configuration for the ChatChonk backend.
