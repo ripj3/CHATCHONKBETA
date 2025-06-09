@@ -26,7 +26,7 @@ from fastapi.staticfiles import StaticFiles  # Ensure fastapi is installed: pip 
 from collections import defaultdict
 
 # Import application settings
-from app.core.config import settings  # Changed from backend.app.core.config to app.core.config
+from app.core.config import settings  # Import using relative path
 logging.basicConfig(
     level=settings.LOG_LEVEL.value,
     format=settings.LOG_FORMAT,
@@ -119,8 +119,9 @@ app = FastAPI(
     Designed for second-brain builders and neurodivergent thinkers.
     """,
     version=settings.APP_VERSION,
-    docs_url=f"{settings.API_V1_STR}/docs",
-    redoc_url=f"{settings.API_V1_STR}/redoc",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     lifespan=lifespan,
     root_path=settings.ROOT_PATH,  # Apply root path if configured
@@ -237,26 +238,18 @@ async def health_check():
     }
 
 
-# Simple root endpoint
-@app.get("/", tags=["System"])
-async def root():
-    """Root endpoint."""
-    return {"message": "ChatChonk API is running", "status": "ok"}
-
-
-# Import and include API routers
-# TODO: Re-enable ModelSwapper router once the model issues are fixed
-# try:
-#     # ModelSwapper router - handles model configuration and selection
-#     from app.api.routes.modelswapper import router as modelswapper_router
-#     app.include_router(modelswapper_router, prefix=settings.API_V1_STR)
-#     logger.info("ModelSwapper router loaded successfully")
-# except Exception as e:
-#     logger.warning(f"Could not load ModelSwapper router: {e}")
-
 # Simple API router for basic endpoints
 api_router = APIRouter(prefix="/api", tags=["API"])
 
+@api_router.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring."""
+    return {
+        "status": "ok",
+        "service": "chatchonk-api",
+        "version": settings.APP_VERSION,
+        "environment": settings.ENVIRONMENT,
+    }
 
 @api_router.get("/status")
 async def api_status():
@@ -292,25 +285,62 @@ app.include_router(api_router)
 # TODO: Add other routers as they are implemented and tested
 # Files, Templates, Exports, AI routers will be added incrementally
 
-# Mount frontend static files (serve frontend from backend)
+# Configure and mount frontend static files
+def configure_static_files(app: FastAPI) -> None:
+    try:
+        # Use absolute path instead of relative path
+        frontend_dir = Path("C:/DEV/DEV_PROJECTS/B15B_CHATCHONK7/frontend_build")
+        logger.info(f"[STATIC_FILES] Looking for frontend build at: {frontend_dir}")
+        
+        if not frontend_dir.exists():
+            logger.error(f"[STATIC_FILES] Frontend build directory not found at: {frontend_dir}")
+            raise FileNotFoundError(f"Frontend build directory not found at: {frontend_dir}")
+
+        logger.info(f"[STATIC_FILES] Found frontend build directory at: {frontend_dir}")
+        logger.info("[STATIC_FILES] Frontend build contents:")
+        for item in frontend_dir.iterdir():
+            logger.info(f"[STATIC_FILES] - {item.name}")
+
+        # First mount API router before any static files
+        logger.info("Mounting API router at /api")
+        app.include_router(api_router)
+        
+        # Then mount specific static directories
+        static_mounts = {
+            "/_next/static": frontend_dir / "_next" / "static",
+            "/admin": frontend_dir / "admin",
+            "/images": frontend_dir / "images",
+            "/icons": frontend_dir / "icons",
+        }
+
+        for path, directory in static_mounts.items():
+            if directory.exists():
+                logger.info(f"[STATIC_FILES] Mounting {path} from {directory}")
+                app.mount(path, StaticFiles(directory=str(directory), html=True), name=path.strip("/").replace("/", "-"))
+                logger.info(f"[STATIC_FILES] Successfully mounted {path}")
+            else:
+                logger.warning(f"[STATIC_FILES] Directory not found: {directory}")
+
+        # Mount root directory last to handle all other paths
+        logger.info("[STATIC_FILES] Mounting root directory")
+        root_files = StaticFiles(directory=str(frontend_dir), html=True)
+        app.mount("/", root_files, name="frontend")
+        logger.info("[STATIC_FILES] Mounted root directory")
+
+    except Exception as e:
+        logger.error(f"[STATIC_FILES] Error configuring static files: {str(e)}")
+        raise
+
+# Configure static files
 try:
-    # Mount Next.js static assets
-    app.mount("/_next", StaticFiles(directory="frontend_build/_next"), name="next-static")
-    # Mount other static asset directories if they exist
-    if os.path.exists("frontend_build/images"):
-        app.mount("/images", StaticFiles(directory="frontend_build/images"), name="images")
-    if os.path.exists("frontend_build/icons"):
-        app.mount("/icons", StaticFiles(directory="frontend_build/icons"), name="icons")
-    # Mount the admin routes separately to ensure they work with client-side routing
-    if os.path.exists("frontend_build/admin"):
-        app.mount("/admin", StaticFiles(directory="frontend_build/admin"), name="admin")
-    # Mount the root directory last for index.html and other pages
-    app.mount("/", StaticFiles(directory="frontend_build", html=True), name="frontend")
-    logger.info("Frontend static files mounted successfully")
+    logger.info("[STATIC_FILES] Configuring static files...")
+    configure_static_files(app)
+    logger.info("[STATIC_FILES] Static file configuration complete")
 except Exception as e:
-    logger.error(f"Could not mount frontend static files: {e}")
+    logger.error(f"[STATIC_FILES] Failed to mount frontend static files: {str(e)}")
     logger.warning("If running in development mode, make sure to run build_and_copy_frontend.ps1 first")
     logger.info("Frontend will need to be served separately if not mounted")
+    raise  # Re-raise the exception to ensure the server doesn't start with missing static files
 
 
 # Run the application if executed directly
