@@ -217,25 +217,23 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
     """Log request information, timing, and collect basic metrics."""
     start_time = time.time()
 
-    with TraceID() as trace:
-        # Log request details with structured data
-        logger.info(
-            "Request started",
-            extra={
-                "http_method": request.method,
-                "path": request.url.path,
-                "client_host": request.client.host if request.client else "unknown",
-                "user_agent": request.headers.get("user-agent", "unknown"),
-                "query_params": str(request.query_params),
-                "trace_id": trace_id_ctx_var.get()
-            }
-        )
+    logger.info(
+        "Request started",
+        extra={
+            "http_method": request.method,
+            "path": request.url.path,
+            "client_host": request.client.host if request.client else "unknown",
+            "user_agent": request.headers.get("user-agent", "unknown"),
+            "query_params": str(request.query_params),
+            "trace_id": trace_id_ctx_var.get()
+        }
+    )
 
-        # Increment total requests
-        metrics["total_requests"] += 1
-        metrics["request_counts_by_path"][request.url.path] += 1
+    # Increment total requests
+    metrics["total_requests"] += 1
+    metrics["request_counts_by_path"][request.url.path] += 1
 
-        # Process the request
+    # Process the request
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
