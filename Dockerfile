@@ -1,21 +1,23 @@
 ############################
-# 1️⃣  FRONT‑END BUILD
+# 1️⃣  FRONT‑END BUILD STAGE
 ############################
 FROM node:18 AS frontend-builder
 WORKDIR /opt/frontend_build
-# copy manifests first for better cache
-COPY frontend/package.json frontend/package-lock.json* ./
 
-# If a lockfile exists ➜ use npm ci, else fallback to npm install
+# Copy manifests first for cache efficiency
+COPY frontend/package.json frontend/package-lock.json* ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# copy the rest of the frontend code
+# Copy the rest of the frontend source
 COPY frontend/ ./
-RUN npm run build && npm run export           # creates /opt/frontend_build/out
-RUN test -d out                               # fail early if export missing
+
+# Build → static export (no package script needed)
+RUN npm run build \
+    && npx next export -o out        # writes /opt/frontend_build/out
+RUN test -d out                      # fail fast if export missing
 
 ############################
-# 2️⃣  PYTHON DEPS (unchanged)
+# 2️⃣  PYTHON DEP STAGE
 ############################
 FROM python:3.11-slim AS builder
 WORKDIR /install
@@ -24,7 +26,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.txt --prefix=/install --no-cache-dir
 
 ############################
-# 3️⃣  RUNTIME
+# 3️⃣  RUNTIME STAGE
 ############################
 FROM python:3.11-slim AS runtime
 WORKDIR /app
@@ -35,7 +37,7 @@ ENV PORT=${PORT:-8000}
 COPY --from=builder /install /usr/local
 COPY backend/ ./backend
 
-# Static bundle
+# Static frontend bundle
 COPY --from=frontend-builder /opt/frontend_build/out ./frontend_build
 
 CMD ["bash", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"]
