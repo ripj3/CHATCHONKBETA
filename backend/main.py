@@ -14,18 +14,18 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
-import uvicorn
+import uvicorn  # Ensure uvicorn is installed: pip install uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
-from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles  # Ensure fastapi is installed: pip install fastapi
 from collections import defaultdict
 
 # Import application settings
-from backend.app.core.config import settings
+from app.core.config import settings  # Changed from backend.app.core.config to app.core.config
 logging.basicConfig(
     level=settings.LOG_LEVEL.value,
     format=settings.LOG_FORMAT,
@@ -128,7 +128,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=settings.allowed_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -244,14 +244,14 @@ async def root():
 
 
 # Import and include API routers
-try:
-    # ModelSwapper router - handles model configuration and selection
-    from app.api.routes.modelswapper import router as modelswapper_router
-
-    app.include_router(modelswapper_router, prefix=settings.API_V1_STR)
-    logger.info("ModelSwapper router loaded successfully")
-except Exception as e:
-    logger.warning(f"Could not load ModelSwapper router: {e}")
+# TODO: Re-enable ModelSwapper router once the model issues are fixed
+# try:
+#     # ModelSwapper router - handles model configuration and selection
+#     from app.api.routes.modelswapper import router as modelswapper_router
+#     app.include_router(modelswapper_router, prefix=settings.API_V1_STR)
+#     logger.info("ModelSwapper router loaded successfully")
+# except Exception as e:
+#     logger.warning(f"Could not load ModelSwapper router: {e}")
 
 # Simple API router for basic endpoints
 api_router = APIRouter(prefix="/api", tags=["API"])
@@ -293,6 +293,9 @@ app.include_router(api_router)
 
 # Mount frontend static files (serve frontend from backend)
 try:
+    app.mount("/_next", StaticFiles(directory="frontend_build/_next"), name="next-static")
+    app.mount("/images", StaticFiles(directory="frontend_build/images"), name="images")
+    app.mount("/icons", StaticFiles(directory="frontend_build/icons"), name="icons")
     app.mount("/", StaticFiles(directory="frontend_build", html=True), name="frontend")
     logger.info("Frontend static files mounted successfully")
 except Exception as e:

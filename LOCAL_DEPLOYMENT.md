@@ -38,6 +38,13 @@ This will:
 - Copy them to `frontend_build/` for the backend to serve
 - Install backend Python dependencies
 
+> **Note:** During the frontend build, you may see warnings like:
+> 
+>     ⚠ Specified "rewrites" will not automatically work with "output: export".
+>     ⚠ Specified "headers" will not automatically work with "output: export".
+> 
+> These are normal for static export with Next.js and can be safely ignored for local and single-service Render.com deployments. If you need rewrites or custom headers, use a Next.js server deployment instead.
+
 ---
 
 ## 5. Run the Backend (FastAPI)

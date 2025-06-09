@@ -25,8 +25,14 @@ from pydantic import (
     PostgresDsn,  # Not directly used but good for reference if direct DB DSN needed
     SecretStr,
     validator,
-    BaseSettings,  # <-- Add this import here
 )
+
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    raise ImportError(
+        "pydantic-settings is not installed. Please run: pip install pydantic-settings"
+    )
 
 
 class LogLevel(str, Enum):
@@ -562,6 +568,18 @@ class Settings(BaseSettings):
         default="", description="Comma-separated list of allowed IP addresses or CIDR blocks if IP filtering is enabled."
     )
 
+    @property
+    def allowed_origins_list(self) -> list[str]:
+        return [item.strip() for item in self.ALLOWED_ORIGINS.split(",") if item.strip()]
+
+    @property
+    def allowed_hosts_list(self) -> list[str]:
+        return [item.strip() for item in self.ALLOWED_HOSTS.split(",") if item.strip()]
+
+    @property
+    def allowed_ips_list(self) -> list[str]:
+        return [item.strip() for item in self.ALLOWED_IPS.split(",") if item.strip()]
+
     # ======================================================================
     # RATE LIMITING CONFIGURATION (Backend)
     # ======================================================================
@@ -628,22 +646,6 @@ class Settings(BaseSettings):
     NEXT_PUBLIC_SUPABASE_ANON_KEY: Optional[SecretStr] = Field(
         default=None, description="Public Supabase anonymous key for frontend."
     )
-
-    @validator(
-        "ALLOWED_ORIGINS", "ALLOWED_HOSTS", "ALLOWED_IPS", pre=True, allow_reuse=True
-    )
-    def _parse_comma_separated_list(cls, v: Union[str, List[str]]) -> List[str]:
-        """Parse comma-separated string into a list of strings."""
-        if isinstance(v, str):
-            return [item.strip() for item in v.split(",") if item.strip()]
-        return v
-
-    @validator("ALLOWED_FILE_TYPES", pre=True, allow_reuse=True)
-    def _parse_allowed_file_types(cls, v: Union[str, List[str]]) -> str:
-        """Ensure ALLOWED_FILE_TYPES is a comma-separated string."""
-        if isinstance(v, list):
-            return ",".join(v)
-        return v
 
     class Config:
         """Pydantic configuration for Settings."""
@@ -777,6 +779,9 @@ if settings.ENABLE_MOCK_AUTH:
     logging.warning("Mock Authentication is ENABLED.")
 if settings.ENABLE_MOCK_SUPABASE:
     logging.warning("Mock Supabase is ENABLED.")
+
+# Ensure pydantic and pydantic-settings are installed in your environment:
+# pip install pydantic pydantic-settings
 
 
 
