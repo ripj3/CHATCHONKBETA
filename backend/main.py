@@ -10,10 +10,14 @@ Author: Rip Jonesy
 import asyncio
 import logging
 import os
+import platform
 import time
-from contextlib import asynccontextmanager
+import logging.config
+from contextlib import asynccontextmanager, ContextDecorator
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
+import uuid
+from contextvars import ContextVar
 
 import uvicorn  # Ensure uvicorn is installed: pip install uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, status
@@ -25,6 +29,29 @@ from fastapi.routing import APIRouter
 from fastapi.staticfiles import StaticFiles  # Ensure fastapi is installed: pip install fastapi
 from collections import defaultdict
 
+# TraceID for correlating logs
+trace_id_ctx_var = ContextVar("trace_id", default="")
+
+
+class TraceID(ContextDecorator):
+    """Context manager for handling trace IDs in logs"""
+
+    def __enter__(self):
+        self.token = trace_id_ctx_var.set(str(uuid.uuid4()))
+        return self
+
+    def __exit__(self, *exc):
+        trace_id_ctx_var.reset(self.token)
+        return False
+
+
+# Add trace ID to log records
+def trace_id_filter(record):
+    """Add trace_id to log records"""
+    record.trace_id = trace_id_ctx_var.get()
+    return True
+
+
 # Import application settings
 from app.core.config import settings  # Import using relative path
 logging.basicConfig(
@@ -32,7 +59,53 @@ logging.basicConfig(
     format=settings.LOG_FORMAT,
 )
 
-# Configure logging
+# Configure detailed logging for better observability
+log_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "detailed": {
+            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(filename)s:%(lineno)d] [trace_id=%(trace_id)s] - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S %z",
+        }
+    },
+    "filters": {
+        "trace_id_filter": {
+            "()": "logging.Filter",
+            "name": "trace_id_filter"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "detailed",
+            "filters": ["trace_id_filter"]
+        }
+    },
+    "root": {
+        "level": settings.LOG_LEVEL.value,
+        "handlers": ["console"]
+    },
+    "loggers": {
+        "chatchonk": {
+            "level": settings.LOG_LEVEL.value,
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "uvicorn": {
+            "level": settings.LOG_LEVEL.value,
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "fastapi": {
+            "level": settings.LOG_LEVEL.value,
+            "handlers": ["console"],
+            "propagate": False,
+        }
+    }
+}
+
+logging.config.dictConfig(log_config)
 logger = logging.getLogger("chatchonk")
 
 # In-memory metrics storage (for demonstration purposes)
@@ -121,7 +194,6 @@ app = FastAPI(
     version=settings.APP_VERSION,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     lifespan=lifespan,
     root_path=settings.ROOT_PATH,  # Apply root path if configured
@@ -146,15 +218,25 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
     """Log request information, timing, and collect basic metrics."""
     start_time = time.time()
 
-    # Generate request ID
-    request_id = f"req_{int(start_time * 1000)}"
-    logger.info(f"[{request_id}] {request.method} {request.url.path}")
+    with TraceID() as trace:
+        # Log request details with structured data
+        logger.info(
+            "Request started",
+            extra={
+                "http_method": request.method,
+                "path": request.url.path,
+                "client_host": request.client.host if request.client else "unknown",
+                "user_agent": request.headers.get("user-agent", "unknown"),
+                "query_params": str(request.query_params),
+                "trace_id": trace_id_ctx_var.get()
+            }
+        )
 
-    # Increment total requests
-    metrics["total_requests"] += 1
-    metrics["request_counts_by_path"][request.url.path] += 1
+        # Increment total requests
+        metrics["total_requests"] += 1
+        metrics["request_counts_by_path"][request.url.path] += 1
 
-    # Process the request
+        # Process the request
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
@@ -166,21 +248,43 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
             metrics["error_requests"] += 1
             metrics["error_counts_by_path"][request.url.path] += 1
             logger.warning(
-                f"[{request_id}] Completed with error: {response.status_code} ({process_time:.4f}s)"
+                "Request completed with error",
+                extra={
+                    "status_code": response.status_code,
+                    "process_time": f"{process_time:.4f}s",
+                    "path": request.url.path,
+                    "trace_id": trace_id_ctx_var.get()
+                }
             )
         else:
             metrics["successful_requests"] += 1
             logger.info(
-                f"[{request_id}] Completed: {response.status_code} ({process_time:.4f}s)"
+                "Request completed successfully",
+                extra={
+                    "status_code": response.status_code,
+                    "process_time": f"{process_time:.4f}s",
+                    "path": request.url.path,
+                    "trace_id": trace_id_ctx_var.get()
+                }
             )
 
-        # Add timing header
+        # Add timing and tracing headers
         response.headers["X-Process-Time"] = f"{process_time:.4f}"
+        response.headers["X-Trace-ID"] = trace_id_ctx_var.get()
         return response
     except Exception as e:
         metrics["error_requests"] += 1
         metrics["error_counts_by_path"][request.url.path] += 1
-        logger.error(f"[{request_id}] Request failed: {str(e)}")
+        logger.error(
+            "Request failed with unhandled exception",
+            extra={
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "path": request.url.path,
+                "trace_id": trace_id_ctx_var.get()
+            },
+            exc_info=True
+        )
         raise
 
 
@@ -191,12 +295,25 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     metrics["error_requests"] += 1  # Count validation errors as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][status.HTTP_422_UNPROCESSABLE_ENTITY] += 1
+    
+    logger.warning(
+        "Request validation failed",
+        extra={
+            "path": request.url.path,
+            "method": request.method,
+            "validation_errors": exc.errors(),
+            "trace_id": trace_id_ctx_var.get()
+        }
+    )
+    
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "detail": "Invalid request data. Please check your input.",
             "errors": exc.errors(),
+            "trace_id": trace_id_ctx_var.get()
         },
+        headers={"X-Trace-ID": trace_id_ctx_var.get()}
     )
 
 
@@ -206,9 +323,25 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     metrics["error_requests"] += 1  # Count HTTP exceptions as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][exc.status_code] += 1
+    
+    logger.warning(
+        "HTTP exception occurred",
+        extra={
+            "status_code": exc.status_code,
+            "error_detail": exc.detail,
+            "path": request.url.path,
+            "method": request.method,
+            "trace_id": trace_id_ctx_var.get()
+        }
+    )
+    
     return JSONResponse(
         status_code=exc.status_code,
-        content={"detail": exc.detail},
+        content={
+            "detail": exc.detail,
+            "trace_id": trace_id_ctx_var.get()
+        },
+        headers={"X-Trace-ID": trace_id_ctx_var.get()}
     )
 
 
@@ -218,24 +351,67 @@ async def general_exception_handler(request: Request, exc: Exception):
     metrics["error_requests"] += 1  # Count general exceptions as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][status.HTTP_500_INTERNAL_SERVER_ERROR] += 1
-    logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
+    
+    logger.error(
+        "Unhandled exception occurred",
+        extra={
+            "error_type": type(exc).__name__,
+            "error_message": str(exc),
+            "path": request.url.path,
+            "method": request.method,
+            "trace_id": trace_id_ctx_var.get()
+        },
+        exc_info=True
+    )
+    
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "An unexpected error occurred. Please try again later."},
+        content={
+            "detail": "An unexpected error occurred. Please try again later.",
+            "trace_id": trace_id_ctx_var.get()
+        },
+        headers={"X-Trace-ID": trace_id_ctx_var.get()}
     )
 
 
 # Health check endpoint
 @app.get("/health", tags=["System"])
 async def health_check():
-    """Health check endpoint for monitoring."""
-    return {
+    """Health check endpoint for monitoring with detailed diagnostic information."""
+    health_info = {
         "status": "ok",
         "service": "chatchonk-api",
-        "version": "0.1.0",
-        "environment": "production",
-        "debug_mode": False,
+        "version": settings.APP_VERSION,
+        "environment": settings.ENVIRONMENT,
+        "debug_mode": settings.DEBUG,
+        "system_info": {
+            "python_version": platform.python_version(),
+            "platform": platform.platform(),
+        },
+        "settings": {
+            "host": settings.HOST,
+            "port": settings.PORT,
+            "root_path": settings.ROOT_PATH,
+            "allowed_origins": settings.allowed_origins_list,
+            "log_level": settings.LOG_LEVEL.value,
+        },
+        "resources": {
+            "frontend_build": str(Path("frontend_build").absolute()),
+            "static_dirs": {
+                "_next": Path("frontend_build/_next").exists(),
+                "admin": Path("frontend_build/admin").exists(),
+                "images": Path("frontend_build/images").exists(),
+                "icons": Path("frontend_build/icons").exists(),
+            }
+        },
+        "metrics": {
+            "total_requests": metrics["total_requests"],
+            "successful_requests": metrics["successful_requests"],
+            "error_requests": metrics["error_requests"],
+            "status_codes": dict(metrics["status_code_counts"]),
+        }
     }
+    return health_info
 
 
 # Simple API router for basic endpoints

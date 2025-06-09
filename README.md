@@ -293,9 +293,6 @@ graph TD
 
 ---
 
-## 🤝 Contributing
-
-Early *dog-fooding* is welcome—open issues for any pain-points, especially around ADHD usability or new chat export formats.
 
 ---
 

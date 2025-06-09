@@ -10,6 +10,7 @@ python-multipart==0.0.6  # For file uploads
 python-dotenv==1.0.0
 email-validator==2.0.0
 fastapi-pagination==0.12.8
+python-json-logger==2.0.7  # Structured logging for production
 
 # === Supabase Client ===
 supabase==1.2.0
