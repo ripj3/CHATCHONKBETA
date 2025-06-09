@@ -28,6 +28,9 @@ from fastapi.routing import APIRouter
 from fastapi.staticfiles import StaticFiles  # Ensure fastapi is installed: pip install fastapi
 from collections import defaultdict
 
+# Import application settings
+from app.core.config import settings  # Import using relative path
+
 # TraceID for correlating logs
 trace_id_ctx_var = ContextVar("trace_id", default="")
 
@@ -51,8 +54,6 @@ def trace_id_filter(record):
     return True
 
 
-# Import application settings
-from app.core.config import settings  # Import using relative path
 logging.basicConfig(
     level=settings.LOG_LEVEL.value,
     format=settings.LOG_FORMAT,
@@ -64,26 +65,29 @@ log_config = {
     "disable_existing_loggers": False,
     "formatters": {
         "detailed": {
-            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(filename)s:%(lineno)d] [trace_id=%(trace_id)s] - %(message)s",
+            "format": (
+                "[%(asctime)s] %(levelname)s [%(name)s:%(filename)s:%(lineno)d] "
+                "[trace_id=%(trace_id)s] - %(message)s"
+            ),
             "datefmt": "%Y-%m-%d %H:%M:%S %z",
         }
     },
     "filters": {
         "trace_id_filter": {
             "()": "logging.Filter",
-            "name": "trace_id_filter"
+            "name": "trace_id_filter",
         }
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "detailed",
-            "filters": ["trace_id_filter"]
+            "filters": ["trace_id_filter"],
         }
     },
     "root": {
         "level": settings.LOG_LEVEL.value,
-        "handlers": ["console"]
+        "handlers": ["console"],
     },
     "loggers": {
         "chatchonk": {
@@ -100,8 +104,8 @@ log_config = {
             "level": settings.LOG_LEVEL.value,
             "handlers": ["console"],
             "propagate": False,
-        }
-    }
+        },
+    },
 }
 
 logging.config.dictConfig(log_config)
@@ -225,8 +229,8 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
             "client_host": request.client.host if request.client else "unknown",
             "user_agent": request.headers.get("user-agent", "unknown"),
             "query_params": str(request.query_params),
-            "trace_id": trace_id_ctx_var.get()
-        }
+            "trace_id": trace_id_ctx_var.get(),
+        },
     )
 
     # Increment total requests
@@ -250,8 +254,8 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
                     "status_code": response.status_code,
                     "process_time": f"{process_time:.4f}s",
                     "path": request.url.path,
-                    "trace_id": trace_id_ctx_var.get()
-                }
+                    "trace_id": trace_id_ctx_var.get(),
+                },
             )
         else:
             metrics["successful_requests"] += 1
@@ -261,8 +265,8 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
                     "status_code": response.status_code,
                     "process_time": f"{process_time:.4f}s",
                     "path": request.url.path,
-                    "trace_id": trace_id_ctx_var.get()
-                }
+                    "trace_id": trace_id_ctx_var.get(),
+                },
             )
 
         # Add timing and tracing headers
@@ -278,9 +282,9 @@ async def log_and_metric_requests(request: Request, call_next: Callable) -> Resp
                 "error": str(e),
                 "error_type": type(e).__name__,
                 "path": request.url.path,
-                "trace_id": trace_id_ctx_var.get()
+                "trace_id": trace_id_ctx_var.get(),
             },
-            exc_info=True
+            exc_info=True,
         )
         raise
 
@@ -292,25 +296,25 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     metrics["error_requests"] += 1  # Count validation errors as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][status.HTTP_422_UNPROCESSABLE_ENTITY] += 1
-    
+
     logger.warning(
         "Request validation failed",
         extra={
             "path": request.url.path,
             "method": request.method,
             "validation_errors": exc.errors(),
-            "trace_id": trace_id_ctx_var.get()
-        }
+            "trace_id": trace_id_ctx_var.get(),
+        },
     )
-    
+
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "detail": "Invalid request data. Please check your input.",
             "errors": exc.errors(),
-            "trace_id": trace_id_ctx_var.get()
+            "trace_id": trace_id_ctx_var.get(),
         },
-        headers={"X-Trace-ID": trace_id_ctx_var.get()}
+        headers={"X-Trace-ID": trace_id_ctx_var.get()},
     )
 
 
@@ -320,7 +324,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     metrics["error_requests"] += 1  # Count HTTP exceptions as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][exc.status_code] += 1
-    
+
     logger.warning(
         "HTTP exception occurred",
         extra={
@@ -328,17 +332,17 @@ async def http_exception_handler(request: Request, exc: HTTPException):
             "error_detail": exc.detail,
             "path": request.url.path,
             "method": request.method,
-            "trace_id": trace_id_ctx_var.get()
-        }
+            "trace_id": trace_id_ctx_var.get(),
+        },
     )
-    
+
     return JSONResponse(
         status_code=exc.status_code,
         content={
             "detail": exc.detail,
-            "trace_id": trace_id_ctx_var.get()
+            "trace_id": trace_id_ctx_var.get(),
         },
-        headers={"X-Trace-ID": trace_id_ctx_var.get()}
+        headers={"X-Trace-ID": trace_id_ctx_var.get()},
     )
 
 
@@ -348,7 +352,7 @@ async def general_exception_handler(request: Request, exc: Exception):
     metrics["error_requests"] += 1  # Count general exceptions as errors
     metrics["error_counts_by_path"][request.url.path] += 1
     metrics["status_code_counts"][status.HTTP_500_INTERNAL_SERVER_ERROR] += 1
-    
+
     logger.error(
         "Unhandled exception occurred",
         extra={
@@ -356,18 +360,18 @@ async def general_exception_handler(request: Request, exc: Exception):
             "error_message": str(exc),
             "path": request.url.path,
             "method": request.method,
-            "trace_id": trace_id_ctx_var.get()
+            "trace_id": trace_id_ctx_var.get(),
         },
-        exc_info=True
+        exc_info=True,
     )
-    
+
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
             "detail": "An unexpected error occurred. Please try again later.",
-            "trace_id": trace_id_ctx_var.get()
+            "trace_id": trace_id_ctx_var.get(),
         },
-        headers={"X-Trace-ID": trace_id_ctx_var.get()}
+        headers={"X-Trace-ID": trace_id_ctx_var.get()},
     )
 
 
@@ -454,20 +458,23 @@ def configure_static_files(app: FastAPI) -> None:
         # Use absolute path instead of relative path
         frontend_dir = Path("C:/DEV/DEV_PROJECTS/B15B_CHATCHONK7/frontend_build")
         logger.info(f"[STATIC_FILES] Looking for frontend build at: {frontend_dir}")
-        
+
         if not frontend_dir.exists():
             logger.error(f"[STATIC_FILES] Frontend build directory not found at: {frontend_dir}")
             raise FileNotFoundError(f"Frontend build directory not found at: {frontend_dir}")
 
         logger.info(f"[STATIC_FILES] Found frontend build directory at: {frontend_dir}")
-        logger.info("[STATIC_FILES] Frontend build contents:")
-        for item in frontend_dir.iterdir():
-            logger.info(f"[STATIC_FILES] - {item.name}")
+        logger.info(
+            "Frontend build contents:",
+            extra={
+                "contents": [item.name for item in frontend_dir.iterdir()],
+            },
+        )
 
         # First mount API router before any static files
         logger.info("Mounting API router at /api")
         app.include_router(api_router)
-        
+
         # Then mount specific static directories
         static_mounts = {
             "/_next/static": frontend_dir / "_next" / "static",
@@ -485,13 +492,20 @@ def configure_static_files(app: FastAPI) -> None:
                 logger.warning(f"[STATIC_FILES] Directory not found: {directory}")
 
         # Mount root directory last to handle all other paths
-        logger.info("[STATIC_FILES] Mounting root directory")
+        logger.info(
+            "Mounted root directory",
+            extra={
+                "directory": str(frontend_dir),
+            },
+        )
         root_files = StaticFiles(directory=str(frontend_dir), html=True)
         app.mount("/", root_files, name="frontend")
         logger.info("[STATIC_FILES] Mounted root directory")
 
     except Exception as e:
-        logger.error(f"[STATIC_FILES] Error configuring static files: {str(e)}")
+        logger.error(
+            f"[STATIC_FILES] Error configuring static files: {str(e)}",
+        )
         raise
 
 # Configure static files
@@ -500,7 +514,12 @@ try:
     configure_static_files(app)
     logger.info("[STATIC_FILES] Static file configuration complete")
 except Exception as e:
-    logger.error(f"[STATIC_FILES] Failed to mount frontend static files: {str(e)}")
+    logger.warning(
+        "Failed to mount frontend static files",
+        extra={
+            "error": str(e),
+        },
+    )
     logger.warning("If running in development mode, make sure to run build_and_copy_frontend.ps1 first")
     logger.info("Frontend will need to be served separately if not mounted")
     raise  # Re-raise the exception to ensure the server doesn't start with missing static files
