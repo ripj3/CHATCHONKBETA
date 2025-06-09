@@ -14,6 +14,7 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
+
 import uvicorn  # Ensure uvicorn is installed: pip install uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
@@ -293,14 +294,23 @@ app.include_router(api_router)
 
 # Mount frontend static files (serve frontend from backend)
 try:
+    # Mount Next.js static assets
     app.mount("/_next", StaticFiles(directory="frontend_build/_next"), name="next-static")
-    app.mount("/images", StaticFiles(directory="frontend_build/images"), name="images")
-    app.mount("/icons", StaticFiles(directory="frontend_build/icons"), name="icons")
+    # Mount other static asset directories if they exist
+    if os.path.exists("frontend_build/images"):
+        app.mount("/images", StaticFiles(directory="frontend_build/images"), name="images")
+    if os.path.exists("frontend_build/icons"):
+        app.mount("/icons", StaticFiles(directory="frontend_build/icons"), name="icons")
+    # Mount the admin routes separately to ensure they work with client-side routing
+    if os.path.exists("frontend_build/admin"):
+        app.mount("/admin", StaticFiles(directory="frontend_build/admin"), name="admin")
+    # Mount the root directory last for index.html and other pages
     app.mount("/", StaticFiles(directory="frontend_build", html=True), name="frontend")
     logger.info("Frontend static files mounted successfully")
 except Exception as e:
-    logger.warning(f"Could not mount frontend static files: {e}")
-    logger.info("Frontend will need to be deployed separately")
+    logger.error(f"Could not mount frontend static files: {e}")
+    logger.warning("If running in development mode, make sure to run build_and_copy_frontend.ps1 first")
+    logger.info("Frontend will need to be served separately if not mounted")
 
 
 # Run the application if executed directly
