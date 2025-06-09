@@ -9,13 +9,12 @@ Author: Rip Jonesy
 
 import asyncio
 import logging
-import os
 import platform
 import time
 import logging.config
 from contextlib import asynccontextmanager, ContextDecorator
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable
 import uuid
 from contextvars import ContextVar
 

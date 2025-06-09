@@ -8,7 +8,7 @@ Author: Rip Jonesy
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 from supabase import create_client, Client
 from app.core.config import get_settings
 

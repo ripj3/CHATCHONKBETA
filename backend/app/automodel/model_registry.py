@@ -8,16 +8,14 @@ and intelligent model selection for tasks.
 Author: Rip Jonesy
 """
 
-import asyncio
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
 from app.automodel import TaskType, ProviderType, ModelPriority
 from app.automodel.providers import (
     BaseProvider,
     Model,
-    ProviderResponse,
     OpenAIProvider,
     AnthropicProvider,
     HuggingFaceProvider,

@@ -85,7 +85,7 @@ def test_cloudflare_config():
     print(f"✅ API Token: {api_token[:10]}...")
     print(f"✅ Account ID: {account_id}")
     print(f"✅ Namespace ID: {namespace_id}")
-    print(f"✅ Namespace corresponds to: CHCHBETA1")
+    print("✅ Namespace corresponds to: CHCHBETA1")
 
     return True
 

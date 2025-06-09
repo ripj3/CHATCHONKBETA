@@ -8,13 +8,12 @@ and availability. It implements the core "AutoSwap" logic.
 Author: Rip Jonesy
 """
 
-import asyncio
 import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from app.automodel import TaskType, ProviderType, ModelPriority
-from app.automodel.providers import BaseProvider, Model, ProviderResponse
+from app.automodel.providers import Model, ProviderResponse
 from app.automodel.model_registry import ModelRegistry
 
 logger = logging.getLogger("chatchonk.automodel.router")

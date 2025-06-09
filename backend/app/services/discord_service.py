@@ -17,14 +17,12 @@ Author: Rip Jonesy
 import asyncio
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, Optional
 
 import discord
 from discord.ext import commands, tasks
 from pydantic import BaseModel
 
-from app.core.config import get_settings
-from app.models.mswap_models import UserTier
 
 logger = logging.getLogger("chatchonk.discord")
 
@@ -283,7 +281,7 @@ class ChatChonkBot(commands.Bot):
 
             # Send ticket creation message
             embed = discord.Embed(
-                title=f"Support Ticket Created 🎫",
+                title="Support Ticket Created 🎫",
                 description=f"**Ticket ID:** {ticket.ticket_id}\n"
                 f"**Created by:** {ctx.author.mention}\n"
                 f"**Description:** {description}",

@@ -8,34 +8,28 @@ providers, model selection, and task routing to provide a simple, consistent API
 Author: Rip Jonesy
 """
 
-import asyncio
-import functools
 import logging
 import time
 import uuid
 from datetime import datetime
-from functools import lru_cache
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field, ValidationError
 
 from app.core.config import get_settings
 from app.services.cache_service import get_cache_service, CacheService
 from app.services.modelswapper_service import ModelSwapperService
-from app.models.mswap_models import ModelSelectionRequest, UserTier
 
 from .model_registry import ModelRegistry
-from .providers.base import BaseProvider, ProviderResponse
+from .providers.base import BaseProvider
 from .task_router import TaskRouter
 from . import (
     TaskType,
     ProviderType,
     ModelPriority,
-    AutoModelError,
     ProviderNotAvailableError,
     ModelNotFoundError,
     TaskNotSupportedError,
-    ProviderApiError,
     ProcessingError,
 )
 

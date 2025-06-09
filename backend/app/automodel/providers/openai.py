@@ -8,12 +8,10 @@ summarization, and more.
 Author: Rip Jonesy
 """
 
-import asyncio
 import logging
 from typing import Any, Dict, List, Optional, Union
 
 import httpx
-from pydantic import ValidationError
 
 from app.automodel import TaskType, ProviderType
 from .base import BaseProvider, Model, ProviderResponse

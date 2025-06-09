@@ -27,8 +27,7 @@ Usage:
 Author: Rip Jonesy
 """
 
-from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Union
+from enum import Enum
 
 # Forward imports from submodules
 from .model_registry import ModelRegistry

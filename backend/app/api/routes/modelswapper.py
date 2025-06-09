@@ -30,7 +30,7 @@ from app.models.mswap_models import (
     # Removed: ModelDefinition, ModelPerformance, TaskRoutingPreference, UserApiUsage
 )
 from app.services.modelswapper_service import ModelSwapperService
-from app.automodel import TaskType, ProviderType
+from app.automodel import TaskType
 
 logger = logging.getLogger("chatchonk.api.modelswapper")
 

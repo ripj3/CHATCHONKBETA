@@ -9,22 +9,18 @@ Environment variables are loaded from .env file if present.
 Author: Rip Jonesy
 """
 
-import ast   # Added for literal_eval
 import logging
-import os
 import secrets
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Optional
 
 from pydantic import (
     AnyHttpUrl,
     EmailStr,
     Field,
-    PostgresDsn,  # Not directly used but good for reference if direct DB DSN needed
     SecretStr,
-    validator,
 )
 
 try:
