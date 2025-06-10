@@ -1,7 +1,7 @@
 select = ["E", "F"]
-ignore = []
+ignore = ["E501"]
 exclude = ["__pycache__", "tmp", "uploads", "frontend_build"]
-line-length = 88
+line-length = 120
 
 [per-file-ignores]
 "backend/main.py" = ["E402"]

@@ -411,7 +411,9 @@ class AutoModel:
             ):
                 # Try fallback if specific provider/model was requested but not available
                 if (provider or model_id) and not getattr(request, "is_fallback", False):
-                    logger.info(f"Attempting fallback for request {request_id}")
+                    logger.info(
+                        f"Attempting fallback for request {request_id}"
+                    )
                     fallback_request = request.copy()
                     fallback_request.provider = None
                     fallback_request.model_id = None
