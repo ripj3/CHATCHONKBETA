@@ -36,8 +36,8 @@ COPY --from=builder /install /usr/local
 COPY backend/ ./backend
 
 # Static frontend bundle
-# Next.js with `output: 'export'` writes the static site to the `out/` directory
-# regardless of any `distDir` setting.  Copy that folder for FastAPI to serve.
-COPY --from=frontend-builder /opt/frontend_build/out ./frontend_build
+# Next.js with `output: 'export'` writes the static site to the `dist/` directory
+# (or whatever `distDir` is set to). Copy that folder for FastAPI to serve.
+COPY --from=frontend-builder /opt/frontend_build/dist ./frontend_build
 
 CMD ["bash", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"]
