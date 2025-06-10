@@ -36,6 +36,6 @@ COPY --from=builder /install /usr/local
 COPY backend/ ./backend
 
 # Static frontend bundle
-COPY --from=frontend-builder /opt/frontend_build/out ./frontend_build
+COPY --from=frontend-builder /opt/frontend_build/dist ./frontend_build # Updated to use `dist` directory as specified in `next.config.js`
 
 CMD ["bash", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"]
