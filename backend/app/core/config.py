@@ -142,6 +142,10 @@ class Settings(BaseSettings):
         default="https://chatchonk.com",
         description="Base URL for the frontend application.",
     )
+    FRONTEND_BUILD_DIR: Path = Field(
+        default=Path("frontend_build"),
+        description="Directory containing the built frontend for serving static files.",
+    )
     API_DOMAIN: Optional[str] = Field(
         default="api.chatchonk.com", description="Subdomain for the API in production."
     )
@@ -716,6 +720,7 @@ logging.info(f"Frontend URL: {settings.FRONTEND_URL}")
 logging.info(f"Allowed Origins: {settings.ALLOWED_ORIGINS}")
 logging.info(f"Log Level: {settings.LOG_LEVEL.value}")
 logging.info(f"Templates Directory: {settings.TEMPLATES_DIR.resolve()}")
+logging.info(f"Frontend Build Directory: {settings.FRONTEND_BUILD_DIR.resolve()}")
 
 # Conditional logging for Supabase
 if settings.SUPABASE_URL:

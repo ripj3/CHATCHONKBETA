@@ -397,12 +397,12 @@ async def health_check():
             "log_level": settings.LOG_LEVEL.value,
         },
         "resources": {
-            "frontend_build": str(Path("frontend_build").absolute()),
+            "frontend_build": str(settings.FRONTEND_BUILD_DIR.resolve()),
             "static_dirs": {
-                "_next": Path("frontend_build/_next").exists(),
-                "admin": Path("frontend_build/admin").exists(),
-                "images": Path("frontend_build/images").exists(),
-                "icons": Path("frontend_build/icons").exists(),
+                "_next": (settings.FRONTEND_BUILD_DIR / "_next").exists(),
+                "admin": (settings.FRONTEND_BUILD_DIR / "admin").exists(),
+                "images": (settings.FRONTEND_BUILD_DIR / "images").exists(),
+                "icons": (settings.FRONTEND_BUILD_DIR / "icons").exists(),
             }
         },
         "metrics": {
@@ -453,19 +453,18 @@ app.include_router(api_router)
 # Files, Templates, Exports, AI routers will be added incrementally
 
 # Configure and mount frontend static files
-def configure_static_files(app: FastAPI) -> None:
+def configure_static_files(app: FastAPI, frontend_dir: Path | None = None) -> None:
     try:
-        # Use absolute path instead of relative path
-        frontend_dir = Path("C:/DEV/DEV_PROJECTS/B15B_CHATCHONK7/frontend_build")
-        logger.info(f"[STATIC_FILES] Looking for frontend build at: {frontend_dir}")
+        # Determine frontend build directory from settings or default
+        frontend_dir = frontend_dir or settings.FRONTEND_BUILD_DIR
+        logger.info(
+            f"[STATIC_FILES] Looking for frontend build at: {frontend_dir.resolve()}"
+        )
 
         if not frontend_dir.exists():
-            logger.error(
-                f"[STATIC_FILES] Frontend build directory not found at: {frontend_dir}"
-            )
-            raise FileNotFoundError(
-                f"Frontend build directory not found at: {frontend_dir}"
-            )
+            msg = f"Frontend build directory not found at: {frontend_dir}"
+            logger.warning(f"[STATIC_FILES] {msg}")
+            raise FileNotFoundError(msg)
 
         logger.info(
             f"[STATIC_FILES] Found frontend build directory at: {frontend_dir}"
@@ -508,6 +507,11 @@ def configure_static_files(app: FastAPI) -> None:
         app.mount("/", root_files, name="frontend")
         logger.info("[STATIC_FILES] Mounted root directory")
 
+    except FileNotFoundError as e:
+        logger.warning(
+            "[STATIC_FILES] Static files not found; the frontend will need to be served separately",
+            extra={"error": str(e)},
+        )
     except Exception as e:
         logger.error(
             f"[STATIC_FILES] Error configuring static files: {str(e)}",
@@ -520,15 +524,11 @@ try:
     configure_static_files(app)
     logger.info("[STATIC_FILES] Static file configuration complete")
 except Exception as e:
-    logger.warning(
-        "Failed to mount frontend static files",
-        extra={
-            "error": str(e),
-        },
+    logger.error(
+        "Failed to configure frontend static files",
+        extra={"error": str(e)},
     )
-    logger.warning("If running in development mode, make sure to run build_and_copy_frontend.ps1 first")
-    logger.info("Frontend will need to be served separately if not mounted")
-    raise  # Re-raise the exception to ensure the server doesn't start with missing static files
+    raise
 
 
 # Run the application if executed directly
