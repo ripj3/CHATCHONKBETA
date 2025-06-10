@@ -11,10 +11,10 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 # Copy the rest of the frontend source
 COPY frontend/ ./
 
-# Build → static export (no package script needed)
+# Build → static export (no extra npm script needed)
 RUN npm run build \
-    && npx next export -o out        # writes /opt/frontend_build/out
-RUN test -d out                      # fail fast if export missing
+    && npx next export              # writes ./out (default)
+RUN test -d out                     # fail fast if export missing
 
 ############################
 # 2️⃣  PYTHON DEP STAGE
