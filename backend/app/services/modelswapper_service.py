@@ -189,25 +189,29 @@ class ModelSwapperService:
         # Check daily limit
         if current_daily_cost + estimated_cost > limits["daily_cost_limit"]:
             raise CostLimitException(
-                f"Request would exceed daily spending limit of ${limits['daily_cost_limit']}"
+                f"Request would exceed daily spending limit of "
+                f"${limits['daily_cost_limit']}"
             )
 
         # Check hourly limit
         if current_hourly_cost + estimated_cost > limits["hourly_cost_limit"]:
             raise CostLimitException(
-                f"Request would exceed hourly spending limit of ${limits['hourly_cost_limit']}"
+                f"Request would exceed hourly spending limit of "
+                f"${limits['hourly_cost_limit']}"
             )
 
         # Check per-request limit
         if estimated_cost > limits["max_cost_per_request"]:
             raise CostLimitException(
-                f"Request cost ${estimated_cost} exceeds per-request limit of ${limits['max_cost_per_request']}"
+                f"Request cost ${estimated_cost} exceeds per-request limit of "
+                f"${limits['max_cost_per_request']}"
             )
 
         # Emergency circuit breaker
         if estimated_cost > self.emergency_cost_threshold:
             raise CostLimitException(
-                f"Request cost ${estimated_cost} exceeds emergency threshold of ${self.emergency_cost_threshold}"
+                f"Request cost ${estimated_cost} exceeds emergency threshold of "
+                f"${self.emergency_cost_threshold}"
             )
 
     def _calculate_cost(

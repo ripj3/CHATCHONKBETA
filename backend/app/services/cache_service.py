@@ -50,7 +50,10 @@ class CacheService:
                 )
                 self._cf_account_id = cf_account_id
                 self._cf_namespace_id = cf_namespace_id
-                self._cf_base_url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account_id}/storage/kv/namespaces/{cf_namespace_id}"
+                self._cf_base_url = (
+                    f"https://api.cloudflare.com/client/v4/accounts/{cf_account_id}/"
+                    f"storage/kv/namespaces/{cf_namespace_id}"
+                )
 
                 self._http_client = httpx.AsyncClient(
                     headers={

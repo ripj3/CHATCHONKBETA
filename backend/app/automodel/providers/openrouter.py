@@ -71,7 +71,9 @@ class OpenRouterProvider(BaseProvider):
         await self._load_models()
 
         self._is_initialized = True
-        logger.info(f"OpenRouter provider initialized with {len(self._models)} models")
+        logger.info(
+            f"OpenRouter provider initialized with {len(self._models)} models"
+        )
 
     async def _load_models(self) -> None:
         """Load available OpenRouter models and their capabilities."""
@@ -108,7 +110,9 @@ class OpenRouterProvider(BaseProvider):
                     completion_cost = pricing.get("completion", "0")
                     # Use average of prompt and completion costs
                     try:
-                        avg_cost = (float(prompt_cost) + float(completion_cost)) / 2
+                        avg_cost = (
+                            float(prompt_cost) + float(completion_cost)
+                        ) / 2
                         cost_per_1k_tokens = avg_cost * 1000  # Convert to per 1k tokens
                     except (ValueError, TypeError):
                         pass

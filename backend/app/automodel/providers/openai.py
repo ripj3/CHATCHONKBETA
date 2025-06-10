@@ -67,7 +67,9 @@ class OpenAIProvider(BaseProvider):
         await self._load_models()
 
         self._is_initialized = True
-        logger.info(f"OpenAI provider initialized with {len(self._models)} models")
+        logger.info(
+            f"OpenAI provider initialized with {len(self._models)} models"
+        )
 
     async def _load_models(self) -> None:
         """Load available OpenAI models and their capabilities."""
@@ -76,7 +78,9 @@ class OpenAIProvider(BaseProvider):
             {
                 "id": "gpt-4o",
                 "name": "GPT-4o",
-                "description": "Most advanced GPT-4 model with vision capabilities",
+                "description": (
+                    "Most advanced GPT-4 model with vision capabilities"
+                ),
                 "max_tokens": 128000,
                 "supports_vision": True,
                 "supports_functions": True,

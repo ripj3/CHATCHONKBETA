@@ -66,7 +66,9 @@ class MistralProvider(BaseProvider):
         await self._load_models()
 
         self._is_initialized = True
-        logger.info(f"Mistral provider initialized with {len(self._models)} models")
+        logger.info(
+            f"Mistral provider initialized with {len(self._models)} models"
+        )
 
     async def _load_models(self) -> None:
         """Load available Mistral models and their capabilities."""
@@ -75,7 +77,9 @@ class MistralProvider(BaseProvider):
             {
                 "id": "mistral-large-latest",
                 "name": "Mistral Large",
-                "description": "Most capable Mistral model for complex reasoning",
+                "description": (
+                    "Most capable Mistral model for complex reasoning"
+                ),
                 "max_tokens": 32768,
                 "supports_functions": True,
                 "cost_per_1k_tokens": 0.008,

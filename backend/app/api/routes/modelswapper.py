@@ -196,12 +196,15 @@ async def create_provider_config(
         )
 
         logger.info(
-            f"Created provider config for {request.provider_type} by user {user['user_id']}"
+            f"Created provider config for {request.provider_type} by user "
+            f"{user['user_id']}"
         )
         return config
 
     except Exception as e:
-        logger.error(f"Failed to create provider config: {e}")
+        logger.error(
+            f"Failed to create provider config: {e}"
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to create provider configuration",

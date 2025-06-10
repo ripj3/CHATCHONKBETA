@@ -68,7 +68,9 @@ class AnthropicProvider(BaseProvider):
         await self._load_models()
 
         self._is_initialized = True
-        logger.info(f"Anthropic provider initialized with {len(self._models)} models")
+        logger.info(
+            f"Anthropic provider initialized with {len(self._models)} models"
+        )
 
     async def _load_models(self) -> None:
         """Load available Anthropic models and their capabilities."""
@@ -77,7 +79,9 @@ class AnthropicProvider(BaseProvider):
             {
                 "id": "claude-3-5-sonnet-20241022",
                 "name": "Claude 3.5 Sonnet",
-                "description": "Most intelligent model with vision capabilities",
+                "description": (
+                    "Most intelligent model with vision capabilities"
+                ),
                 "max_tokens": 200000,
                 "supports_vision": True,
                 "cost_per_1k_tokens": 0.003,
@@ -326,13 +330,35 @@ class AnthropicProvider(BaseProvider):
     def _get_system_prompt(self, task_type: TaskType) -> Optional[str]:
         """Get system prompt for specific task types."""
         prompts = {
-            TaskType.SUMMARIZATION: "You are an expert at creating concise, accurate summaries. Focus on the key points and main ideas while preserving important context.",
-            TaskType.TOPIC_EXTRACTION: "You are an expert at identifying and extracting key topics and themes from text. Provide clear, relevant topics with brief explanations.",
-            TaskType.CLASSIFICATION: "You are an expert at text classification. Analyze the content carefully and provide accurate, well-reasoned classifications.",
-            TaskType.SENSEMAKING: "You are an expert at analyzing complex information and making sense of patterns, relationships, and insights. Think deeply about connections and implications.",
-            TaskType.PLANNING: "You are an expert at creating structured plans and organizing information logically. Break down complex tasks into manageable steps.",
-            TaskType.TRANSLATION: "You are an expert translator. Provide accurate, natural translations while preserving meaning, context, and cultural nuances.",
-            TaskType.MEDIA_ANALYSIS: "You are an expert at analyzing visual content. Describe what you see in detail and provide insights about the content.",
+            TaskType.SUMMARIZATION: (
+                "You are an expert at creating concise, accurate summaries. "
+                "Focus on the key points and main ideas while preserving important context."
+            ),
+            TaskType.TOPIC_EXTRACTION: (
+                "You are an expert at identifying and extracting key topics and "
+                "themes from text. Provide clear, relevant topics with brief explanations."
+            ),
+            TaskType.CLASSIFICATION: (
+                "You are an expert at text classification. Analyze the content carefully "
+                "and provide accurate, well-reasoned classifications."
+            ),
+            TaskType.SENSEMAKING: (
+                "You are an expert at analyzing complex information and making sense of "
+                "patterns, relationships, and insights. Think deeply about connections "
+                "and implications."
+            ),
+            TaskType.PLANNING: (
+                "You are an expert at creating structured plans and organizing information "
+                "logically. Break down complex tasks into manageable steps."
+            ),
+            TaskType.TRANSLATION: (
+                "You are an expert translator. Provide accurate, natural translations while "
+                "preserving meaning, context, and cultural nuances."
+            ),
+            TaskType.MEDIA_ANALYSIS: (
+                "You are an expert at analyzing visual content. Describe what you see in "
+                "detail and provide insights about the content."
+            ),
         }
         return prompts.get(task_type)
 

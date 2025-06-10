@@ -142,13 +142,27 @@ class AutoModel:
         # Initialize model registry with configuration
         settings = get_settings()
         config = {
-            "openai": {"api_key": getattr(settings, "OPENAI_API_KEY", None)},
-            "anthropic": {"api_key": getattr(settings, "ANTHROPIC_API_KEY", None)},
-            "huggingface": {"api_key": getattr(settings, "HUGGINGFACE_API_KEY", None)},
-            "mistral": {"api_key": getattr(settings, "MISTRAL_API_KEY", None)},
-            "deepseek": {"api_key": getattr(settings, "DEEPSEEK_API_KEY", None)},
-            "qwen": {"api_key": getattr(settings, "QWEN_API_KEY", None)},
-            "openrouter": {"api_key": getattr(settings, "OPENROUTER_API_KEY", None)},
+            "openai": {
+                "api_key": getattr(settings, "OPENAI_API_KEY", None)
+            },
+            "anthropic": {
+                "api_key": getattr(settings, "ANTHROPIC_API_KEY", None)
+            },
+            "huggingface": {
+                "api_key": getattr(settings, "HUGGINGFACE_API_KEY", None)
+            },
+            "mistral": {
+                "api_key": getattr(settings, "MISTRAL_API_KEY", None)
+            },
+            "deepseek": {
+                "api_key": getattr(settings, "DEEPSEEK_API_KEY", None)
+            },
+            "qwen": {
+                "api_key": getattr(settings, "QWEN_API_KEY", None)
+            },
+            "openrouter": {
+                "api_key": getattr(settings, "OPENROUTER_API_KEY", None)
+            },
         }
         cls._model_registry = ModelRegistry(config)
         await cls._model_registry.initialize()
@@ -165,14 +179,17 @@ class AutoModel:
 
         # Mark as initialized
         cls._initialized = True
-        logger.info("AutoModel system initialized successfully")
+        logger.info(
+            "AutoModel system initialized successfully"
+        )
 
     @classmethod
     async def shutdown(cls) -> None:
         """
         Shutdown the AutoModel system.
 
-        This method cleans up resources and should be called during application shutdown.
+        This method cleans up resources and should be called during application
+        shutdown.
         """
         if not cls._initialized:
             return
@@ -360,8 +377,8 @@ class AutoModel:
             )
 
             logger.info(
-                f"Request {request_id} processed successfully in {processing_time:.2f}s "
-                f"using {provider_instance.provider_type}/{model.id}"
+                f"Request {request_id} processed successfully in "
+                f"{processing_time:.2f}s using {provider_instance.provider_type}/{model.id}"
             )
 
             return response
@@ -383,7 +400,8 @@ class AutoModel:
 
             # Log the error
             logger.error(
-                f"Error processing request {request_id}: {str(e)}", exc_info=True
+                f"Error processing request {request_id}: {str(e)}",
+                exc_info=True
             )
 
             # Handle different error types
@@ -392,16 +410,12 @@ class AutoModel:
                 (ProviderNotAvailableError, ModelNotFoundError, TaskNotSupportedError),
             ):
                 # Try fallback if specific provider/model was requested but not available
-                if (provider or model_id) and not getattr(
-                    request, "is_fallback", False
-                ):
+                if (provider or model_id) and not getattr(request, "is_fallback", False):
                     logger.info(f"Attempting fallback for request {request_id}")
                     fallback_request = request.copy()
                     fallback_request.provider = None
                     fallback_request.model_id = None
-                    fallback_request.is_fallback = (
-                        True  # Mark as fallback to prevent infinite recursion
-                    )
+                    fallback_request.is_fallback = True  # Mark as fallback to prevent infinite recursion
                     try:
                         return await cls.process(
                             **fallback_request.dict(exclude={"is_fallback"})

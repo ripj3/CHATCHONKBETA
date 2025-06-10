@@ -33,7 +33,8 @@ class DatabaseService:
                 or not self.settings.SUPABASE_SERVICE_ROLE_KEY
             ):
                 raise ValueError(
-                    "CHCH3 Supabase configuration missing: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required"
+                    "CHCH3 Supabase configuration missing: SUPABASE_URL and "
+                    "SUPABASE_SERVICE_ROLE_KEY required"
                 )
 
             self._chch3_client = create_client(
@@ -53,7 +54,8 @@ class DatabaseService:
                 or not self.settings.MSWAP_SUPABASE_SERVICE_ROLE_KEY
             ):
                 raise ValueError(
-                    "MSWAP Supabase configuration missing: MSWAP_SUPABASE_URL and MSWAP_SUPABASE_SERVICE_ROLE_KEY required"
+                    "MSWAP Supabase configuration missing: MSWAP_SUPABASE_URL and "
+                    "MSWAP_SUPABASE_SERVICE_ROLE_KEY required"
                 )
 
             self._mswap_client = create_client(
@@ -130,7 +132,9 @@ class DatabaseService:
                 raise ValueError(f"Unsupported operation: {operation}")
 
         except Exception as e:
-            logger.error(f"CHCH3 database error in {operation} on {table}: {e}")
+            logger.error(
+                f"CHCH3 database error in {operation} on {table}: {e}"
+            )
             raise
 
     async def execute_mswap_query(

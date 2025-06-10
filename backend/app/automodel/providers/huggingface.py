@@ -66,7 +66,9 @@ class HuggingFaceProvider(BaseProvider):
         await self._load_models()
 
         self._is_initialized = True
-        logger.info(f"HuggingFace provider initialized with {len(self._models)} models")
+        logger.info(
+            f"HuggingFace provider initialized with {len(self._models)} models"
+        )
 
     async def _load_models(self) -> None:
         """Load available HuggingFace models and their capabilities."""

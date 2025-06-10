@@ -66,7 +66,9 @@ class QwenProvider(BaseProvider):
         await self._load_models()
 
         self._is_initialized = True
-        logger.info(f"Qwen provider initialized with {len(self._models)} models")
+        logger.info(
+            f"Qwen provider initialized with {len(self._models)} models"
+        )
 
     async def _load_models(self) -> None:
         """Load available Qwen models and their capabilities."""
@@ -75,7 +77,9 @@ class QwenProvider(BaseProvider):
             {
                 "id": "qwen-turbo",
                 "name": "Qwen Turbo",
-                "description": "Fast and efficient multilingual model",
+                "description": (
+                    "Fast and efficient multilingual model"
+                ),
                 "max_tokens": 8192,
                 "cost_per_1k_tokens": 0.002,
                 "priority_score": 7.0,

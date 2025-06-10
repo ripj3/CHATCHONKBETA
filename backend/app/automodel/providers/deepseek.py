@@ -66,7 +66,9 @@ class DeepseekProvider(BaseProvider):
         await self._load_models()
 
         self._is_initialized = True
-        logger.info(f"DeepSeek provider initialized with {len(self._models)} models")
+        logger.info(
+            f"DeepSeek provider initialized with {len(self._models)} models"
+        )
 
     async def _load_models(self) -> None:
         """Load available DeepSeek models and their capabilities."""
@@ -253,12 +255,30 @@ class DeepseekProvider(BaseProvider):
     def _get_system_prompt(self, task_type: TaskType) -> Optional[str]:
         """Get system prompt for specific task types."""
         prompts = {
-            TaskType.SUMMARIZATION: "You are an expert at creating concise, accurate summaries. Focus on the key points and main ideas.",
-            TaskType.TOPIC_EXTRACTION: "You are an expert at identifying and extracting key topics and themes from text. Provide clear, relevant topics.",
-            TaskType.CLASSIFICATION: "You are an expert at text classification. Analyze the content and provide accurate classifications.",
-            TaskType.SENSEMAKING: "You are an expert at analyzing complex information and making sense of patterns, relationships, and insights. Use logical reasoning.",
-            TaskType.PLANNING: "You are an expert at creating structured plans and organizing information logically. Break down complex problems systematically.",
-            TaskType.TRANSLATION: "You are an expert translator. Provide accurate, natural translations while preserving meaning and context.",
+            TaskType.SUMMARIZATION: (
+                "You are an expert at creating concise, accurate summaries. "
+                "Focus on the key points and main ideas."
+            ),
+            TaskType.TOPIC_EXTRACTION: (
+                "You are an expert at identifying and extracting key topics and "
+                "themes from text. Provide clear, relevant topics."
+            ),
+            TaskType.CLASSIFICATION: (
+                "You are an expert at text classification. Analyze the content "
+                "and provide accurate classifications."
+            ),
+            TaskType.SENSEMAKING: (
+                "You are an expert at analyzing complex information and making "
+                "sense of patterns, relationships, and insights. Use logical reasoning."
+            ),
+            TaskType.PLANNING: (
+                "You are an expert at creating structured plans and organizing "
+                "information logically. Break down complex problems systematically."
+            ),
+            TaskType.TRANSLATION: (
+                "You are an expert translator. Provide accurate, natural translations "
+                "while preserving meaning and context."
+            ),
         }
         return prompts.get(task_type)
 

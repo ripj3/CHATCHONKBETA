@@ -460,10 +460,16 @@ def configure_static_files(app: FastAPI) -> None:
         logger.info(f"[STATIC_FILES] Looking for frontend build at: {frontend_dir}")
 
         if not frontend_dir.exists():
-            logger.error(f"[STATIC_FILES] Frontend build directory not found at: {frontend_dir}")
-            raise FileNotFoundError(f"Frontend build directory not found at: {frontend_dir}")
+            logger.error(
+                f"[STATIC_FILES] Frontend build directory not found at: {frontend_dir}"
+            )
+            raise FileNotFoundError(
+                f"Frontend build directory not found at: {frontend_dir}"
+            )
 
-        logger.info(f"[STATIC_FILES] Found frontend build directory at: {frontend_dir}")
+        logger.info(
+            f"[STATIC_FILES] Found frontend build directory at: {frontend_dir}"
+        )
         logger.info(
             "Frontend build contents:",
             extra={

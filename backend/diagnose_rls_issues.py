@@ -44,7 +44,7 @@ async def diagnose_chch3_policies():
             COUNT(*) as total_policies,
             COUNT(CASE WHEN permissive = 'PERMISSIVE' THEN 1 END) as permissive_policies,
             string_agg(policyname, ', ') as policy_names
-        FROM pg_policies 
+        FROM pg_policies
         WHERE schemaname = 'public'
         GROUP BY tablename
         HAVING COUNT(CASE WHEN permissive = 'PERMISSIVE' THEN 1 END) > 1
@@ -86,7 +86,7 @@ async def diagnose_mswap_policies():
             COUNT(*) as total_policies,
             COUNT(CASE WHEN permissive = 'PERMISSIVE' THEN 1 END) as permissive_policies,
             string_agg(policyname, ', ') as policy_names
-        FROM pg_policies 
+        FROM pg_policies
         WHERE schemaname = 'public'
         GROUP BY tablename
         HAVING COUNT(CASE WHEN permissive = 'PERMISSIVE' THEN 1 END) > 1

@@ -85,7 +85,9 @@ class Settings(BaseSettings):
     )
     APP_NAME: str = Field(
         default="ChatChonk",
-        description="The name of the application (can be same as PROJECT_NAME).",
+        description=(
+            "The name of the application (can be same as PROJECT_NAME)."
+        ),
     )
     APP_VERSION: str = Field(default="0.1.0", description="Application version.")
     ENVIRONMENT: Environment = Field(
@@ -119,11 +121,15 @@ class Settings(BaseSettings):
     )
     API_URL: AnyHttpUrl = Field(
         default="http://127.0.0.1:8080/api",
-        description="Full base URL for the API in development.",
+        description=(
+            "Full base URL for the API in development."
+        ),
     )
     PRODUCTION_API_URL: Optional[AnyHttpUrl] = Field(
         default=None,
-        description="Full base URL for the API in production (e.g., https://api.chatchonk.com).",
+        description=(
+            "Full base URL for the API in production (e.g., https://api.chatchonk.com)."
+        ),
     )
 
     # ======================================================================
@@ -158,7 +164,10 @@ class Settings(BaseSettings):
     )
     API_KEY: Optional[SecretStr] = Field(
         default=None,
-        description="Generic API key for securing internal or specific endpoints (development only or specific use cases).",
+        description=(
+            "Generic API key for securing internal or specific endpoints "
+            "(development only or specific use cases)."
+        ),
     )
     REQUIRE_API_KEY: bool = Field(
         default=False, description="Whether a general API key is required for access."

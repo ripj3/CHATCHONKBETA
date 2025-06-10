@@ -76,7 +76,8 @@ class ModelRegistry:
 
         self._is_initialized = True
         logger.info(
-            f"ModelRegistry initialized with {len(self._providers)} providers and {len(self._models)} models"
+            f"ModelRegistry initialized with {len(self._providers)} providers "
+            f"and {len(self._models)} models"
         )
 
     async def _initialize_providers(self) -> None:
@@ -108,7 +109,8 @@ class ModelRegistry:
                 # Skip if no API key provided
                 if not provider_config.get("api_key"):
                     logger.warning(
-                        f"No API key provided for {provider_type}, skipping initialization"
+                        f"No API key provided for {provider_type}, "
+                        "skipping initialization"
                     )
                     continue
 
