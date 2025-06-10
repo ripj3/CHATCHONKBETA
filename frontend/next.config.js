@@ -6,6 +6,7 @@ const nextConfig = {
   output: 'export',
   distDir: 'dist', // Specify dist directory
   trailingSlash: true, // Add trailing slashes to all URLs
+
   // Image Optimization Configuration
   // https://nextjs.org/docs/pages/api-reference/components/image#remotepatterns
   // Add remote patterns for any external image sources you use (e.g., Supabase Storage)
@@ -27,6 +28,7 @@ const nextConfig = {
     ],
     // You can also specify deviceSizes, imageSizes if you have specific needs
     // but the defaults are generally good.
+    unoptimized: true, // Handle unoptimized images for static export
   },
 
   // Environment Variables
