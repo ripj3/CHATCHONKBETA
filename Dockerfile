@@ -11,8 +11,10 @@ RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 # Copy the rest of the frontend source
 COPY frontend/ ./
 
-# Build → static export (no extra npm script needed)
-RUN npm run build
+# Build frontend then explicitly export to the `out/` directory.
+# Some Render builds failed to find the static files when relying solely on the
+# built‑in export behavior, so we run `next export` explicitly.
+RUN npm run build && npx next export
 
 ############################
 # 2️⃣  PYTHON DEP STAGE
