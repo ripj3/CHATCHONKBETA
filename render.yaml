@@ -61,7 +61,7 @@ services:
   - type: web # Render's web service type for applications that listen for HTTP requests
     name: chatchonk-api # Name of the service in Render
     runtime: docker # Deploy using a Dockerfile that now includes frontend build
-    branch: main-beta # Deploy from the 'main-beta' branch
+    branch: main # Deploy from the 'main' branch
     rootDir: . # Docker build context is the repository root
     # dockerfilePath: ./Dockerfile # Default location, no need to specify
     autoDeploy: false # Set to false to enable manual deploys during debugging
@@ -69,6 +69,7 @@ services:
       paths:
         - "backend/**"
         - "frontend/**" # Added frontend path as it's now part of this service's build
+        - "frontend/pnpm-lock.yaml" # Ensure changes to lock file trigger rebuilds
         - "templates/**"
         - "render.yaml"
         - "Dockerfile" # Rebuild if Dockerfile changes
@@ -105,6 +106,8 @@ services:
         value: "/api"
       - key: PROJECT_NAME
         value: "ChatChonk"
+      - key: FRONTEND_BUILD_DIR # Explicitly set to match Dockerfile output and WORKDIR /app
+        value: "/app/frontend_build"
     # Optional: Define disk for persistent storage if not using Supabase for everything
     # disks:
     #   - name: chatchonk-data
