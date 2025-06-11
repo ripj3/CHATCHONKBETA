@@ -22,6 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
+from fastapi.staticfiles import StaticFiles
 
 # Load environment variables from .env file
 load_dotenv()
@@ -86,6 +87,9 @@ app = FastAPI(
     lifespan=lifespan,
     root_path=settings.ROOT_PATH, # Apply root path if configured
 )
+
+# Mount the static files directory
+app.mount("/static", StaticFiles(directory=settings.STATIC_FILES_DIR), name="static")
 
 # Configure CORS
 app.add_middleware(
