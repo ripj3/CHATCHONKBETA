@@ -63,7 +63,7 @@ pytesseract==0.3.10  # OCR for images
 # === Text Processing and NLP ===
 nltk==3.8.1
 spacy==3.7.2
-langchain==0.0.335  # Framework for LLM applications
+langchain==0.2.5  # Framework for LLM applications
 langchain-community==0.0.10  # Community extensions
 
 # === HTTP Clients and Utilities ===
