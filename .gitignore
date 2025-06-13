@@ -61,3 +61,5 @@ yarn-error.log*
 # Ignore Next.js SWC binaries
 frontend/next-swc.*.node
 frontend/libvips-*.dll
+.env.bak
+.env.bak
