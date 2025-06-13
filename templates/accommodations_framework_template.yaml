@@ -1,0 +1,161 @@
+meta:
+  title: "Accommodations Framework"
+  description: "A template to help you document effective accommodations, track requests, and develop self-advocacy skills across different environments."
+  ai_coach_prompts:
+    - "This framework is yours to customize based on your unique needs and experiences."
+    - "Accommodations are about creating environments where you can thrive and fully participate."
+    - "Remember that requesting accommodations is about equal access, not special treatment."
+
+environments_contexts:
+  - environment_name: "Work Environment"
+    effective_accommodations:
+      - accommodation_name_description: "e.g., Flexible start times"
+        need_addressed: "e.g., Morning executive function challenges, medication timing"
+        implementation_details: "e.g., Arrival between 9-10am with consistent 8-hour workday"
+        status: "e.g., In Place, Requested, Exploring, Not Needed Anymore"
+        effectiveness_notes: "e.g., Works well most days, occasional challenges during team meetings"
+        ai_coach_prompt_accommodation: "How is this accommodation working for you in your work environment? Has its effectiveness changed over time?"
+      - accommodation_name_description: "e.g., Noise-canceling headphones"
+        need_addressed: "e.g., Auditory sensitivity, focus in open office"
+        implementation_details: "e.g., Used during focused work time, not in meetings"
+        status: "e.g., In Place, Requested, Exploring, Not Needed Anymore"
+        effectiveness_notes: "e.g., Very effective for concentration, need breaks every 90 minutes"
+        ai_coach_prompt_accommodation: "How is this accommodation working for you in your work environment? Are there any adjustments that might make it more effective?"
+    accommodation_requests_log:
+      - date_of_request: "YYYY-MM-DD"
+        accommodation_requested: "e.g., Dual monitors with screen reader compatibility"
+        requested_from_person_department: "e.g., Jane Smith, HR Department"
+        reason_for_request_need_addressed: "e.g., Visual processing, reduced eye strain, workflow efficiency"
+        response_received_date: "YYYY-MM-DD or Pending"
+        response_summary: "e.g., Initial approval, waiting on IT implementation timeline"
+        outcome_status: "e.g., Approved, Denied, Pending, In Discussion"
+        supporting_documentation_submitted:
+          - "e.g., Doctor's recommendation letter"
+          - "e.g., Workplace assessment report"
+        next_steps_follow_up: "e.g., Check with IT on installation date by next Friday"
+        ai_coach_prompt_request: "What's the current status of this request? Do we need to plan a follow-up or prepare additional information?"
+
+  - environment_name: "Educational Setting"
+    effective_accommodations:
+      - accommodation_name_description: "e.g., Extended time for assignments"
+        need_addressed: "e.g., Processing speed, executive function"
+        implementation_details: "e.g., 1.5x standard time, arranged directly with instructor"
+        status: "e.g., In Place, Requested, Exploring, Not Needed Anymore"
+        effectiveness_notes: "e.g., Very helpful for written assignments, less needed for projects"
+        ai_coach_prompt_accommodation: "How is this accommodation working for you in your educational setting? Are there specific courses where it's more helpful?"
+    accommodation_requests_log:
+      - date_of_request: "YYYY-MM-DD"
+        accommodation_requested: "e.g., Note-taking assistance"
+        requested_from_person_department: "e.g., Disability Services Office"
+        reason_for_request_need_addressed: "e.g., Difficulty processing auditory information while taking notes"
+        response_received_date: "YYYY-MM-DD or Pending"
+        response_summary: "e.g., Approved with shared notes system"
+        outcome_status: "e.g., Approved, Denied, Pending, In Discussion"
+        supporting_documentation_submitted:
+          - "e.g., Neuropsychological evaluation"
+        next_steps_follow_up: "e.g., Meet with note-taker coordinator next week"
+        ai_coach_prompt_request: "Has this accommodation been implemented as planned? Is it meeting your needs effectively?"
+
+  - environment_name: "Home/Living Situation"
+    effective_accommodations:
+      - accommodation_name_description: "e.g., Visual schedule system"
+        need_addressed: "e.g., Executive function, routine maintenance"
+        implementation_details: "e.g., Digital calendar with alerts, physical whiteboard for daily tasks"
+        status: "e.g., In Place, Requested, Exploring, Not Needed Anymore"
+        effectiveness_notes: "e.g., Works well for regular tasks, need better system for unexpected changes"
+        ai_coach_prompt_accommodation: "How is this system working in your home environment? Are there any adjustments that might make it more effective?"
+    accommodation_requests_log:
+      - date_of_request: "YYYY-MM-DD"
+        accommodation_requested: "e.g., Maintenance request for better lighting"
+        requested_from_person_department: "e.g., Building management"
+        reason_for_request_need_addressed: "e.g., Visual processing, reduced eye strain"
+        response_received_date: "YYYY-MM-DD or Pending"
+        response_summary: "e.g., Approved, scheduled for installation next week"
+        outcome_status: "e.g., Approved, Denied, Pending, In Discussion"
+        supporting_documentation_submitted:
+          - "e.g., None required"
+        next_steps_follow_up: "e.g., Confirm installation date"
+        ai_coach_prompt_request: "Has this request been resolved to your satisfaction? Is there any follow-up needed?"
+
+  - environment_name: "Community/Public Spaces"
+    effective_accommodations:
+      - accommodation_name_description: "e.g., Advance information about venue layout"
+        need_addressed: "e.g., Anxiety reduction, sensory planning"
+        implementation_details: "e.g., Email request to event organizers 1 week before"
+        status: "e.g., In Place, Requested, Exploring, Not Needed Anymore"
+        effectiveness_notes: "e.g., Very helpful when available, not always provided"
+        ai_coach_prompt_accommodation: "How well is this accommodation working for you in community settings? Are there ways to make the request process more effective?"
+    accommodation_requests_log:
+      - date_of_request: "YYYY-MM-DD"
+        accommodation_requested: "e.g., Reserved seating near exit"
+        requested_from_person_department: "e.g., Theater box office"
+        reason_for_request_need_addressed: "e.g., Anxiety management, potential sensory overload"
+        response_received_date: "YYYY-MM-DD or Pending"
+        response_summary: "e.g., Accommodated with accessible seating section"
+        outcome_status: "e.g., Approved, Denied, Pending, In Discussion"
+        supporting_documentation_submitted:
+          - "e.g., None required"
+        next_steps_follow_up: "e.g., Arrive 30 minutes early to confirm seating"
+        ai_coach_prompt_request: "How did this accommodation work in practice? Would you request it again or modify your approach?"
+
+self_advocacy_toolkit:
+  my_strengths_and_needs_summary: "This is a space to articulate your unique strengths and needs in your own words. This summary can help you quickly communicate your situation when needed."
+  
+  common_phrases_for_requests:
+    - phrase_example: "To perform at my best, I benefit from..."
+      when_to_use: "When initially discussing needs in a positive, strength-based way."
+    - phrase_example: "I've found that I'm most effective when..."
+      when_to_use: "When explaining accommodations that have worked well in the past."
+    - phrase_example: "Due to the way my brain processes information, I need..."
+      when_to_use: "When a more direct explanation of needs is required."
+    - phrase_example: "I'd like to discuss some adjustments that would help me contribute more effectively..."
+      when_to_use: "When initiating an accommodation conversation in a work setting."
+    - phrase_example: "My accessibility needs include..."
+      when_to_use: "When making specific requests in formal settings."
+  
+  talking_points_for_common_scenarios:
+    - scenario: "Explaining the need for a quiet workspace"
+      key_points_to_cover:
+        - "How background noise affects your concentration and work quality"
+        - "Specific solutions that have worked in the past"
+        - "Benefits to your productivity and work quality"
+        - "Flexibility in implementation (if applicable)"
+    - scenario: "Requesting extended time for assignments/projects"
+      key_points_to_cover:
+        - "How your processing style affects time management"
+        - "The quality difference in your work with adequate time"
+        - "Proposed specific timeline or extension parameters"
+        - "How this accommodation helps demonstrate your true capabilities"
+    - scenario: "Discussing flexible attendance or remote work options"
+      key_points_to_cover:
+        - "Specific aspects of your condition that impact attendance"
+        - "How flexibility helps manage symptoms while maintaining productivity"
+        - "Proposed communication plan for schedule changes"
+        - "How you'll ensure work responsibilities are fulfilled"
+  
+  ai_coach_prompt_self_advocacy: "Practicing how you'll phrase a request can be helpful. Would you like to role-play a conversation for an upcoming accommodation request?"
+
+rights_and_protections_references:
+  - resource_name_description: "e.g., Americans with Disabilities Act (ADA) Information Line"
+    contact_info_url: "e.g., www.ada.gov, 800-514-0301"
+    notes: "e.g., Good resource for workplace and public accommodation questions"
+    ai_coach_prompt_rights: "Knowing your rights is empowering. Have you identified key resources for your current environments?"
+  
+  - resource_name_description: "e.g., Local Disability Rights Organization"
+    contact_info_url: "e.g., Contact information for your local advocacy group"
+    notes: "e.g., Offers free consultations on accommodation issues"
+    ai_coach_prompt_rights: "Would it be helpful to connect with local advocacy resources for specific guidance on your situation?"
+  
+  - resource_name_description: "e.g., Workplace Accommodation Network (JAN)"
+    contact_info_url: "e.g., askjan.org"
+    notes: "e.g., Excellent resource for workplace accommodation ideas and implementation"
+    ai_coach_prompt_rights: "This resource has specific guidance for different conditions and work environments. Would you like to explore it together?"
+
+global_ai_coach_prompts:
+  - "This framework is a tool to help you identify, request, and manage accommodations that support your success."
+  - "Remember, advocating for your needs is a skill that can be developed. I'm here to help you prepare and practice."
+  - "Accommodations are about removing barriers, not creating advantages. They help create a level playing field."
+  - "Your experiences with different accommodations provide valuable data. What patterns have you noticed about what works best for you?"
+  - "Would it be helpful to review your accommodation requests and their outcomes to identify successful strategies?"
+  - "Self-advocacy becomes easier with practice. Would you like to work on preparing for an upcoming accommodation conversation?"
+  - "Remember that you don't need to disclose your specific diagnosis to request accommodations - focusing on specific needs and solutions is often more effective."

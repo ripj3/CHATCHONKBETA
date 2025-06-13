@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "supabase-chch3": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "${env:SUPABASE_PERSONAL_ACCESS_TOKEN}"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${env:SUPABASE_PERSONAL_ACCESS_TOKEN}",
+        "SUPABASE_PROJECTS": "[{\"ref\":\"YOUR_PROJECT_REF\",\"name\":\"CHCH3\",\"db_password\":\"${env:SUPABASE_DB_PASSWORD}\",\"service_role_key\":\"${env:SUPABASE_SERVICE_ROLE_KEY}\",\"region\":\"us-west-1\"}]"
+      }
+    },
+    "supabase-mswap": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "${env:SUPABASE_PERSONAL_ACCESS_TOKEN}"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${env:SUPABASE_PERSONAL_ACCESS_TOKEN}",
+        "SUPABASE_PROJECTS": "[{\"ref\":\"YOUR_MSWAP_PROJECT_REF\",\"name\":\"MSWAP\",\"db_password\":\"${env:SUPABASE_DB_PASSWORD_MSWAP}\",\"service_role_key\":\"${env:SUPABASE_SERVICE_ROLE_KEY}\",\"region\":\"us-east-2\"}]"
+      }
+    }
+  }
+}

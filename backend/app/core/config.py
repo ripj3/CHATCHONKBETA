@@ -82,7 +82,7 @@ class Settings(BaseSettings):
     API_HOST: str = Field(default="127.0.0.1", description="Host for constructing API URLs, typically localhost for dev.")
 :start_line:83
 -------
-    API_URL: AnyHttpUrl = Field(default="http://127.0.0.1:8080/api", alias="LOCAL_API_URL", description="Full base URL for the API in development.")
+    API_URL: AnyHttpUrl = Field(default="http://127.0.0.1:8000/api", alias="LOCAL_API_URL", description="Full base URL for the API in development.")
     PRODUCTION_API_URL: Optional[AnyHttpUrl] = Field(default=None, description="Full base URL for the API in production (e.g., https://api.chatchonk.com).")
 
     # ======================================================================

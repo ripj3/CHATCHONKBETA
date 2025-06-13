@@ -1,0 +1,103 @@
+meta:
+  title: "Healthcare & Insurance Organizer"
+  description: "A template to help you organize your healthcare information, track appointments, and manage insurance details."
+  ai_coach_prompts:
+    - "This organizer is designed to help you navigate healthcare systems with confidence."
+    - "Remember that you're the expert on your own health experience - this tool helps you document and communicate that expertise."
+
+insurance_policies:
+  - policy_provider_name: "Example Health Insurance"
+    plan_name: "e.g., Premium Plus Plan, Basic Coverage Plan"
+    policy_id_number: "For your reference only - store securely"
+    group_number: "If applicable - store securely"
+    policy_type: "e.g., Medical, Dental, Vision, Prescription, Supplemental"
+    insurer_contact_info:
+      customer_service_phone: "e.g., 800-123-4567"
+      website: "e.g., www.examplehealthinsurance.com"
+      member_portal_url: "e.g., portal.examplehealthinsurance.com"
+    effective_date: "YYYY-MM-DD"
+    renewal_date: "YYYY-MM-DD"
+    coverage_summary:
+      copays: "e.g., $25 PCP, $50 Specialist"
+      deductible: "e.g., $1500 individual/$3000 family"
+      out_of_pocket_maximum: "e.g., $5000 individual/$10000 family"
+      prescription_coverage_notes: "e.g., Tier 1: $10, Tier 2: $30, Tier 3: $50"
+      additional_notes: "e.g., Prior authorization needed for certain procedures"
+    ai_coach_prompt_policy: "When was the last time you reviewed this policy's coverage details? Would you like to schedule a time to look at your benefits together?"
+
+healthcare_providers_list:
+  - provider_name: "Dr. Example Provider"
+    specialty: "e.g., Primary Care, Neurology, Physical Therapy"
+    clinic_name_location: "e.g., Example Medical Center, 123 Health St."
+    contact_info:
+      phone: "e.g., 555-123-4567"
+      fax: "e.g., 555-123-4568"
+      patient_portal_url: "e.g., portal.exampleclinic.com"
+    notes: "e.g., Primary Care Physician, Referral needed for specialists"
+    preferred_communication_approach: "e.g., Direct questions work best, appreciate written summaries"
+    ai_coach_prompt_provider: "Is this provider's contact information up to date? When did you last see this provider?"
+
+appointments_log:
+  - date_time: "YYYY-MM-DD HH:MM"
+    provider_name_specialty: "e.g., Dr. Example (Cardiology)"
+    purpose_of_visit: "e.g., Annual check-up, Follow-up, Specific concern"
+    status: "e.g., Scheduled, Completed, Canceled, Rescheduled"
+    preparation_notes_questions:
+      - "e.g., Ask about medication side effects"
+      - "e.g., Discuss recent test results"
+      - "e.g., Bring up new symptoms"
+    visit_summary_outcomes:
+      - "e.g., Diagnosis discussed: [details]"
+      - "e.g., Treatment plan updated: [details]"
+      - "e.g., Tests ordered: [details]"
+    action_items_for_me:
+      - "e.g., Schedule follow-up in 3 months"
+      - "e.g., Fill new prescription"
+      - "e.g., Complete lab work before next visit"
+    next_appointment_scheduled: "YYYY-MM-DD or TBD"
+    ai_coach_prompt_appointment: "What are the key things you want to discuss or achieve at this upcoming appointment?" # For scheduled appointments
+    ai_coach_prompt_completed: "What were the main takeaways from your last visit? Is there anything you're still unclear about?"
+
+medications_list:
+  - medication_name: "Example Medication"
+    dosage: "e.g., 10mg"
+    frequency: "e.g., Once daily, Twice daily with meals"
+    prescribing_doctor_name: "e.g., Dr. Example Provider"
+    purpose_condition: "e.g., For managing [condition]"
+    start_date: "YYYY-MM-DD"
+    end_date: "YYYY-MM-DD or Ongoing"
+    refill_info:
+      pharmacy_name: "e.g., Example Pharmacy"
+      pharmacy_phone: "e.g., 555-123-9876"
+      prescription_number: "For your reference only - store securely"
+      next_refill_date: "YYYY-MM-DD"
+      refills_remaining: "e.g., 3"
+    notes_side_effects:
+      - "e.g., Mild drowsiness in the morning"
+      - "e.g., Works best when taken with food"
+    ai_coach_prompt_medication: "Do you have enough refills for this medication? Let's check the next refill date and make sure you won't run out."
+
+symptom_tracker:
+  - entry_date: "YYYY-MM-DD"
+    symptom_description: "e.g., Headache, Fatigue, Joint pain"
+    severity_rating: "e.g., Mild, Moderate, Severe, or 1-10 scale"
+    duration_frequency: "e.g., 2 hours, All day, Intermittent throughout day"
+    potential_triggers_notes: "e.g., Occurred after [activity/food/situation]"
+    relief_measures_tried_effectiveness:
+      - measure: "e.g., Rest, OTC medication, Ice pack"
+        effectiveness: "e.g., Partial relief, Complete relief, No change"
+    ai_coach_prompt_symptom: "Tracking symptoms can sometimes reveal patterns. Have you noticed any patterns recently? Would it be helpful to look at your tracked symptoms together?"
+
+healthcare_visit_preparation_guide_prompts:
+  - "What are common questions you like to ask your doctors?"
+  - "What information is essential for you to bring to every appointment?"
+  - "How do you prefer to receive information from your healthcare providers (e.g., written, verbal, diagrams)? Let's note that down."
+  - "What helps you feel most comfortable or confident during healthcare appointments?"
+  - "Are there specific communication approaches that work best for you in medical settings?"
+
+global_ai_coach_prompts:
+  - "Managing healthcare can be complex. Remember, this tool is here to help you keep things organized and advocate for your needs."
+  - "Consider reviewing your insurance coverage before any planned procedures or specialist visits."
+  - "You're the expert on your own experience. This organizer helps you document that expertise to share with your healthcare team."
+  - "Would it be helpful to prepare a summary of your recent health experiences before your next appointment?"
+  - "Remember that tracking patterns in symptoms, medication effects, or appointment outcomes can provide valuable insights for both you and your healthcare providers."

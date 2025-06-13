@@ -1,0 +1,30 @@
+# Development Dockerfile - Fast builds for iteration
+FROM python:3.11-slim-bullseye
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8000
+
+WORKDIR /app
+
+# Install only base requirements for faster builds
+COPY backend/requirements-base.txt .
+RUN pip install --no-cache-dir -r requirements-base.txt
+
+# Copy application code
+COPY backend/ .
+COPY templates/ ./templates
+
+# Create non-root user
+RUN addgroup --system appgroup && \
+    adduser --system --ingroup appgroup --no-create-home appuser
+
+# Create and set permissions for the uploads directory
+RUN mkdir -p uploads && chown appuser:appgroup uploads
+
+USER appuser
+
+EXPOSE 8000
+
+# Use uvicorn directly for development (faster startup)
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT} --reload"]

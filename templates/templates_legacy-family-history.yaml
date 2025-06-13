@@ -1,0 +1,197 @@
+# Legacy & Family History Companion Template for ChatChonk
+# Purpose: Preserves family stories, documents intergenerational connections, and creates
+# a lasting record of family history from conversations.
+#
+# Note: This template acknowledges and respects diverse family structures, cultural
+# approaches to family history, and different ways of defining and experiencing family.
+# Family can be chosen, biological, adoptive, or defined in many other ways.
+
+template_name: "Legacy & Family History Companion"
+template_description: "Preserves family stories, intergenerational wisdom, and personal heritage from conversations, creating a meaningful record to share across generations."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - family-history
+  - legacy
+  - memoir
+  - genealogy
+  - heritage
+  - ancestors
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The central focus of the family history exploration
+  family_history_focus:
+    title: "✨ Family History Focus"
+    description: "The central focus, time period, branch of family, or themes of this family history exploration."
+    extraction_prompt: "What central aspects of family history were explored in this conversation? Was there a particular branch of family, time period, geographic region, or theme that was the focus?"
+    format: "paragraph"
+    
+  # Family members mentioned and their relationships
+  family_tree_notes:
+    title: "🌳 Family Tree Notes"
+    description: "Family members mentioned and their relationships to each other."
+    extraction_prompt: "Extract information about family members mentioned and their relationships to each other. Include names, approximate birth/death dates if mentioned, and relationships to you and to each other."
+    format: "nested_list"
+    
+  # Stories and anecdotes about ancestors
+  ancestral_stories:
+    title: "📚 Ancestral Stories & Anecdotes"
+    description: "Stories, anecdotes, or tales passed down through generations."
+    extraction_prompt: "Extract memorable stories, anecdotes, or tales about ancestors or family members that were mentioned. Preserve the narrative quality of these stories as much as possible."
+    format: "bullet_list"
+    
+  # Family traditions and customs
+  family_traditions_customs:
+    title: "🎭 Family Traditions & Customs"
+    description: "Traditional practices, customs, celebrations, or rituals in your family."
+    extraction_prompt: "Identify traditions, customs, celebrations, rituals, or practices that have been passed down or are important in your family. How have these traditions connected generations?"
+    format: "bullet_list"
+    optional: true
+    
+  # Cultural backgrounds and heritage
+  cultural_heritage:
+    title: "🌐 Cultural Heritage & Roots"
+    description: "Cultural backgrounds, heritage, or ancestral origins of your family."
+    extraction_prompt: "Extract information about cultural backgrounds, heritage, ancestral origins, or countries/regions of origin for your family. Include any reflections on how this cultural heritage has influenced family identity."
+    format: "bullet_list"
+    optional: true
+    
+  # Geographic relocations in family history
+  family_migrations_movements:
+    title: "🧳 Family Migrations & Movements"
+    description: "Geographic relocations or migrations in your family history."
+    extraction_prompt: "Identify geographic relocations, migrations, or movements mentioned in your family history. What prompted these moves, and how did they shape your family story?"
+    format: "bullet_list"
+    optional: true
+    
+  # Historical context for family stories
+  historical_events_context:
+    title: "⏳ Historical Events & Context"
+    description: "How larger historical events affected or intersected with your family story."
+    extraction_prompt: "Extract mentions of how historical events, periods, or societal changes affected your family. How was your family story shaped by the times in which they lived?"
+    format: "bullet_list"
+    optional: true
+    
+  # Core values passed down through generations
+  family_values_beliefs:
+    title: "🧭 Family Values & Beliefs"
+    description: "Core values, beliefs, or principles passed down through generations."
+    extraction_prompt: "What core values, beliefs, principles, or philosophies have been passed down through your family? How have these shaped your family identity or individual members?"
+    format: "bullet_list"
+    
+  # Meaningful physical objects in family history
+  family_artifacts_heirlooms:
+    title: "📦 Family Artifacts & Heirlooms"
+    description: "Meaningful physical objects, documents, or heirlooms in your family."
+    extraction_prompt: "Extract details about meaningful family artifacts, heirlooms, documents, photos, or objects mentioned. What significance do these items hold in your family story?"
+    format: "bullet_list"
+    optional: true
+    
+  # Traits and characteristics that run in the family
+  family_traits_characteristics:
+    title: "👤 Family Traits & Characteristics"
+    description: "Traits, talents, characteristics, or attributes that run in your family."
+    extraction_prompt: "Identify traits, talents, characteristics, physical attributes, personality features, or other qualities that seem to run in your family or are associated with particular branches."
+    format: "bullet_list"
+    optional: true
+    
+  # Challenges faced by the family
+  family_challenges_resilience:
+    title: "💪 Family Challenges & Resilience"
+    description: "Hardships, obstacles, or challenges faced by your family and how they were addressed."
+    extraction_prompt: "Extract challenges, hardships, obstacles, or difficult periods that your family or ancestors faced, and how they responded, adapted, or demonstrated resilience."
+    format: "bullet_list"
+    optional: true
+    
+  # Patterns that repeat across generations
+  intergenerational_patterns:
+    title: "🔄 Intergenerational Patterns"
+    description: "Patterns, themes, or dynamics that repeat across generations."
+    extraction_prompt: "What patterns, themes, dynamics, or repeating situations can be observed across generations in your family? These could be positive patterns, challenges, or neutral observations."
+    format: "bullet_list"
+    optional: true
+    
+  # Wisdom and lessons passed down
+  family_wisdom_lessons:
+    title: "💡 Family Wisdom & Lessons"
+    description: "Wisdom, advice, sayings, or lessons passed down through generations."
+    extraction_prompt: "Capture wisdom, advice, sayings, proverbs, or life lessons that have been passed down through your family. Who shared these, and what context do they come from?"
+    format: "bullet_list"
+    
+  # Work and careers in family history
+  occupations_livelihoods:
+    title: "🛠️ Occupations & Livelihoods"
+    description: "Work, careers, trades, or means of livelihood in your family history."
+    extraction_prompt: "Extract information about occupations, careers, trades, businesses, or means of livelihood that have featured in your family history. How has work shaped your family story?"
+    format: "bullet_list"
+    optional: true
+    
+  # Food traditions and recipes
+  family_recipes_food_traditions:
+    title: "🍽️ Family Recipes & Food Traditions"
+    description: "Food-related traditions, recipes, or culinary heritage in your family."
+    extraction_prompt: "Identify any family recipes, food traditions, culinary heritage, or food-related stories mentioned. How has food connected generations in your family?"
+    format: "bullet_list"
+    optional: true
+    
+  # Areas for further research
+  research_questions_gaps:
+    title: "❓ Research Questions & Gaps"
+    description: "Areas of family history to research further or questions remaining."
+    extraction_prompt: "What aspects of your family history remain unclear or need further research? What questions do you still have about your family story or particular ancestors?"
+    format: "bullet_list"
+    optional: true
+    
+  # Ideas for preserving family history
+  preservation_sharing_plans:
+    title: "🤝 Preservation & Sharing Plans"
+    description: "Ideas for preserving and sharing your family history with others."
+    extraction_prompt: "Extract any thoughts or ideas mentioned about how to preserve, document, or share your family history with current or future generations."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these elements of your family history. Is there a particular branch or story you'd like to explore further, or would you like suggestions for how to preserve these memories for future generations?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your family history has such rich elements. Would you like to explore how these stories might be shaped into a family history book, or perhaps discuss creative ways to share these stories with younger generations?"
+    
+  # Hypothetical specialized coach for legacy preservation
+  legacy_preservation_coach:
+    prompt: "These family stories are precious. Would it be helpful to discuss ways to fill in some of the gaps in your family history, or perhaps explore how to create a lasting record that captures the essence of your family's journey?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

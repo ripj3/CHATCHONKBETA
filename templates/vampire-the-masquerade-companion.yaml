@@ -1,0 +1,225 @@
+# Vampire: The Masquerade Companion Template for ChatChonk
+# Purpose: Organizes Vampire: The Masquerade information from conversations,
+# including character details, chronicle notes, session summaries, and vampire-specific elements.
+#
+# Note: This template is specifically designed for Vampire: The Masquerade and includes terminology
+# specific to that system (like Hunger, Humanity, Disciplines, The Masquerade, etc.).
+# It's optimized for both players and Storytellers to capture the personal horror and
+# political intrigue that makes Vampire: The Masquerade unique.
+
+template_name: "Vampire: The Masquerade Companion"
+template_description: "Organizes Vampire: The Masquerade information from your conversations, including character details, chronicle notes, session summaries, and vampire-specific elements for your World of Darkness adventures."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - vampire-the-masquerade
+  - vtm
+  - world-of-darkness
+  - chronicles-of-darkness
+  - ttrpg
+  - rpg
+  - white-wolf
+  - personal-horror
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Overview of what happened in the session
+  session_summary:
+    title: "📝 Session Summary"
+    description: "A brief overview of what happened in the Vampire: The Masquerade session."
+    extraction_prompt: "Summarize the key events, encounters, and developments from the Vampire: The Masquerade session discussed. What were the main things that happened?"
+    format: "paragraph"
+    
+  # Notes on character development and moral struggles
+  character_development:
+    title: "👤 Character Development"
+    description: "Notes on character development, moral struggles, or personal evolution."
+    extraction_prompt: "Extract information about character development - including moral struggles, personal evolution, relationships with mortals or other Kindred, or significant choices that reflect the character's personality or values."
+    format: "bullet_list"
+    
+  # Humanity checks and moral compromises
+  humanity_morality:
+    title: "⚖️ Humanity & Morality"
+    description: "Reflections on Humanity checks, moral compromises, or the struggle against the Beast."
+    extraction_prompt: "Extract information about Humanity or morality struggles, moral compromises made, Humanity checks, or the character's ongoing battle with their inner Beast. How is the character's humanity being challenged or maintained?"
+    format: "bullet_list"
+    optional: true
+    
+  # Feeding scenes and Hunger management
+  hunger_feeding:
+    title: "🩸 Hunger & Feeding"
+    description: "Notes on feeding scenes, Hunger management, or blood-related challenges."
+    extraction_prompt: "Extract information about feeding scenes, Hunger management, or blood-related challenges. How did the characters feed, what complications arose from Hunger, or how did feeding impact the story?"
+    format: "bullet_list"
+    optional: true
+    
+  # Vampire politics and sect affairs
+  political_maneuvering:
+    title: "👑 Political Maneuvering & Sect Affairs"
+    description: "Vampire politics, sect affairs, or faction developments."
+    extraction_prompt: "Extract information about vampire politics, sect affairs, faction developments, or power plays among Kindred. What political movements, alliances, or conflicts are developing?"
+    format: "bullet_list"
+    optional: true
+    
+  # Masquerade breaches and threats
+  masquerade_threats:
+    title: "🎭 The Masquerade & Threats"
+    description: "Masquerade breaches, threats to secrecy, or human awareness concerns."
+    extraction_prompt: "Extract information about Masquerade breaches, threats to vampire secrecy, suspicious mortals, or other developments that might threaten the Masquerade or vampire society."
+    format: "bullet_list"
+    optional: true
+    
+  # Coterie dynamics and group development
+  coterie_dynamics:
+    title: "🧛‍♀️ Coterie Dynamics"
+    description: "Developments within the coterie, group dynamics, or shared goals."
+    extraction_prompt: "Extract information about the coterie's internal dynamics, conflicts, bonds, shared goals, or collective development. How is the group evolving together?"
+    format: "bullet_list"
+    optional: true
+    
+  # Domains, havens, and hunting grounds
+  domain_locations:
+    title: "🏙️ Domain & Locations"
+    description: "Information about domains, havens, hunting grounds, or important locations."
+    extraction_prompt: "Extract information about domains, havens, hunting grounds, or important locations visited or discussed. What new areas were explored or what developments occurred in established locations?"
+    format: "bullet_list"
+    optional: true
+    
+  # NPC relationships and developments
+  npc_relationships:
+    title: "🧑‍🤝‍🧑 NPC Relationships"
+    description: "Details about NPCs, their relationships to PCs, or their developments."
+    extraction_prompt: "Extract information about NPCs (both Kindred and kine) encountered or discussed - including new NPCs introduced, developments with existing NPCs, or changes in relationships between NPCs and PCs."
+    format: "bullet_list"
+    optional: true
+    
+  # Touchstones and mortal connections
+  touchstones_connections:
+    title: "❤️ Touchstones & Mortal Connections"
+    description: "Developments with touchstones, mortal connections, or anchors to humanity."
+    extraction_prompt: "Extract information about touchstones, mortal connections, or other anchors to humanity. How are these relationships developing, and how do they affect the characters' connection to their human sides?"
+    format: "bullet_list"
+    optional: true
+    
+  # Discipline usage and supernatural effects
+  discipline_usage:
+    title: "🔮 Discipline Usage & Powers"
+    description: "Notable uses of Disciplines, power development, or supernatural effects."
+    extraction_prompt: "Extract information about notable uses of Disciplines, development of vampire powers, or supernatural effects. How did these powers influence the story or solve problems?"
+    format: "bullet_list"
+    optional: true
+    
+  # Advancement of major plotlines
+  plot_developments:
+    title: "📚 Plot Developments & Story Threads"
+    description: "Advancement of major plotlines and emerging story threads."
+    extraction_prompt: "Extract developments in major plotlines or emerging story threads. What story elements moved forward? What new threads emerged? What mysteries deepened or were resolved?"
+    format: "bullet_list"
+    
+  # Thematic elements and motifs
+  thematic_elements:
+    title: "🎭 Thematic Elements & Motifs"
+    description: "Thematic elements, motifs, or personal horror aspects that emerged."
+    extraction_prompt: "Identify thematic elements, motifs, or personal horror aspects that emerged during the session. What larger themes about vampirism, humanity, or morality were explored?"
+    format: "bullet_list"
+    optional: true
+    
+  # Character resources and status
+  resources_status:
+    title: "📊 Resources & Status"
+    description: "The character's current resources, condition, and general status."
+    extraction_prompt: "Extract information about the character's current resources, condition, and general status. This might include Hunger level, Health, Willpower, important possessions, Backgrounds, or Advantages/Flaws in play."
+    format: "bullet_list"
+    optional: true
+    
+  # Boons, debts, and obligations
+  boons_debts:
+    title: "⚖️ Boons, Debts & Obligations"
+    description: "Boons, debts, obligations, or other social currency exchanged."
+    extraction_prompt: "Extract information about boons, debts, obligations, or other social currency exchanged, incurred, or called in. Who owes what to whom, and what obligations are in play?"
+    format: "bullet_list"
+    optional: true
+    
+  # Notes on VtM rules and mechanics
+  rules_mechanics:
+    title: "📘 Rules & Mechanics Notes"
+    description: "Notes on VtM rules, mechanics interpretations, or house rules."
+    extraction_prompt: "Extract any notes on Vampire: The Masquerade rules, mechanics interpretations, house rules, or mechanical interactions that were discussed or clarified."
+    format: "bullet_list"
+    optional: true
+    
+  # Ideas and plans discussed by players
+  player_ideas_plans:
+    title: "💭 Player Ideas & Plans"
+    description: "Ideas, plans, or strategies discussed by the players."
+    extraction_prompt: "What ideas, plans, theories, or strategies were discussed by the players? What are they thinking of doing next or how are they approaching their current situations?"
+    format: "bullet_list"
+    
+  # Open questions and mysteries
+  unresolved_questions:
+    title: "❓ Unresolved Questions & Mysteries"
+    description: "Open questions, mysteries, or unresolved situations."
+    extraction_prompt: "What open questions, mysteries, or unresolved situations remain? What are the players still wondering about or trying to figure out?"
+    format: "bullet_list"
+    optional: true
+    
+  # Memorable quotes from the session
+  memorable_quotes:
+    title: "💬 Memorable Quotes"
+    description: "Dramatic, chilling, or otherwise memorable quotes from the session."
+    extraction_prompt: "Capture any dramatic, chilling, or otherwise memorable quotes from the session, either in-character or out-of-character."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes for the next session
+  next_session_prep:
+    title: "📅 Next Session Preparation"
+    description: "Notes for preparing for the next Vampire: The Masquerade session."
+    extraction_prompt: "Extract any notes relevant to preparing for the next Vampire: The Masquerade session - including planned activities, things to remember, or preparation needed by either players or Storyteller."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these notes from your Vampire: The Masquerade session. Would you like me to help you explore any particular aspect further, like your character's moral struggles or the political implications of recent events?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "Your Vampire chronicle has some fascinating elements! Would you like to brainstorm some character development possibilities, potential plot theories, or creative ways your character might navigate their undead existence?"
+    
+  # Hypothetical specialized coach for storytellers
+  storyteller_assistant:
+    prompt: "These session notes have a lot of great thematic and narrative elements. If you're the Storyteller, would it be helpful to discuss how to develop certain personal horror aspects further or perhaps create connections between different story threads?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

@@ -1,0 +1,85 @@
+meta:
+  title: "Services & Support Navigator"
+  description: "A template to help you organize and manage your support services, providers, and key information."
+  ai_coach_prompts:
+    - "Remember to review your eligibility for services regularly. I can help you set reminders."
+    - "This is your space to keep track of what matters to you in your support network."
+
+providers:
+  - provider_name: "Example Provider Inc."
+    service_type: "e.g., Advocacy, Respite Care, Transportation"
+    status: "e.g., Active, Exploring, Waitlisted, Paused, Former"
+    contacts:
+      - name: "Jane Doe"
+        role: "e.g., Case Manager, Support Coordinator, Direct Support Staff"
+        phone: "555-123-4567"
+        email: "jane.doe@example.com"
+        preferred_contact_method: "e.g., Email, Phone (mornings only), Text"
+        notes: "e.g., Best to reach out early in the week."
+    eligibility:
+      criteria_summary: "e.g., Resident of X county, specific diagnosis, income level."
+      documents_submitted:
+        - "Proof of Address - Submitted 2024-01-15"
+        - "Diagnosis Verification - Submitted 2024-01-20"
+      application_status: "e.g., Approved, Pending Review, Information Requested"
+      application_date: "YYYY-MM-DD"
+      effective_date: "YYYY-MM-DD"
+      renewal_date: "YYYY-MM-DD"
+      renewal_notes: "e.g., Process takes 4-6 weeks, start early."
+      ai_coach_prompt_eligibility: "What's the next step for this eligibility, or when should we check on it?"
+    interactions:
+      - date: "YYYY-MM-DD"
+        type: "e.g., Phone Call, Email, In-Person Meeting, Video Call"
+        initiated_by: "e.g., Me, Provider, Mutual"
+        summary: "e.g., Discussed X, Y, Z. Agreed on A."
+        action_items_for_me:
+          - "Send document B by [date]"
+        action_items_for_provider:
+          - "Follow up on C by [date]"
+        outcome_feeling: "e.g., Positive, Neutral, Needs Improvement, Unresolved"
+        ai_coach_prompt_interaction: "What was the most important outcome of this interaction for you?"
+    provider_specific_user_manual_notes:
+      section_title: "Key Info for My Support Team at [Provider Name]"
+      communication_preferences:
+        - "e.g., Please use clear, direct language."
+        - "e.g., Allow extra time for me to process information during calls."
+      support_strategies_that_work_well:
+        - "e.g., Visual aids are helpful for complex topics."
+        - "e.g., Breaking down tasks into smaller steps."
+      what_to_do_if_i_seem_overwhelmed:
+        - "e.g., Offer a short break."
+        - "e.g., Ask if I'd prefer to continue another time."
+      ai_coach_prompt_provider_manual: "What's one thing you really want the team at [Provider Name] to understand about supporting you effectively?"
+
+general_user_manual:
+  title: "My Personal User Manual - How I Thrive"
+  sections:
+    - title: "About Me & My Communication Style"
+      points:
+        - "e.g., I communicate best when..."
+        - "e.g., I appreciate when people..."
+        - "e.g., Things that can make communication challenging for me are..."
+      ai_coach_prompt: "How would you describe your ideal communication scenario?"
+    - title: "My Strengths & How I Like to Be Supported"
+      points:
+        - "e.g., I'm good at..."
+        - "e.g., I feel supported when..."
+        - "e.g., I prefer to approach new tasks by..."
+      ai_coach_prompt: "What's a strength you'd like your support network to help you leverage more?"
+    - title: "Important Routines or Preferences"
+      points:
+        - "e.g., My morning routine is important for a good start to the day."
+        - "e.g., I prefer appointments in the afternoon if possible."
+      ai_coach_prompt: "Are there any routines or preferences that, if respected, make a big difference to your day?"
+    - title: "Navigating Challenges & Overwhelm"
+      points:
+        - "e.g., When I'm feeling overwhelmed, I might..."
+        - "e.g., Helpful ways to support me during these times are..."
+        - "e.g., Signs that I might need a break or a different approach include..."
+      ai_coach_prompt: "What helps you regain a sense of calm or control when things feel challenging?"
+
+global_ai_coach_prompts:
+  - "This Services & Support Navigator is a living document. We can update it anytime you learn something new or your needs change."
+  - "Regularly reviewing this information can help ensure your support network is always aligned with your current goals and preferences. Would you like to schedule a time to look it over together?"
+  - "Remember, you are the expert on your own needs. This tool is here to help you articulate and advocate for them."
+  - "Is there anything in this structure that feels confusing or like it's missing something important for you?"

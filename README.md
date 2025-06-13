@@ -1,22 +1,35 @@
-# ChatChonk
+# ChatChonk - AI-Powered Knowledge Processing Platform
 
-> **“Tame the Chatter. Find the Signal.”**  
+> **“Tame the Chatter. Find the Signal.”**
 > You enjoy that hyper-focus. **We organize it all.**
 
-ChatChonk is a one-person, privacy-first SaaS that turns messy, ideation-heavy AI chat exports (ChatGPT, Claude, Gemini & more) into **Obsidian- and Notion-ready knowledge bundles**—complete with backlinks, tags, Dataview metadata, and media linking.  
-Designed for second-brain builders, neurodivergent thinkers, and anyone who drowns in brilliant but scattered conversations.
+ChatChonk is a privacy-first SaaS platform that transforms messy AI chat exports (ChatGPT, Claude, Gemini & more) into **structured, searchable knowledge bundles** ready for Obsidian, Notion, and other knowledge management systems.
+
+**🚀 Now featuring the complete AutoModel-ModelSwapper system with enterprise-grade security and cost controls!**
 
 ---
 
-## ✨ Why It Exists
+## ✨ What's New - AutoModel Integration
 
-People with ADHD (like the founder) generate **tons of creative ideas** during AI chat sessions but struggle to retrieve them later. ChatChonk harnesses that chaotic brilliance by:
+ChatChonk now includes a sophisticated **AI model management system** that provides:
 
-1. **Ingesting** ZIP archives (up to 2 GB) containing chat logs & media.  
-2. **Structuring** content with AI-powered templates optimised for ideation discovery.  
-3. **Exporting** polished Markdown/Notion assets that drop straight into your knowledge base.
+### 🔐 **Security-First AI Processing**
+- **User tier-based access control** (Free → Meowtrix)
+- **Multi-layer cost protection** with $50 emergency circuit breaker
+- **Real-time spending tracking** and automatic limits
+- **Encrypted API key storage** for high-tier users
 
-Enjoy the hyperfocus—ChatChonk does the filing.
+### 🧠 **Intelligent Model Selection**
+- **Performance-based routing** using real MSWAP database
+- **Cost optimization** with automatic fallbacks
+- **Provider diversity** (OpenAI, Anthropic, HuggingFace, Mistral, etc.)
+- **Task-specific model matching**
+
+### 💰 **Cost Control Features**
+- **Pre-request cost estimation** with approval gates
+- **Tier-based spending limits** ($1/day → $500/day)
+- **Emergency circuit breakers** prevent billing surprises
+- **Detailed usage analytics** and cost breakdowns
 
 ---
 
@@ -24,14 +37,36 @@ Enjoy the hyperfocus—ChatChonk does the filing.
 
 ```
 chatchonk/
-  backend/          # FastAPI  · Python 3.11 · Supabase client
-  frontend/         # Next.js 14 · App Router · Tailwind CSS
-  templates/        # YAML templates (ADHD-optimised)
-  scripts/          # Helper & deploy scripts
-  docs/             # Additional docs / ADRs
+  backend/
+    app/
+      api/routes/           # API endpoints (ModelSwapper, file processing)
+      automodel/           # AI model management system
+        providers/         # OpenAI, Anthropic, HuggingFace, etc.
+      models/              # Pydantic models (MSWAP database schema)
+      services/            # Core services (ModelSwapper, cache, Discord)
+      core/                # Configuration and utilities
+    main.py              # FastAPI application entry point
+    requirements.txt     # Python dependencies
+
+  frontend/
+    src/
+      app/
+        admin/             # Admin dashboard (users, models, analytics)
+        page.tsx          # Main application page
+      components/ui/       # Reusable UI components
+      lib/                # Utilities and helpers
+      styles/             # Global CSS and Tailwind
+    next.config.js       # Next.js configuration
+    package.json         # Node.js dependencies
+
+  templates/             # YAML processing templates
+  scripts/               # Deployment and utility scripts
+  docs/                  # Documentation and ADRs
 ```
 
-Core flow: `Upload → ZIP & Media Parse → AI Analysis (AutoModel) → Template Apply → Export`.
+**Core Flow:** `Upload → ZIP Parse → AutoModel AI Processing → Template Apply → Export`
+
+**New AutoModel Flow:** `Request → Security Check → Cost Estimation → Model Selection → API Call → Usage Tracking`
 
 ---
 
@@ -55,24 +90,45 @@ cd chatchonk
 Create `.env` in project root:
 
 ```env
-# ==== Supabase ====
+# ==== Supabase (ChatChonk Database) ====
 SUPABASE_URL=https://xxxxxxxx.supabase.co
 SUPABASE_ANON_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
 SUPABASE_SERVICE_ROLE_KEY=xxxxxxxxxxxxxxxx
 
-# ==== Backend secrets ====
-CHONK_SECRET_KEY=change_me
-HUGGINGFACE_API_KEY=hf_xxxxxxxxxxxxx      # initial AI provider
-OPENAI_API_KEY=sk-xxxxxxxx (optional)
-ANTHROPIC_API_KEY=claude-xxxxxxxx (optional)
+# ==== MSWAP Database (ModelSwapper) ====
+MSWAP_SUPABASE_URL=https://yyyyyyyy.supabase.co
+MSWAP_SUPABASE_ANON_KEY=yyyyyyyyyyyyyyyyyyyy
+MSWAP_SUPABASE_SERVICE_ROLE_KEY=yyyyyyyyyyyy
 
-# ==== File processing ====
+# ==== Backend Security ====
+CHONK_SECRET_KEY=your-super-secret-key-here
+JWT_SECRET_KEY=your-jwt-secret-key-here
+ENCRYPTION_KEY=your-32-byte-encryption-key
+
+# ==== AI Provider Keys (System-Level) ====
+HUGGINGFACE_API_KEY=hf_xxxxxxxxxxxxx
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxx
+MISTRAL_API_KEY=xxxxxxxxxxxxxxxx
+DEEPSEEK_API_KEY=xxxxxxxxxxxxxxxx
+
+# ==== File Processing ====
 UPLOAD_DIR=./uploads
 TEMP_DIR=./tmp
+MAX_FILE_SIZE=2147483648  # 2GB
 
-# ==== App ====
-ALLOWED_ORIGINS=http://localhost:3000
+# ==== Application ====
+ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
 PORT=8000
+ENVIRONMENT=development
+
+# ==== Discord Integration (Optional) ====
+DISCORD_BOT_TOKEN=your-discord-bot-token
+DISCORD_GUILD_ID=your-discord-server-id
+
+# ==== Cost Control ====
+EMERGENCY_COST_THRESHOLD=50.00
+DEFAULT_DAILY_LIMIT=25.00
 ```
 
 ### 3. Backend
@@ -110,77 +166,117 @@ Feature branches follow **conventional commits** + PR review.
 
 ---
 
-## 🚀 Deployment (Digital Ocean Droplet)
+## 🚀 Deployment
 
-Traditional (non-Docker) flow—perfect for lightweight VPS.
+### **Render.com Deployment (Recommended)**
 
-1. **Provision droplet** – Ubuntu 22.04, 2 vCPU / 2 GB RAM.  
-2. **SSH & setup**  
+ChatChonk is optimized for **Render.com** deployment with the included `render.yaml` configuration:
+
+#### **Prerequisites**
+1. **Two Supabase Projects**:
+   - **CHCH3**: Main ChatChonk database
+   - **MSWAP**: ModelSwapper database (with providers, models, task_types tables)
+
+2. **Environment Variables** (set in Render dashboard):
+   ```env
+   # Supabase connections
+   SUPABASE_URL=https://your-chch3-project.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your-chch3-service-key
+   MSWAP_SUPABASE_URL=https://your-mswap-project.supabase.co
+   MSWAP_SUPABASE_SERVICE_ROLE_KEY=your-mswap-service-key
+
+   # Security
+   CHONK_SECRET_KEY=your-production-secret
+   JWT_SECRET_KEY=your-jwt-secret
+   ENCRYPTION_KEY=your-32-byte-encryption-key
+
+   # AI Providers (system-level)
+   HUGGINGFACE_API_KEY=hf_your_key
+   OPENAI_API_KEY=sk-your_key
+   ANTHROPIC_API_KEY=sk-ant-your_key
+
+   # Cost controls
+   EMERGENCY_COST_THRESHOLD=50.00
+   ```
+
+#### **Deployment Steps**
+1. **Connect GitHub** repository to Render
+2. **Set environment variables** in Render dashboard
+3. **Deploy** - Render will automatically:
+   - Build the FastAPI backend
+   - Build the Next.js frontend
+   - Set up health checks and auto-scaling
+
+#### **Post-Deployment**
+1. **Populate MSWAP database** with your AI provider configurations
+2. **Test ModelSwapper** endpoints via `/api/modelswapper/health`
+3. **Configure user tiers** and spending limits
+4. **Set up monitoring** for cost controls
+
+### **Alternative: Traditional VPS Deployment**
+
+For self-hosted deployment on Ubuntu 22.04+ VPS:
 
 ```bash
-# system packages
+# System setup
 sudo apt update && sudo apt install python3.11-venv nodejs npm nginx git
-# optional media tools
-sudo apt install ffmpeg tesseract-ocr
-```
 
-3. **Clone repo & build**
-
-```bash
-git clone https://github.com/yourname/chatchonk.git /opt/chatchonk
+# Clone and build
+git clone https://github.com/ripj3/CHATCHONKBETA.git /opt/chatchonk
 cd /opt/chatchonk
-# backend
+
+# Backend
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r backend/requirements.txt
-# frontend
+
+# Frontend
 cd frontend && npm ci && npm run build
-```
 
-4. **Process manager**
-
-Using **PM2**:
-
-```bash
+# Process management with PM2
 sudo npm i -g pm2
-pm2 start backend/pm2.backend.json    # uvicorn
-pm2 start frontend/pm2.frontend.json  # next start
-pm2 save
-pm2 startup
+pm2 start "uvicorn backend.main:app --host 0.0.0.0 --port 8000" --name chatchonk-api
+pm2 start "npm start" --name chatchonk-frontend --cwd frontend
+pm2 save && pm2 startup
 ```
-
-5. **nginx reverse proxy**
-
-```nginx
-server {
-  server_name chatchonk.com;
-  location /api/ {
-    proxy_pass http://localhost:8000/;
-    proxy_set_header Host $host;
-  }
-  location / {
-    proxy_pass http://localhost:3000;
-    proxy_set_header Host $host;
-    try_files $uri $uri/ /index.html;
-  }
-}
-```
-
-6. **SSL** – issue cert via Cloudflare or `certbot`.
 
 ---
 
 ## 🏗 Architecture Overview
 
-| Layer | Tech | Notes |
-|-------|------|-------|
-| Frontend | Next.js 14, Tailwind, Brand Kit | Responsive, accessible UI |
-| Backend | FastAPI, Pydantic | Stateless API, JWT (future) |
-| AI Layer | AutoModel (HuggingFace MVP) | Pluggable providers (OpenAI, Anthropic…) |
-| Data | Supabase Postgres | Auth, storage, edge functions |
-| Processing | Async ZIP parser + media extractors | Streams >2 GB w/ chunk uploads |
-| Exports | Markdown / Notion JSON | Obsidian-ready, full linking |
+| Layer | Technology | Implementation | Notes |
+|-------|------------|----------------|-------|
+| **Frontend** | Next.js 14, Tailwind CSS | React components, Admin dashboard | Responsive, accessible UI |
+| **Backend** | FastAPI, Pydantic | RESTful API, async processing | Stateless, JWT auth ready |
+| **AI Layer** | **AutoModel + ModelSwapper** | Multi-provider routing | **NEW: Intelligent model selection** |
+| **Security** | **Multi-tier access control** | User authentication, API key encryption | **NEW: Enterprise-grade security** |
+| **Cost Control** | **Real-time tracking** | Spending limits, circuit breakers | **NEW: $50 emergency threshold** |
+| **Data** | Dual Supabase setup | CHCH3 (main) + MSWAP (models) | Postgres with edge functions |
+| **Processing** | Async ZIP parser | Media extraction, chunked uploads | Handles >2GB files |
+| **Exports** | Markdown/Notion JSON | Obsidian-ready with backlinks | Full knowledge graph linking |
 
-Supabase **Edge Functions** will replace heavy Celery queues for background tasks.
+### **New AutoModel-ModelSwapper Architecture**
+
+```mermaid
+graph TD
+    A[User Request] --> B[Security Check]
+    B --> C[Cost Estimation]
+    C --> D[Model Selection]
+    D --> E[Provider Routing]
+    E --> F[API Call]
+    F --> G[Usage Tracking]
+    G --> H[Response]
+
+    I[MSWAP Database] --> D
+    J[User Tier Limits] --> B
+    K[Performance Data] --> D
+    L[Cost Thresholds] --> C
+```
+
+**Key Features:**
+- **Intelligent Routing**: Selects optimal model based on task, performance, and cost
+- **Security First**: Multi-layer protection with user tier enforcement
+- **Cost Optimization**: Real-time tracking with automatic fallbacks
+- **High-Tier Features**: Custom API keys for Clawback+ users
 
 ---
 

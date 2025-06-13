@@ -1,0 +1,204 @@
+# Disability & Late Diagnosis Companion Template for ChatChonk
+# Purpose: Explores and processes experiences related to disability, particularly focusing on
+# late diagnosis and reinterpreting past experiences through a newly informed understanding.
+#
+# Note: This template acknowledges the diversity of disability experiences and affirms that
+# each person's journey is unique and valid. There is no single "right way" to experience,
+# understand, or express disability or neurodivergence. This template aims to provide
+# supportive structure while honoring individual perspectives and preferences.
+
+template_name: "Disability & Late Diagnosis Companion"
+template_description: "Explores and processes experiences related to disability, particularly focusing on late diagnosis and reinterpreting past experiences through a newly informed understanding."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - disability
+  - late-diagnosis
+  - neurodiversity
+  - personal-narrative
+  - self-understanding
+  - identity
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The path to diagnosis or self-identification
+  diagnosis_journey:
+    title: "🔍 Diagnosis Journey & Realizations"
+    description: "The path to diagnosis or self-identification and key realizations along the way."
+    extraction_prompt: "Extract details about your path to diagnosis or self-identification. What led to this discovery? What key moments or realizations were part of this journey? How did receiving this knowledge affect you?"
+    format: "paragraph"
+    
+  # Past experiences now viewed differently
+  reinterpreted_experiences:
+    title: "🔄 Reinterpreted Past Experiences"
+    description: "Past experiences that make more sense or appear differently when viewed through your current understanding."
+    extraction_prompt: "Identify past experiences, challenges, or memories that you now see differently in light of your diagnosis or new understanding. How has your perspective on these experiences changed?"
+    format: "bullet_list"
+    
+  # How disability/neurodivergence integrates with identity
+  identity_integration:
+    title: "⭐ Identity Integration & Understanding"
+    description: "How this aspect of your identity has been integrated into your self-understanding."
+    extraction_prompt: "Extract reflections on how this diagnosis or understanding has been integrated into your sense of self and identity. How has it changed how you view yourself or explain yourself to others?"
+    format: "bullet_list"
+    
+  # Positive traits and strengths
+  strengths_abilities:
+    title: "💪 Strengths & Unique Abilities"
+    description: "Positive traits, strengths, or unique perspectives connected to your disability or neurodivergence."
+    extraction_prompt: "What strengths, unique abilities, positive traits, or valuable perspectives do you recognize as connected to your disability or neurodivergence? How have these benefited you or others?"
+    format: "bullet_list"
+    
+  # Challenges and adaptations developed
+  challenges_adaptations:
+    title: "🧩 Challenges & Adaptations"
+    description: "Difficult aspects and the adaptations or strategies developed to address them."
+    extraction_prompt: "What challenges or difficulties have you experienced that are related to your disability or neurodivergence? What adaptations, coping strategies, or accommodations have you developed or discovered?"
+    format: "bullet_list"
+    
+  # Distinctive sensory experiences
+  sensory_experiences:
+    title: "👁️ Sensory Experiences & Processing"
+    description: "Distinctive sensory experiences or processing patterns you've noticed."
+    extraction_prompt: "Extract any mentioned distinctive sensory experiences or processing patterns that you've recognized. This might include sensitivities, preferences, or unique ways of experiencing the physical world."
+    format: "bullet_list"
+    optional: true
+    
+  # Communication and social interaction patterns
+  communication_social:
+    title: "💬 Communication & Social Patterns"
+    description: "Observations about your communication style and social interaction patterns."
+    extraction_prompt: "What have you noticed about your communication style, social interaction patterns, or relationship approaches that might be connected to your disability or neurodivergence?"
+    format: "bullet_list"
+    optional: true
+    
+  # Executive functioning patterns
+  executive_functioning:
+    title: "🧠 Executive Functioning Patterns"
+    description: "Observations about planning, organization, time management, and task execution."
+    extraction_prompt: "Extract any mentioned patterns related to executive functioning - such as approaches to planning, organization, time management, task initiation, or completion. What works well for you, and what's challenging?"
+    format: "bullet_list"
+    optional: true
+    
+  # Emotional experiences and regulation
+  emotional_regulation:
+    title: "❤️ Emotional Experiences & Regulation"
+    description: "Patterns in emotional experiences, expression, and regulation strategies."
+    extraction_prompt: "What patterns have you noticed in how you experience, process, express, or regulate emotions? Are there particular emotional experiences that seem connected to your disability or neurodivergence?"
+    format: "bullet_list"
+    optional: true
+    
+  # Energy management and recovery needs
+  energy_management:
+    title: "🔋 Energy Management & Recovery"
+    description: "Patterns related to energy levels, fatigue, and recovery needs."
+    extraction_prompt: "Extract observations about your energy patterns, fatigue experiences, recovery needs, or cycles of capacity. What depletes you, and what helps you recharge?"
+    format: "bullet_list"
+    optional: true
+    
+  # Masking and authenticity experiences
+  masking_authenticity:
+    title: "🎭 Masking & Authenticity"
+    description: "Experiences with masking, camouflaging, or finding authentic self-expression."
+    extraction_prompt: "Have you experienced masking or camouflaging (hiding natural traits to fit in)? Extract reflections on the balance between adaptation and authentic self-expression."
+    format: "bullet_list"
+    optional: true
+    
+  # Navigating systems and advocacy
+  systems_navigation:
+    title: "🧭 Systems Navigation & Advocacy"
+    description: "Experiences navigating systems, seeking accommodations, or self-advocacy."
+    extraction_prompt: "Extract experiences related to navigating educational, workplace, healthcare, or other systems. This might include seeking accommodations, self-advocacy efforts, or institutional challenges."
+    format: "bullet_list"
+    optional: true
+    
+  # Community connections and belonging
+  community_belonging:
+    title: "🌟 Community & Belonging"
+    description: "Connections to disability community, representation, or finding belonging."
+    extraction_prompt: "Extract reflections on connection to disability or neurodivergent communities, finding representation, or experiences of belonging. Has connecting with others with similar experiences been important to you?"
+    format: "bullet_list"
+    optional: true
+    
+  # Family patterns across generations
+  intergenerational_patterns:
+    title: "🌳 Intergenerational & Family Patterns"
+    description: "Observations about similar traits or experiences across family members or generations."
+    extraction_prompt: "Have you recognized similar traits, characteristics, or experiences in family members across generations? Extract any reflections on potential hereditary or familial patterns."
+    format: "bullet_list"
+    optional: true
+    
+  # Preferences regarding disability terminology
+  terminology_language_preferences:
+    title: "🔤 Terminology & Language Preferences"
+    description: "Your preferences regarding disability terminology and language."
+    extraction_prompt: "Extract any mentioned preferences about disability terminology or language (e.g., person-first vs. identity-first language, medical vs. social model terms, or specific words that feel right or wrong to you)."
+    format: "bullet_list"
+    optional: true
+    
+  # Helpful accommodations and tools
+  accommodations_tools:
+    title: "🛠️ Helpful Accommodations & Tools"
+    description: "Accommodations, adaptations, tools, or approaches that have been helpful."
+    extraction_prompt: "What accommodations, adaptations, tools, technologies, or approaches have been helpful for you? This could include formal accommodations or personal strategies."
+    format: "bullet_list"
+    
+  # Disclosure decisions and experiences
+  disclosure_decisions:
+    title: "💌 Disclosure Decisions & Experiences"
+    description: "Thoughts and experiences related to disclosing your disability to others."
+    extraction_prompt: "Extract reflections on disclosing your disability or neurodivergence to others. What factors influence these decisions, and what experiences have you had with disclosure?"
+    format: "bullet_list"
+    optional: true
+    
+  # Evolving understanding and ongoing questions
+  evolving_understanding:
+    title: "📈 Evolving Understanding & Ongoing Questions"
+    description: "How your understanding continues to evolve and questions you're exploring."
+    extraction_prompt: "How is your understanding of your disability or neurodivergence continuing to evolve? What questions are you still exploring or what aspects are you still making sense of?"
+    format: "bullet_list"
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these reflections on your disability and diagnosis journey. Would you like to explore any particular aspect further, or would you prefer to simply have this record to revisit when it feels helpful?"
+    
+  # Hypothetical personal reflection coach
+  personal_reflection_coach:
+    prompt: "These insights about your experiences are valuable. Would it be helpful to explore how your strengths connect to some of the challenges you've noted, or perhaps discuss how your self-understanding has evolved since your diagnosis?"
+    
+  # Hypothetical specialized coach for disability perspective
+  disability_perspective_coach:
+    prompt: "Your experience with late diagnosis brings unique insights. Would it be helpful to discuss how this new understanding might inform your approach to specific life areas, or perhaps explore resources that others with similar experiences have found valuable?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

@@ -1,0 +1,200 @@
+# Intersectionality Companion Template for ChatChonk
+# Purpose: Explores and documents personal experiences through an intersectional lens,
+# examining how multiple aspects of identity interact to create unique lived experiences.
+#
+# Scholarly Note: This template is based on the framework of intersectionality developed by
+# legal scholar Dr. Kimberlé Crenshaw in 1989. Dr. Crenshaw's groundbreaking work illuminated
+# how multiple social identities (such as race, gender, sexuality, class, disability) overlap
+# and intersect, creating unique experiences of discrimination or privilege that cannot be
+# understood by examining any single identity in isolation. This framework has been instrumental
+# in advancing more nuanced understandings of social justice and identity across many disciplines.
+
+template_name: "Intersectionality Companion"
+template_description: "Explores and documents personal experiences through an intersectional lens, examining how multiple aspects of identity interact to create unique lived experiences. Based on the framework developed by Dr. Kimberlé Crenshaw."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - intersectionality
+  - identity
+  - social-justice
+  - multiple-identities
+  - personal-narrative
+  - critical-theory
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Basic understanding of intersectionality in personal context
+  intersectionality_understanding:
+    title: "🌟 Intersectionality Understanding"
+    description: "What intersectionality means to you and how you understand the concept in your life."
+    extraction_prompt: "Extract reflections on what intersectionality means to you personally. How do you understand this concept as it relates to your own life and experiences? (Note: Intersectionality, a term coined by legal scholar Dr. Kimberlé Crenshaw in 1989, examines how different aspects of identity combine to create unique experiences of oppression or privilege.)"
+    format: "paragraph"
+    
+  # The different aspects of identity that shape experiences
+  identity_dimensions:
+    title: "🧩 Identity Dimensions"
+    description: "The different aspects of your identity that shape your experiences."
+    extraction_prompt: "What aspects of your identity were mentioned as significant in shaping your experiences? These might include (but aren't limited to) race, ethnicity, gender, sexuality, class, disability status, religion, nationality, age, body size, or other dimensions."
+    format: "bullet_list"
+    
+  # Specific experiences reflecting intersecting identities
+  intersectional_experiences:
+    title: "🔄 Intersectional Experiences"
+    description: "Specific experiences that reflect how multiple aspects of your identity interact."
+    extraction_prompt: "Extract specific experiences mentioned that reflect how multiple aspects of your identity interact. How do different dimensions of your identity combine to create experiences that wouldn't be fully understood by looking at just one aspect?"
+    format: "bullet_list"
+    
+  # Visibility and invisibility of different identity aspects
+  visibility_invisibility:
+    title: "👁️ Visibility & Invisibility"
+    description: "How certain aspects of your identity are visible or invisible in different contexts."
+    extraction_prompt: "Extract reflections on how certain aspects of your identity are visible or invisible in different contexts. When are parts of your identity more noticeable or more hidden, and how does this affect your experiences?"
+    format: "bullet_list"
+    optional: true
+    
+  # Complex interplay of privileged and marginalized identity aspects
+  privilege_marginalization:
+    title: "⚖️ Privilege & Marginalization Dynamics"
+    description: "The complex interplay of privileged and marginalized aspects of your identity."
+    extraction_prompt: "Extract reflections on the complex interplay of privileged and marginalized aspects of your identity. How do you experience both advantage and disadvantage across different dimensions of your life?"
+    format: "bullet_list"
+    optional: true
+    
+  # How intersectional identity is experienced differently across contexts
+  context_specific_experiences:
+    title: "🌐 Context-Specific Experiences"
+    description: "How your intersectional identity is experienced differently across various environments."
+    extraction_prompt: "How is your intersectional identity experienced differently across various contexts or environments (e.g., workplace, family, different geographic locations, online spaces)? Extract reflections on these context-specific experiences."
+    format: "bullet_list"
+    optional: true
+    
+  # Experiences navigating systems and institutions
+  systems_navigation:
+    title: "🧭 Systems & Institutional Navigation"
+    description: "Experiences navigating systems and institutions with your intersectional identity."
+    extraction_prompt: "Extract experiences related to navigating systems and institutions with your intersectional identity. How do organizational structures, policies, or institutional practices interact with different aspects of who you are?"
+    format: "bullet_list"
+    optional: true
+    
+  # Experiences of microaggressions and misrecognition
+  microaggressions_misrecognition:
+    title: "🔍 Microaggressions & Misrecognition"
+    description: "Subtle experiences of bias, stereotyping, or having your identity misunderstood."
+    extraction_prompt: "If mentioned, extract experiences of microaggressions, stereotyping, assumptions, or having aspects of your identity misunderstood or misrecognized. How do these experiences relate to your intersectional identity?"
+    format: "bullet_list"
+    optional: true
+    
+  # Experiences of belonging or exclusion within different communities
+  community_belonging:
+    title: "🤝 Community & Belonging Complexities"
+    description: "Experiences of belonging or exclusion within different identity communities."
+    extraction_prompt: "Extract reflections on experiences of belonging or exclusion within different identity communities. How do you navigate spaces where only part of your identity is represented or welcomed?"
+    format: "bullet_list"
+    optional: true
+    
+  # Reflections on media representation
+  representation_media:
+    title: "📱 Representation & Media"
+    description: "Reflections on media representation of your intersectional identity."
+    extraction_prompt: "If mentioned, extract reflections on media representation (or lack thereof) of people with your intersectional identity. What impact has representation or misrepresentation had on your understanding of yourself?"
+    format: "bullet_list"
+    optional: true
+    
+  # How understanding of intersectional identity has evolved
+  evolving_understanding:
+    title: "🌱 Evolving Understanding"
+    description: "How your understanding of your intersectional identity has evolved over time."
+    extraction_prompt: "How has your understanding of your intersectional identity evolved over time? Extract reflections on your journey of self-awareness and how your perspective has changed."
+    format: "bullet_list"
+    
+  # Reflections on language and terminology
+  language_terminology:
+    title: "🔤 Language & Terminology"
+    description: "Reflections on language and terminology related to your intersectional identity."
+    extraction_prompt: "Extract reflections on language and terminology related to your intersectional identity. How do you describe yourself, and how has language shaped your understanding of your identities?"
+    format: "bullet_list"
+    optional: true
+    
+  # Ways of advocating for self or others
+  advocacy_resistance:
+    title: "✊ Advocacy & Resistance"
+    description: "Ways you advocate for yourself or others with intersectional identities."
+    extraction_prompt: "If mentioned, extract reflections on how you advocate for yourself or others with intersectional identities. What forms of resistance, activism, or advocacy are meaningful to you?"
+    format: "bullet_list"
+    optional: true
+    
+  # Unique strengths and wisdom from intersectional perspective
+  intersectional_strengths:
+    title: "💪 Intersectional Strengths & Wisdom"
+    description: "Unique strengths, insights, or wisdom that come from your intersectional perspective."
+    extraction_prompt: "What unique strengths, insights, perspectives, or wisdom do you recognize as coming from your intersectional identity? How has navigating multiple identities contributed to your capabilities or understanding?"
+    format: "bullet_list"
+    
+  # Expressing authentic self across different aspects of identity
+  authenticity_expression:
+    title: "💫 Authenticity & Expression"
+    description: "How you express your full, authentic self across different aspects of identity."
+    extraction_prompt: "Extract reflections on how you express your full, authentic self across different aspects of identity. What helps you feel most authentic, and what challenges authenticity?"
+    format: "bullet_list"
+    optional: true
+    
+  # Experiences with solidarity and allyship
+  solidarity_allyship:
+    title: "🌉 Solidarity & Allyship"
+    description: "Experiences with solidarity across different identity groups or being an ally to others."
+    extraction_prompt: "If mentioned, extract reflections on experiences with solidarity across different identity groups or being an ally to others. How do you connect with people who share some but not all aspects of your identity?"
+    format: "bullet_list"
+    optional: true
+    
+  # Helpful resources and supports
+  resources_supports:
+    title: "📚 Resources & Supports"
+    description: "Helpful resources, communities, or supports for navigating intersectional identity."
+    extraction_prompt: "What resources, communities, or supports have been helpful for navigating your intersectional identity? This might include books, organizations, online spaces, or specific practices."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these reflections on your intersectional experiences. Is there a particular aspect you'd like to explore further, or would you prefer to simply have this record to revisit when it feels meaningful to you?"
+    
+  # Personal reflection coach for deeper exploration
+  personal_reflection_coach:
+    prompt: "Your insights about navigating multiple aspects of identity contain valuable wisdom. Would it be helpful to explore how your intersectional perspective has shaped your approach to specific life situations, or perhaps discuss how certain identity dimensions interact in particular contexts?"
+    
+  # Specialized coach for intersectional perspective
+  intersectional_perspective_coach:
+    prompt: "Your experiences at the intersection of multiple identities offer unique perspectives. Would it be helpful to discuss how these perspectives might inform your engagement with communities, systems, or personal growth, or perhaps explore resources that others with similar intersectional experiences have found valuable?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

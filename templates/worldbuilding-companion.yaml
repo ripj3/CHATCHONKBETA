@@ -1,0 +1,194 @@
+# Worldbuilding Companion Template for ChatChonk
+# Purpose: Deeply explores and organizes setting elements from creative conversations,
+# supporting rich world development for fiction, games, and other narrative projects.
+# Designed to capture the essence and details of fictional worlds while respecting
+# different approaches to worldbuilding.
+
+template_name: "Worldbuilding Companion"
+template_description: "Deeply explores and organizes setting elements from creative conversations, supporting rich world development for fiction, games, and other narrative projects."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - creative
+  - fiction
+  - worldbuilding
+  - setting
+  - fantasy
+  - scifi
+  - gamedev
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The central feeling or concept that defines the world
+  world_essence:
+    title: "✨ World Essence & Core Concept"
+    description: "The central feeling, theme, or concept that defines this world."
+    extraction_prompt: "What is the essential nature or core concept of this world? Capture the feeling, atmosphere, central idea, or 'hook' that makes this world distinctive."
+    format: "paragraph"
+    
+  # The physical nature and environment of the world
+  physical_environment:
+    title: "🌍 Physical Environment"
+    description: "The geography, climate, physical laws, and natural features of the world."
+    extraction_prompt: "Extract details about the physical nature of this world: geography, climate, terrain, physical laws, natural features, flora, fauna, or any unusual physical phenomena discussed."
+    format: "nested_list"
+    subsections:
+      geography_terrain: "Landforms, bodies of water, geographical features"
+      climate_weather: "Climate patterns, seasons, unusual weather phenomena"
+      flora_fauna: "Plant and animal life, ecosystems, biodiversity"
+      physical_laws: "Laws of nature, physics, reality (especially if different from our world)"
+      celestial_features: "Stars, moons, planets, astronomical phenomena"
+    
+  # The peoples, cultures and social structures of the world
+  cultures_societies:
+    title: "👥 Cultures & Societies"
+    description: "The peoples, cultures, social structures, and civilizations of the world."
+    extraction_prompt: "Identify the cultures, societies, civilizations, or groups mentioned. Extract details about their social structures, values, customs, demographics, politics, or distinctive cultural elements."
+    format: "nested_list"
+    subsections:
+      major_groups: "Primary cultural groups, civilizations, or species"
+      social_structures: "Class systems, hierarchies, social organization"
+      governance: "Political systems, leadership, power structures"
+      values_customs: "Cultural values, customs, traditions, taboos"
+      demographics: "Population distribution, diversity aspects"
+    
+  # Historical events and timeline of the world
+  history_timeline:
+    title: "📜 History & Timeline"
+    description: "Historical events, eras, developments, and chronology of the world."
+    extraction_prompt: "Extract any historical elements mentioned: key events, eras, ages, developments, conflicts, or chronology that shape this world's background."
+    format: "bullet_list"
+    optional: true
+    
+  # Magic or technology systems that exist in the world
+  magic_technology_systems:
+    title: "⚡ Magic/Technology Systems"
+    description: "Rules, capabilities, limitations, and cultural impact of magic or advanced technology."
+    extraction_prompt: "Identify details about any magic systems or advanced technologies in this world. Extract information about their rules, capabilities, limitations, sources, cultural integration, or consequences."
+    format: "nested_list"
+    optional: true
+    
+  # Specific locations and places within the world
+  locations_places:
+    title: "📍 Locations & Places of Interest"
+    description: "Specific locations, settlements, landmarks, and environments in the world."
+    extraction_prompt: "Extract details about specific locations mentioned: cities, towns, landmarks, buildings, territories, or distinctive environments within the world."
+    format: "nested_list"
+    optional: true
+    
+  # Religious and belief systems of the world
+  religion_belief_systems:
+    title: "🙏 Religion & Belief Systems"
+    description: "Spiritual beliefs, religions, deities, and philosophical systems."
+    extraction_prompt: "Identify elements related to religions, spiritual beliefs, deities, philosophical systems, creation myths, or metaphysical aspects of the world."
+    format: "bullet_list"
+    optional: true
+    
+  # Languages and communication methods in the world
+  language_communication:
+    title: "💬 Language & Communication"
+    description: "Languages, writing systems, communication methods, and linguistic elements."
+    extraction_prompt: "Extract details about languages, writing systems, communication methods, linguistic elements, or named terminology specific to this world."
+    format: "bullet_list"
+    optional: true
+    
+  # Economic systems and resources of the world
+  economy_resources:
+    title: "💰 Economy & Resources"
+    description: "Economic systems, trade, resources, and material aspects of the world."
+    extraction_prompt: "Identify economic elements: currencies, trade systems, resources, crafts, industries, or material concerns that shape life in this world."
+    format: "bullet_list"
+    optional: true
+    
+  # Aspects of daily life in the world
+  daily_life:
+    title: "🏡 Daily Life & Social Norms"
+    description: "The texture of everyday existence, customs, and social expectations."
+    extraction_prompt: "Extract details about daily life in this world: food, clothing, housing, family structures, rituals, entertainment, or social norms and expectations."
+    format: "bullet_list"
+    optional: true
+    
+  # Ongoing conflicts and tensions in the world
+  conflicts_tensions:
+    title: "⚔️ Conflicts & Tensions"
+    description: "Ongoing conflicts, tensions, or problems affecting the world."
+    extraction_prompt: "Identify any ongoing conflicts, tensions, problems, or threats that exist in this world - whether political, environmental, social, or supernatural."
+    format: "bullet_list"
+    optional: true
+    
+  # Spatial relationships and mapping information
+  maps_spatial_relationships:
+    title: "🗺️ Maps & Spatial Relationships"
+    description: "Notes on maps, territories, borders, and spatial organization of the world."
+    extraction_prompt: "Extract any information about the spatial organization of this world: descriptions of maps, relative positions, territories, borders, travel times, or geographical relationships."
+    format: "bullet_list"
+    optional: true
+    
+  # Distinctive sensory and aesthetic elements of the world
+  sensory_aesthetic_elements:
+    title: "🎨 Sensory & Aesthetic Elements"
+    description: "Distinctive visual, auditory, or other sensory aspects that define the world's feel."
+    extraction_prompt: "Identify distinctive sensory or aesthetic elements that help define the feel of this world: architectural styles, art forms, music, colors, sounds, smells, or general aesthetic qualities."
+    format: "bullet_list"
+    optional: true
+    
+  # Areas of the world that need further development
+  unexplored_areas:
+    title: "❓ Unexplored Areas & Worldbuilding Questions"
+    description: "Aspects of the world that need further development or exploration."
+    extraction_prompt: "What aspects of this world remain unexplored or need further development? What questions about the world remain unanswered?"
+    format: "bullet_list"
+    optional: true
+    
+  # Influences and inspirations for the world
+  worldbuilding_inspirations:
+    title: "💭 Worldbuilding Inspirations & References"
+    description: "Influences, references, or inspirations for aspects of the world."
+    extraction_prompt: "Identify any mentioned influences, references, or inspirations for this world or its elements - whether books, films, historical periods, other fictional worlds, or real-world cultures."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these worldbuilding elements for you. Is there a particular aspect of this world you'd like to explore more deeply, or would you prefer to let these ideas develop organically?"
+    
+  # Creative muse coach for inspiration
+  creative_muse_coach:
+    prompt: "I notice that [world element] seems particularly distinctive in your setting. Would you like to explore how this might influence other aspects of your world, like [related element]?"
+    
+  # Specialized worldbuilding guide coach
+  worldbuilding_guide_coach:
+    prompt: "Your world has some fascinating elements. Would it be helpful to discuss how these might affect the daily lives of people in your setting, or perhaps how they might drive conflict and story?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

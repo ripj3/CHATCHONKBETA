@@ -1,0 +1,142 @@
+# Fiction Writer Companion Template for ChatChonk
+# Purpose: Transforms creative conversations into an organized collection of story elements,
+# character notes, plot ideas, and world-building details while preserving the spark of inspiration.
+# Designed to support both structured and non-linear creative processes.
+
+template_name: "Fiction Writer Companion"
+template_description: "Transforms creative conversations into an organized collection of story elements, character notes, plot ideas, and world-building details while preserving the spark of inspiration."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - creative
+  - fiction
+  - writing
+  - storytelling
+  - narrative
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # The central concept or premise of the story
+  story_essence:
+    title: "✨ Story Essence & Core Ideas"
+    description: "The central concept, premise, or spark that ignited this story idea."
+    extraction_prompt: "What is the core concept, premise, or central idea of the story discussed in this conversation? Capture the essence of what makes this story unique or compelling."
+    format: "paragraph"
+    
+  # Details about characters mentioned in the conversation
+  character_elements:
+    title: "👤 Character Elements"
+    description: "Notes on characters, their traits, motivations, arcs, and relationships."
+    extraction_prompt: "Extract details about characters mentioned in the conversation, including names, traits, backgrounds, motivations, conflicts, relationships, and potential arcs. Group by character when possible."
+    format: "nested_list" # Characters as main items, details as subitems
+    
+  # Key plot elements and structural ideas
+  plot_points_structure:
+    title: "📈 Plot Points & Structure"
+    description: "Key plot elements, turning points, and structural ideas discussed."
+    extraction_prompt: "Identify key plot points, story beats, sequences, or structural elements mentioned or implied in the conversation. These could include inciting incidents, conflicts, turning points, climactic moments, or resolution ideas."
+    format: "bullet_list"
+    
+  # Details about the story's world and setting
+  setting_worldbuilding:
+    title: "🌍 Setting & World-Building"
+    description: "Details about the story's world, locations, rules, systems, and atmosphere."
+    extraction_prompt: "Extract elements related to the story's setting, world-building, locations, time period, cultural details, magic/technology systems, rules of the world, atmosphere, or environmental factors."
+    format: "bullet_list"
+    
+  # Themes, symbols, and deeper meanings
+  thematic_elements:
+    title: "🎭 Thematic Elements & Motifs"
+    description: "Themes, symbols, motifs, and deeper meanings explored."
+    extraction_prompt: "Identify any themes, recurring symbols, motifs, or deeper meanings that were discussed or implied. What might this story be saying beneath the surface?"
+    format: "bullet_list"
+    optional: true
+    
+  # Dialogue and character voice notes
+  dialogue_snippets:
+    title: "💬 Dialogue Snippets & Voice Notes"
+    description: "Memorable lines, dialogue exchanges, or notes on character voices."
+    extraction_prompt: "Capture any specific dialogue lines, exchanges, or notes about character voices and speech patterns that emerged in the conversation. These could be exact quotes to preserve or notes about how a character speaks."
+    format: "bullet_list"
+    optional: true
+    
+  # Vivid scenes and sensory details
+  scene_sketches:
+    title: "🎬 Scene Sketches & Imagery"
+    description: "Vivid scenes, images, or sensory details envisioned."
+    extraction_prompt: "Extract descriptions of specific scenes, vivid imagery, or sensory details (sights, sounds, smells, textures, tastes) that were mentioned or explored in the conversation."
+    format: "bullet_list"
+    optional: true
+    
+  # Open questions about the story
+  narrative_questions:
+    title: "❓ Narrative Questions & Explorations"
+    description: "Open questions about the story, areas to explore further, or decisions to make."
+    extraction_prompt: "What questions about the story remain open? What aspects need further exploration or development? What decisions about the narrative still need to be made?"
+    format: "bullet_list"
+    optional: true
+    
+  # Research topics and reference materials
+  research_needs:
+    title: "🔍 Research Needs & Reference Ideas"
+    description: "Topics to research or reference materials that might be helpful."
+    extraction_prompt: "Identify any topics mentioned that might need research, or reference materials, books, films, or other media that were suggested as potential inspiration or resources."
+    format: "bullet_list"
+    optional: true
+    
+  # Notes on writing approach and style
+  writing_process_notes:
+    title: "✏️ Writing Process Notes"
+    description: "Ideas about approach, style, POV, tense, structure, or workflow for this project."
+    extraction_prompt: "Extract any notes related to the writing process itself - discussions about point of view, tense, style, approach, structure, or workflow considerations specific to this project."
+    format: "bullet_list"
+    optional: true
+    
+  # Unexpected ideas and connections
+  creative_sparks:
+    title: "💫 Creative Sparks & Unexpected Connections"
+    description: "Surprising ideas, connections, or inspirations that don't fit elsewhere."
+    extraction_prompt: "Capture any surprising ideas, unexpected connections, or moments of inspiration that don't clearly fit into other categories but feel important to preserve."
+    format: "bullet_list"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these story elements for you. Is there a particular aspect you'd like to explore further or develop next? Or would you prefer to just let these ideas simmer for a while?"
+    
+  # Hypothetical creative coach
+  creative_muse_coach:
+    prompt: "I notice that [character/element] seems particularly vibrant in your story concept. Would you like to explore them more deeply, or perhaps consider how they might interact with [another element]?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"

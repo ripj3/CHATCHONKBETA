@@ -1,0 +1,117 @@
+# Meeting Notes Synthesizer Template for ChatChonk
+# Purpose: Transforms meeting-like conversations into structured, actionable meeting notes
+# that capture key decisions, insights, and follow-up tasks.
+
+template_name: "Meeting Notes Synthesizer"
+template_description: "Transforms meeting-like conversations into clear, structured notes that capture key decisions, action items, insights, and follow-up tasks."
+version: 1.0
+compatibility: 
+  - obsidian-md
+  - notion
+  - html
+  - pdf
+  - docx
+tags:
+  - professional
+  - meetings
+  - collaboration
+  - productivity
+  - teams
+
+# Core sections that will be populated by the AI processing engine
+sections:
+  # Brief overview of the meeting's purpose and outcomes
+  meeting_summary:
+    title: "📋 Meeting Overview"
+    description: "A brief summary of the meeting's purpose and key outcomes."
+    extraction_prompt: "Summarize the overall purpose and key outcomes of this meeting-like conversation in 2-3 sentences."
+    format: "paragraph"
+    
+  # Important decisions that were made during the meeting
+  key_decisions_made:
+    title: "✅ Key Decisions Made"
+    description: "Important decisions reached during the meeting."
+    extraction_prompt: "Identify any clear decisions that were made during this conversation. Focus on final conclusions or choices agreed upon."
+    format: "bullet_list"
+    
+  # Specific tasks assigned with responsible parties where indicated
+  action_items:
+    title: "⚡ Action Items"
+    description: "Specific tasks assigned or implied, with responsible parties where indicated."
+    extraction_prompt: "Identify specific action items or tasks mentioned in the conversation. Where possible, include who is responsible and any mentioned deadlines. Format as: [Task] - [Owner] - [Deadline/Timeframe]."
+    format: "checkbox_list" # This allows for checking off completed items in compatible platforms
+    
+  # Key points or topics from the discussion
+  discussion_highlights:
+    title: "💬 Discussion Highlights"
+    description: "Key points or topics from the discussion, including different perspectives shared."
+    extraction_prompt: "Extract the main points of discussion, including any significant perspectives shared or topics explored. Focus on substance rather than who said what."
+    format: "bullet_list"
+    
+  # Questions raised but not fully resolved during the meeting
+  open_questions_uncertainties:
+    title: "❓ Open Questions & Uncertainties"
+    description: "Questions raised but not fully resolved during the meeting."
+    extraction_prompt: "Identify any questions, concerns, or areas of uncertainty that were raised but not fully resolved during the conversation."
+    format: "bullet_list"
+    optional: true
+    
+  # Areas requiring further discussion, research, or clarification
+  follow_up_needed:
+    title: "🔄 Follow-up Needed"
+    description: "Areas requiring further discussion, research, or clarification."
+    extraction_prompt: "Extract any mentioned needs for follow-up, whether it's further discussion, additional information needed, or deferred decisions."
+    format: "bullet_list"
+    optional: true
+    
+  # Documents, links, or resources shared or referenced
+  resources_references:
+    title: "🔗 Resources & References"
+    description: "Documents, links, or resources shared or referenced during the meeting."
+    extraction_prompt: "List any documents, links, resources, or references mentioned during the conversation that would be useful to have in the meeting notes."
+    format: "bullet_list"
+    optional: true
+    
+  # Overview of what happens next, including scheduled follow-ups
+  next_steps_timeline:
+    title: "📅 Next Steps & Timeline"
+    description: "Overview of what happens next, including any scheduled follow-ups."
+    extraction_prompt: "Summarize the next steps discussed, including any mentioned follow-up meetings, deadlines for broader initiatives, or general timelines."
+    format: "paragraph"
+    optional: true
+
+# AI Coach integration points - prompts that coaches can use to help the user
+ai_coach_prompts:
+  # Sara is the onboarding coach who helps discover user preferences
+  sara_onboarding:
+    prompt: "I've organized these meeting notes for you. Would you like me to help you prioritize the action items, or perhaps set up reminders for any of these follow-ups?"
+    
+  # Project Flow Coach (renamed from "Project Planning Coach")
+  project_flow_coach:
+    prompt: "I notice there are [X] action items from this meeting. Would you like me to help you integrate these into your existing project workflow, or perhaps suggest a way to track their completion?"
+
+# Formatting preferences for the final output
+output_formatting:
+  include_metadata: true
+  include_timestamps: false
+  include_tags: true
+  callout_style: "obsidian"  # Options: obsidian, notion, markdown
+  heading_level_start: 2  # H2 for main sections
+  
+# Accessibility features
+accessibility:
+  high_contrast_mode: false
+  reduced_motion: false
+  screen_reader_optimized: true
+  
+# User customization options that will be presented in the UI
+customization_options:
+  allow_section_reordering: true
+  allow_section_hiding: true
+  allow_format_changes: true
+  
+# Template creator information
+creator_info:
+  name: "ChatChonk Team"
+  version_date: "2025-05-31"
+  license: "MIT"
