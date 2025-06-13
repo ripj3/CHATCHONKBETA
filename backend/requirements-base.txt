@@ -21,7 +21,7 @@ requests==2.31.0
 # === Basic Utilities ===
 aiofiles==23.2.1
 tenacity==8.2.3
-tqdm==4.66.1
+tqdm==4.66.3
 
 # === Production Server ===
 gunicorn==21.2.0

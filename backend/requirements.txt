@@ -71,7 +71,7 @@ langchain-community==0.0.10  # Community extensions
 requests==2.31.0  # Sync HTTP client
 websockets==12.0  # WebSocket support
 tenacity==8.2.3  # Retry logic
-tqdm==4.66.1  # Progress bars
+tqdm==4.66.3  # Progress bars
 
 # === Discord Integration ===
 discord.py==2.3.2  # Discord bot library
