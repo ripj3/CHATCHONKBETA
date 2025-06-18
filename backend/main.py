@@ -18,6 +18,7 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.exceptions import RequestValidationError
+import os
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
@@ -172,6 +173,37 @@ async def health_check():
         "environment": settings.ENVIRONMENT.value,
         "debug_mode": settings.DEBUG,
     }
+
+from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_client import push_to_gateway
+
+instrumentator = Instrumentator()
+instrumentator.instrument(app)
+
+GRAFANA_CLOUD_ENDPOINT = os.environ.get("GRAFANA_CLOUD_ENDPOINT")
+GRAFANA_CLOUD_API_KEY = os.environ.get("GRAFANA_CLOUD_API_KEY")
+PROMETHEUS_PUSH_GATEWAY = GRAFANA_CLOUD_ENDPOINT  # Replace with your Grafana Cloud Prometheus remote write endpoint
+
+@app.get("/metrics")
+async def metrics():
+    return instrumentator.expose()
+
+# Push metrics to Grafana Cloud
+@app.on_event("shutdown")
+def push_metrics():
+    try:
+        push_to_gateway(
+            PROMETHEUS_PUSH_GATEWAY,
+            job="chatchonk-backend",  # Replace with your job name
+            gateway_kwargs={
+                "headers": {
+                    "Authorization": f"Basic {GRAFANA_CLOUD_API_KEY}"  # Replace with your Grafana Cloud API key
+                }
+            },
+        )
+        print("Successfully pushed metrics to Grafana Cloud")
+    except Exception as e:
+        print(f"Failed to push metrics to Grafana Cloud: {e}")
 
 
 # Import and include API routers

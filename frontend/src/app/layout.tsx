@@ -119,6 +119,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={clsx(inter.variable, poppins.variable, 'scroll-smooth')} suppressHydrationWarning>
       <body className="font-primary bg-chatchonk-neutral-50 text-chatchonk-neutral-800 antialiased selection:bg-chatchonk-pink-500 selection:text-white">
+        <HighlightProvider projectId={process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID!}>
         {/* <ThemeProvider attribute="class" defaultTheme="light" enableSystem> */}
           {/* Header can go here if it's part of every page */}
           <main className="flex min-h-screen flex-col">
@@ -127,6 +128,7 @@ export default function RootLayout({
           {/* Footer can go here if it's part of every page */}
           <Toaster richColors position="top-right" />
         {/* </ThemeProvider> */}
+        </HighlightProvider>
       </body>
     </html>
   );

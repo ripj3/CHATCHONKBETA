@@ -15,7 +15,10 @@
       ],
       "env": {
         "BRAVE_API_KEY": "BSAcqq1kPAHnoi5jyaaoKwoy4i95AAX"
-      }
+      },
+      "alwaysAllow": [
+        "brave_web_search"
+      ]
     },
     "stripe": {
       "command": "npx",
