@@ -6,7 +6,7 @@ fastapi==0.104.1
 uvicorn[standard]==0.23.2
 pydantic==2.4.2
 pydantic-settings==2.0.3
-python-multipart==0.0.6  # For file uploads
+python-multipart==0.0.18  # For file uploads
 python-dotenv==1.0.0
 email-validator==2.0.0
 fastapi-pagination==0.12.8
@@ -48,7 +48,7 @@ markdown==3.5  # Markdown processing
 beautifulsoup4==4.12.2  # HTML parsing
 lxml==4.9.3  # XML processing
 pyyaml==6.0.1  # YAML processing
-jinja2==3.1.2  # Template rendering
+jinja2==3.1.6  # Template rendering
 
 # === Audio/Video Processing ===
 ffmpeg-python==0.2.0  # FFmpeg wrapper
@@ -56,22 +56,22 @@ whisper==1.1.10  # OpenAI Whisper for audio transcription
 pydub==0.25.1  # Audio processing
 
 # === Image Processing ===
-pillow==10.1.0  # Image processing
+pillow==10.3.0  # Image processing
 opencv-python-headless==4.8.1.78  # OpenCV for image analysis
 pytesseract==0.3.10  # OCR for images
 
 # === Text Processing and NLP ===
-nltk==3.8.1
+nltk==3.9
 spacy==3.7.2
-langchain==0.0.335  # Framework for LLM applications
-langchain-community==0.0.10  # Community extensions
+langchain==0.3.0.dev1  # Framework for LLM applications
+langchain-community==0.2.9  # Community extensions
 
 # === HTTP Clients and Utilities ===
 # httpx is specified above - compatible with supabase requirements
-requests==2.31.0  # Sync HTTP client
+requests==2.32.4  # Sync HTTP client
 websockets==12.0  # WebSocket support
 tenacity==8.2.3  # Retry logic
-tqdm==4.66.1  # Progress bars
+tqdm==4.66.3  # Progress bars
 
 # === Discord Integration ===
 discord.py==2.3.2  # Discord bot library
@@ -79,19 +79,19 @@ discord.py==2.3.2  # Discord bot library
 # === Testing and Development ===
 pytest==7.4.3
 pytest-asyncio==0.21.1
-black==23.10.1  # Code formatting
+black==24.3.0  # Code formatting
 isort==5.12.0  # Import sorting
 mypy==1.6.1  # Type checking
 ruff==0.1.3  # Fast linter
 
 # === Production Server Tools ===
-gunicorn==21.2.0  # WSGI HTTP Server
+gunicorn==23.0.0  # WSGI HTTP Server
 watchfiles==0.21.0  # File watching
 
 # === Monitoring and Logging ===
 prometheus-fastapi-instrumentator==6.1.0  # Metrics
 loguru==0.7.2  # Better logging
-sentry-sdk==1.32.0  # Error tracking
+sentry-sdk==1.45.1  # Error tracking
 
 # === Development Dependencies ===
 transformers>=4.35.0,<5.0.0
@@ -117,4 +117,4 @@ markdown==3.5
 beautifulsoup4==4.12.2
 lxml==4.9.3
 pyyaml==6.0.1
-jinja2==3.1.2
+jinja2==3.1.6
