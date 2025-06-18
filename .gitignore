@@ -73,3 +73,14 @@ OLDREADME.md
 
 # Docs
 /docs/dev/*.md
+
+# Added by security review
+env.example
+package-lock.json
+pnpm-lock.yaml
+frontend_build/
+exports/
+storage/
+local_dev_start.ps1
+chatchonk-patch1.yml
+mcp_servers.example.json
