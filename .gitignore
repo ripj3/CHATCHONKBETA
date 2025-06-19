@@ -79,3 +79,5 @@ package-lock.json
 pnpm-lock.yaml
 .env.bak
 .roo/mcp.json
+
+fix_rls_policies.sql
