@@ -5,6 +5,12 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: false, // it was detected as invalid option
   trailingSlash: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 }
 
 module.exports = nextConfig

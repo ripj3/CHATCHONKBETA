@@ -7,6 +7,8 @@ WORKDIR /opt/frontend_build
 # Copy manifests first for cache efficiency
 COPY frontend/package.json frontend/package-lock.json* ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+RUN rm -rf frontend/node_modules
+RUN npm install --prefix frontend
 
 # Copy the rest of the frontend source
 COPY frontend/ ./
