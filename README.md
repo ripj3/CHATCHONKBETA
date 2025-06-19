@@ -301,3 +301,15 @@ Early *dog-fooding* is welcome—open issues for any pain-points, especially aro
 
 None — at this time
 Built with 🐱‍👓 & ☕ by Rip Jonesy.
+## Security Policy
+### Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 5.1.x   | :white_check_mark: |
+| 5.0.x   | :x:                |
+### Reporting a Vulnerability
+
+Report to ripjonesy498+secchch@gmail.com - Subject: CHCHSECURITY
+| 4.0.x   | :white_check_mark: |
+| &lt; 4.0   | :x:                |

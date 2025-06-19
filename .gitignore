@@ -64,7 +64,6 @@ frontend/libvips-*.dll
 .env.bak
 .env.bak
 
-
 # Factory Items
 Factory+Bridge-0.1.21+Setup.exe
 
@@ -78,9 +77,5 @@ OLDREADME.md
 env.example
 package-lock.json
 pnpm-lock.yaml
-frontend_build/
-exports/
-storage/
-local_dev_start.ps1
-chatchonk-patch1.yml
-mcp_servers.example.json
+.env.bak
+.roo/mcp.json
