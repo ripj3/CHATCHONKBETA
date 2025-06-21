@@ -315,3 +315,5 @@ Report to ripjonesy498+secchch@gmail.com - Subject: CHCHSECURITY
 | &lt; 4.0   | :x:                |
 
 This is a minor change to trigger the workflow.
+
+This is another minor change to trigger the workflow.
