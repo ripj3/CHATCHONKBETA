@@ -89,13 +89,14 @@ jobs:
 
       # 5) Comment (skip when run manually)
       - if: github.event_name != 'workflow_dispatch'
-        env: { GH_TOKEN: ${{ github.token }} }
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**  \n_Model:_ ${{ steps.ctx.outputs.MODE }}\n\n$(cat review.txt)")
           curl -s -X POST \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
-            -d "{\"body\": $BODY}" \
+            -d '{"body": $BODY}' \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
 
       # 6) Archive raw JSON (optional debug)
@@ -104,3 +105,5 @@ jobs:
         with:
           name: moonshot-response
           path: resp.json
+
+# This is a minor change to trigger the workflow.
