@@ -1,60 +1,54 @@
+# .github/workflows/kimi-review.yml
+#
 # ──────────────────────────────────────────────────────────────────────────────
-#  GitHub Action:  Automatic Pull-Request Code Review with Moonshot Kimi-Dev
+#  GitHub Action  |  Automated PR code reviews using Moonshot Kimi-Dev-72B
+#                 |  + manual “Run workflow” button
 #
-#  What it does
-#  ------------
-#  • The very first time a pull-request (PR) is opened, it sends (almost) the
-#    WHOLE repository to the Kimi-Dev 72-B-parameter model so you get a
-#    “big-picture” review.  (We trim to ~90 000 tokens so it fits.)
-#  • Every later push to that same PR sends only the little “diff” (what
-#    actually changed) to the model, which is quicker and cheaper.
-#  • The model’s feedback is posted back as a normal PR comment.
-#
-#  One secret needed
-#  -----------------
-#  1.  GitHub → Settings → Secrets → Actions → *New repository secret*
-#      Name  :  MOONSHOT_AI_KIMIDEV
-#      Value :  sk-xxxxxxxxxxxxxxxx   (your Moonshot project key, **no** “Bearer ”)
-#
-#  That’s it—copy this file into `.github/workflows/kimi-review.yml` and the
-#  bot is live.
+#  Secret needed
+#  --------------
+#  MOONSHOT_AI_KIMIDEV = sk-xxxxxxxxxxxxxxxx  (add in Settings → Secrets → Actions)
 # ──────────────────────────────────────────────────────────────────────────────
 
-name: "Kimi code review (full-then-diff)"
+name: "Kimi code review (full-then-diff + manual)"
 
-# When should it run?
+###############################################################################
+# When should this workflow run?
+#   • pull_request/opened        → first time a PR appears  (full-repo review)
+#   • pull_request/synchronize   → every new commit to the PR (diff-only)
+#   • workflow_dispatch          → manual click in Actions UI
+###############################################################################
 on:
   pull_request:
-    #   opened        → first creation of the PR
-    #   synchronize   → every push to the PR branch
     types: [opened, synchronize]
 
+  workflow_dispatch:         # ← adds the “Run workflow” button
+
+###############################################################################
 jobs:
   review:
-    # ► Runs on a free Ubuntu runner provided by GitHub
     runs-on: ubuntu-latest
-
-    # ► Allows the job to READ code and WRITE comments on the PR
     permissions:
-      contents: read
-      pull-requests: write
+      contents: read          # allow code checkout
+      pull-requests: write    # allow posting a comment
 
     steps:
-    # ───────────────────────────────────────────────────────────
-    # 1) Pull the repo so we can read files / diffs
+
+    # 1) Checkout repository so we can read files / diffs
     - name: "Checkout code"
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0    # full history (better diffs)
+      with: { fetch-depth: 0 }
 
-    # ───────────────────────────────────────────────────────────
-    # 2) Decide:
-    #    • opened      → use big 128-k-token model, send whole repo
-    #    • synchronize → use 32-k-token model, send only diff
+    # 2) Decide scope & model
+    #    - opened       → full repo  → 128k-token model
+    #    - synchronize  → diff only →  32k-token model
+    #    - workflow_dispatch → **forces** full repo (uses 128k)
     - name: "Set context variables"
       id: ctx
       run: |
-        if [ "${{ github.event.action }}" = "opened" ]; then
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "MODE=kimidev-72b-128k"  >> "$GITHUB_OUTPUT"
+          echo "SCOPE=repo"             >> "$GITHUB_OUTPUT"
+        elif [ "${{ github.event.action }}" = "opened" ]; then
           echo "MODE=kimidev-72b-128k"  >> "$GITHUB_OUTPUT"
           echo "SCOPE=repo"             >> "$GITHUB_OUTPUT"
         else
@@ -62,79 +56,59 @@ jobs:
           echo "SCOPE=diff"             >> "$GITHUB_OUTPUT"
         fi
 
-    # ───────────────────────────────────────────────────────────
-    # 3) Gather the text we will ask Kimi to review
+    # 3) Collect code text: whole repo *or* just the PR diff
     - name: "Collect code to review"
       id: blob
       run: |
         if [ "${{ steps.ctx.outputs.SCOPE }}" = "repo" ]; then
-          # 🡒 WHOLE REPO PATH: concatenate every tracked file
+          # WHOLE REPO: concatenate tracked files, trim to ~90k tokens
           git ls-files -z | xargs -0 cat | head -c 360000 > review.txt
         else
-          # 🡒 DIFF PATH: just the patch for this PR
+          # DIFF ONLY
           curl -sL "${{ github.event.pull_request.diff_url }}" > review.txt
         fi
-        # tiny sanitation so back-ticks don’t break Markdown later
-        sed -i 's/`/‘‘/g' review.txt
-        # send it forward base64-encoded so YAML doesn’t choke
+        sed -i 's/`/‘‘/g' review.txt         # escape back-ticks
         echo "BLOB=$(base64 -w0 review.txt)" >> "$GITHUB_OUTPUT"
 
-    # ───────────────────────────────────────────────────────────
-    # 4) Call Moonshot’s API
+    # 4) Call Moonshot
     - name: "Ask Kimi-Dev"
       id: kimi
-      env:
-        # the secret you created in repo settings
-        MOONSHOT_KEY: ${{ secrets.MOONSHOT_AI_KIMIDEV }}
+      env: { MOONSHOT_KEY: ${{ secrets.MOONSHOT_AI_KIMIDEV }} }
       run: |
-        set -e  # exit on any error
-
         MODEL="${{ steps.ctx.outputs.MODE }}"
-
-        # Decode the blob, then JSON-escape it so newlines/quotes are safe
         DIFF_JSON=$(echo "${{ steps.blob.outputs.BLOB }}" | base64 -d | jq -Rs .)
 
-        # Build the request Moonshot expects (OpenAI–compatible JSON)
         jq -n --arg model "$MODEL" --arg diff "$DIFF_JSON" '
-        {
-          model: $model,
-          messages: [
+        { model:$model,
+          messages:[
             {role:"system",
-             content:"You are an expert software engineer. Provide a concise, line-referenced GitHub code review for the content the user supplies."},
-            {role:"user", content: ($diff | fromjson)}
+             content:"You are an expert software engineer. Provide a concise, line-referenced GitHub code review of the content supplied."},
+            {role:"user", content:($diff|fromjson)}
           ],
-          max_tokens: 512,
-          temperature: 0.2
-        }' > payload.json
+          max_tokens:512, temperature:0.2 }' > payload.json
 
-        # Send the request
         STATUS=$(curl -s -o resp.json -w "%{http_code}" \
           -H "Authorization: Bearer $MOONSHOT_KEY" \
           -H "Content-Type: application/json" \
           --data @payload.json \
           https://api.moonshot.ai/v1/chat/completions)
 
-        echo "Moonshot HTTP status: $STATUS"
+        echo "Moonshot HTTP: $STATUS"
         cat resp.json
-
-        # Fail the job (so you notice) if Moonshot didn’t return 200 OK
         [ "$STATUS" = "200" ] || exit 1
 
-        # Extract just the text of the assistant’s reply
         REVIEW=$(jq -r '.choices[0].message.content' resp.json)
         echo "REVIEW<<EOF" >> "$GITHUB_OUTPUT"
         echo "$REVIEW"      >> "$GITHUB_OUTPUT"
         echo "EOF"          >> "$GITHUB_OUTPUT"
 
-    # ───────────────────────────────────────────────────────────
-    # 5) Post the AI feedback back to GitHub as a normal PR comment
+    # 5) Post result
     - name: "Comment on PR"
-      env:
-        GH_TOKEN: ${{ github.token }}   # GitHub hands this to every job
+      if: github.event_name != 'workflow_dispatch'   # manual runs have no PR ID
+      env: { GH_TOKEN: ${{ github.token }} }
       run: |
-        # Wrap in JSON-friendly quotes
-        BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**  \n_Model: ${{
-          steps.ctx.outputs.MODE }}_\n\n${{ steps.kimi.outputs.REVIEW }}")
+        BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**  
+        _Model:_ ${{ steps.ctx.outputs.MODE }}\n\n${{ steps.kimi.outputs.REVIEW }}")
 
         curl -s -X POST \
           -H "Authorization: Bearer $GH_TOKEN" \
@@ -142,8 +116,7 @@ jobs:
           -d "{\"body\": $BODY}" \
           "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
 
-    # ───────────────────────────────────────────────────────────
-    # (Optional) 6) Save Moonshot’s raw JSON response as an artifact
+    # 6) Save raw JSON response for troubleshooting
     - name: "Save raw response (debug)"
       if: always()
       uses: actions/upload-artifact@v4
