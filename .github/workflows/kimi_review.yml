@@ -1,78 +1,152 @@
-name: Kimi code review (Moonshot)
+# ──────────────────────────────────────────────────────────────────────────────
+#  GitHub Action:  Automatic Pull-Request Code Review with Moonshot Kimi-Dev
+#
+#  What it does
+#  ------------
+#  • The very first time a pull-request (PR) is opened, it sends (almost) the
+#    WHOLE repository to the Kimi-Dev 72-B-parameter model so you get a
+#    “big-picture” review.  (We trim to ~90 000 tokens so it fits.)
+#  • Every later push to that same PR sends only the little “diff” (what
+#    actually changed) to the model, which is quicker and cheaper.
+#  • The model’s feedback is posted back as a normal PR comment.
+#
+#  One secret needed
+#  -----------------
+#  1.  GitHub → Settings → Secrets → Actions → *New repository secret*
+#      Name  :  MOONSHOT_AI_KIMIDEV
+#      Value :  sk-xxxxxxxxxxxxxxxx   (your Moonshot project key, **no** “Bearer ”)
+#
+#  That’s it—copy this file into `.github/workflows/kimi-review.yml` and the
+#  bot is live.
+# ──────────────────────────────────────────────────────────────────────────────
 
+name: "Kimi code review (full-then-diff)"
+
+# When should it run?
 on:
   pull_request:
-    types: [opened, synchronize]   # run on every push to a PR
+    #   opened        → first creation of the PR
+    #   synchronize   → every push to the PR branch
+    types: [opened, synchronize]
 
 jobs:
   review:
+    # ► Runs on a free Ubuntu runner provided by GitHub
     runs-on: ubuntu-latest
+
+    # ► Allows the job to READ code and WRITE comments on the PR
     permissions:
-      pull-requests: write         # allow the bot to comment
       contents: read
+      pull-requests: write
 
     steps:
-      # 1️⃣ check out the repo so we can fetch the diff
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    # ───────────────────────────────────────────────────────────
+    # 1) Pull the repo so we can read files / diffs
+    - name: "Checkout code"
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0    # full history (better diffs)
 
-      # 2️⃣ capture the PR diff as text
-      - name: Get PR diff
-        id: diff
-        run: |
-          curl -L "${{ github.event.pull_request.diff_url }}" -o pr.diff
-          # escape back-ticks so they don’t break Markdown
-          DIFF=$(sed 's/`/‘‘/g' pr.diff | base64 -w0)
-          echo "DIFF_B64=$DIFF" >> "$GITHUB_OUTPUT"
+    # ───────────────────────────────────────────────────────────
+    # 2) Decide:
+    #    • opened      → use big 128-k-token model, send whole repo
+    #    • synchronize → use 32-k-token model, send only diff
+    - name: "Set context variables"
+      id: ctx
+      run: |
+        if [ "${{ github.event.action }}" = "opened" ]; then
+          echo "MODE=kimidev-72b-128k"  >> "$GITHUB_OUTPUT"
+          echo "SCOPE=repo"             >> "$GITHUB_OUTPUT"
+        else
+          echo "MODE=kimidev-72b-32k"   >> "$GITHUB_OUTPUT"
+          echo "SCOPE=diff"             >> "$GITHUB_OUTPUT"
+        fi
 
-      # 3️⃣ send the diff to Kimi-Dev-72B
-      - name: Ask Kimi
-        id: kimi
-        env:
-          MOONSHOT_KEY: ${{ secrets.MOONSHOT_AI_KIMIDEV }}
-        run: |
-          # ↳ put the model ID you have access to here.
-          MODEL="kimidev-72b-chat"
+    # ───────────────────────────────────────────────────────────
+    # 3) Gather the text we will ask Kimi to review
+    - name: "Collect code to review"
+      id: blob
+      run: |
+        if [ "${{ steps.ctx.outputs.SCOPE }}" = "repo" ]; then
+          # 🡒 WHOLE REPO PATH: concatenate every tracked file
+          git ls-files -z | xargs -0 cat | head -c 360000 > review.txt
+        else
+          # 🡒 DIFF PATH: just the patch for this PR
+          curl -sL "${{ github.event.pull_request.diff_url }}" > review.txt
+        fi
+        # tiny sanitation so back-ticks don’t break Markdown later
+        sed -i 's/`/‘‘/g' review.txt
+        # send it forward base64-encoded so YAML doesn’t choke
+        echo "BLOB=$(base64 -w0 review.txt)" >> "$GITHUB_OUTPUT"
 
-          cat > payload.json <<EOF
-          {
-            "model": "${MODEL}",
-            "messages": [
-              {
-                "role": "system",
-                "content": "You are an expert software engineer. \
-Provide a concise, line-referenced code review for the GitHub PR diff supplied."
-              },
-              {
-                "role": "user",
-                "content": "$(echo ${{ steps.diff.outputs.DIFF_B64 }} | base64 -d)"
-              }
-            ],
-            "max_tokens": 512,
-            "temperature": 0.2,
-            "stream": false
-          }
-          EOF
+    # ───────────────────────────────────────────────────────────
+    # 4) Call Moonshot’s API
+    - name: "Ask Kimi-Dev"
+      id: kimi
+      env:
+        # the secret you created in repo settings
+        MOONSHOT_KEY: ${{ secrets.MOONSHOT_AI_KIMIDEV }}
+      run: |
+        set -e  # exit on any error
 
-          curl -s https://api.moonshot.ai/v1/chat/completions \
-               -H "Authorization: Bearer $MOONSHOT_KEY" \
-               -H "Content-Type: application/json" \
-               --data @payload.json > resp.json
+        MODEL="${{ steps.ctx.outputs.MODE }}"
 
-          REVIEW=$(jq -r '.choices[0].message.content' resp.json)
-          echo "REVIEW<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$REVIEW"      >> "$GITHUB_OUTPUT"
-          echo "EOF"          >> "$GITHUB_OUTPUT"
+        # Decode the blob, then JSON-escape it so newlines/quotes are safe
+        DIFF_JSON=$(echo "${{ steps.blob.outputs.BLOB }}" | base64 -d | jq -Rs .)
 
-      # 4️⃣ drop the AI review back onto the PR
-      - name: Comment on PR
-        env:
-          GH_TOKEN: ${{ github.token }}          # provided automatically
-        run: |
-          BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**\n\n${{ steps.kimi.outputs.REVIEW }}")
-          curl -s -X POST \
-               -H "Authorization: Bearer $GH_TOKEN" \
-               -H "Accept: application/vnd.github+json" \
-               -d "{\"body\": $BODY}" \
-               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
+        # Build the request Moonshot expects (OpenAI–compatible JSON)
+        jq -n --arg model "$MODEL" --arg diff "$DIFF_JSON" '
+        {
+          model: $model,
+          messages: [
+            {role:"system",
+             content:"You are an expert software engineer. Provide a concise, line-referenced GitHub code review for the content the user supplies."},
+            {role:"user", content: ($diff | fromjson)}
+          ],
+          max_tokens: 512,
+          temperature: 0.2
+        }' > payload.json
+
+        # Send the request
+        STATUS=$(curl -s -o resp.json -w "%{http_code}" \
+          -H "Authorization: Bearer $MOONSHOT_KEY" \
+          -H "Content-Type: application/json" \
+          --data @payload.json \
+          https://api.moonshot.ai/v1/chat/completions)
+
+        echo "Moonshot HTTP status: $STATUS"
+        cat resp.json
+
+        # Fail the job (so you notice) if Moonshot didn’t return 200 OK
+        [ "$STATUS" = "200" ] || exit 1
+
+        # Extract just the text of the assistant’s reply
+        REVIEW=$(jq -r '.choices[0].message.content' resp.json)
+        echo "REVIEW<<EOF" >> "$GITHUB_OUTPUT"
+        echo "$REVIEW"      >> "$GITHUB_OUTPUT"
+        echo "EOF"          >> "$GITHUB_OUTPUT"
+
+    # ───────────────────────────────────────────────────────────
+    # 5) Post the AI feedback back to GitHub as a normal PR comment
+    - name: "Comment on PR"
+      env:
+        GH_TOKEN: ${{ github.token }}   # GitHub hands this to every job
+      run: |
+        # Wrap in JSON-friendly quotes
+        BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**  \n_Model: ${{
+          steps.ctx.outputs.MODE }}_\n\n${{ steps.kimi.outputs.REVIEW }}")
+
+        curl -s -X POST \
+          -H "Authorization: Bearer $GH_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          -d "{\"body\": $BODY}" \
+          "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
+
+    # ───────────────────────────────────────────────────────────
+    # (Optional) 6) Save Moonshot’s raw JSON response as an artifact
+    - name: "Save raw response (debug)"
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: moonshot-response
+        path: resp.json
