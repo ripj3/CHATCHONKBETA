@@ -313,3 +313,5 @@ Built with 🐱‍👓 & ☕ by Rip Jonesy.
 Report to ripjonesy498+secchch@gmail.com - Subject: CHCHSECURITY
 | 4.0.x   | :white_check_mark: |
 | &lt; 4.0   | :x:                |
+
+This is a minor change to trigger the workflow.
