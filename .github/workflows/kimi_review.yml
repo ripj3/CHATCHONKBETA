@@ -1,0 +1,78 @@
+name: Kimi code review (Moonshot)
+
+on:
+  pull_request:
+    types: [opened, synchronize]   # run on every push to a PR
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write         # allow the bot to comment
+      contents: read
+
+    steps:
+      # 1️⃣ check out the repo so we can fetch the diff
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ capture the PR diff as text
+      - name: Get PR diff
+        id: diff
+        run: |
+          curl -L "${{ github.event.pull_request.diff_url }}" -o pr.diff
+          # escape back-ticks so they don’t break Markdown
+          DIFF=$(sed 's/`/‘‘/g' pr.diff | base64 -w0)
+          echo "DIFF_B64=$DIFF" >> "$GITHUB_OUTPUT"
+
+      # 3️⃣ send the diff to Kimi-Dev-72B
+      - name: Ask Kimi
+        id: kimi
+        env:
+          MOONSHOT_KEY: ${{ secrets.MOONSHOT_AI_KIMIDEV }}
+        run: |
+          # ↳ put the model ID you have access to here.
+          MODEL="kimidev-72b-chat"
+
+          cat > payload.json <<EOF
+          {
+            "model": "${MODEL}",
+            "messages": [
+              {
+                "role": "system",
+                "content": "You are an expert software engineer. \
+Provide a concise, line-referenced code review for the GitHub PR diff supplied."
+              },
+              {
+                "role": "user",
+                "content": "$(echo ${{ steps.diff.outputs.DIFF_B64 }} | base64 -d)"
+              }
+            ],
+            "max_tokens": 512,
+            "temperature": 0.2,
+            "stream": false
+          }
+          EOF
+
+          curl -s https://api.moonshot.ai/v1/chat/completions \
+               -H "Authorization: Bearer $MOONSHOT_KEY" \
+               -H "Content-Type: application/json" \
+               --data @payload.json > resp.json
+
+          REVIEW=$(jq -r '.choices[0].message.content' resp.json)
+          echo "REVIEW<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$REVIEW"      >> "$GITHUB_OUTPUT"
+          echo "EOF"          >> "$GITHUB_OUTPUT"
+
+      # 4️⃣ drop the AI review back onto the PR
+      - name: Comment on PR
+        env:
+          GH_TOKEN: ${{ github.token }}          # provided automatically
+        run: |
+          BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**\n\n${{ steps.kimi.outputs.REVIEW }}")
+          curl -s -X POST \
+               -H "Authorization: Bearer $GH_TOKEN" \
+               -H "Accept: application/vnd.github+json" \
+               -d "{\"body\": $BODY}" \
+               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
