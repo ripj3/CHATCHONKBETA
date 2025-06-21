@@ -314,6 +314,4 @@ Report to ripjonesy498+secchch@gmail.com - Subject: CHCHSECURITY
 | 4.0.x   | :white_check_mark: |
 | &lt; 4.0   | :x:                |
 
-This is a minor change to trigger the workflow.
-
-This is another minor change to trigger the workflow.
+Changes here are minor -to trigger new kimi codereviewer.
