@@ -1,12 +1,11 @@
 # .github/workflows/kimi-review.yml
 #
-# Kimi-Dev 72 B PR reviewer
-# – Full repo review (128 K) on first PR commit or manual run,
-#   but **skips external libraries & build artefacts**.
-# – Diff-only review (32 K) on later commits (filtered the same way).
-# – Concurrency keeps only the newest run per branch.
+# Robust Kimi-Dev 72 B PR reviewer
+# ─ First PR commit / manual run → full repo (minus libs) with 128 K model
+# ─ Later commits               → diff-only with 32 K model
+# ─ Built-in concurrency        → cancels older runs
 #
-# SECRET required:
+# REQUIRED secret (repo → Settings → Secrets → Actions):
 #   MOONSHOT_AI_KIMIDEV = sk-xxxxxxxxxxxxxxxxxxxxxxxx
 # ------------------------------------------------------------------------------
 
@@ -29,87 +28,102 @@ jobs:
       pull-requests: write
 
     steps:
-# 0️⃣  quick feedback so you see the job is alive
-      - run: echo "🕐 Kimi review job queued…"
+    # 0) verify secret exists
+    - name: Validate secret
+      run: |
+        [[ -n "${{ secrets.MOONSHOT_AI_KIMIDEV }}" ]] \
+          || { echo "::error ::MOONSHOT_AI_KIMIDEV secret missing"; exit 1; }
 
-# 1️⃣  checkout repository
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+    # 0.5) ensure jq present (edge-case)
+    - run: |
+        command -v jq >/dev/null || sudo apt-get update -y && sudo apt-get install -y jq
 
-# 2️⃣  decide scope + model
-      - id: ctx
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || \
-                "${{ github.event.action }}" == "opened" ]]; then
-            echo "MODE=kimidev-72b-128k" >> "$GITHUB_OUTPUT"
-            echo "SCOPE=repo"            >> "$GITHUB_OUTPUT"
-          else
-            echo "MODE=kimidev-72b-32k"  >> "$GITHUB_OUTPUT"
-            echo "SCOPE=diff"            >> "$GITHUB_OUTPUT"
-          fi
+    # 1) checkout
+    - uses: actions/checkout@v4
+      with: { fetch-depth: 0 }
 
-# 3️⃣  collect code, excluding common library / build folders
-      - id: collect
-        run: |
-          EXCLUDE='node_modules|vendor|dist|build|\.next|\.venv|\.cache|__pycache__'
-          if [[ "${{ steps.ctx.outputs.SCOPE }}" == "repo" ]]; then
-            git ls-files -z | \
-              grep -zEv "(${EXCLUDE})" | \
-              xargs -0 cat | head -c 360000 > blob.txt
-          else
-            curl -sL "${{ github.event.pull_request.diff_url }}" | \
-              grep -Ev "^diff --git a/(${EXCLUDE})/" > blob.txt
-          fi
-          sed -i 's/`/‘‘/g' blob.txt
-          echo "FILE=blob.txt" >> "$GITHUB_OUTPUT"
+    # 2) decide scope/model
+    - id: ctx
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" || \
+              "${{ github.event.action }}" == "opened" ]]; then
+          echo "MODE=kimidev-72b-128k" >> $GITHUB_OUTPUT
+          echo "SCOPE=repo"            >> $GITHUB_OUTPUT
+        else
+          echo "MODE=kimidev-72b-32k"  >> $GITHUB_OUTPUT
+          echo "SCOPE=diff"            >> $GITHUB_OUTPUT
+        fi
 
-# 4️⃣  call Moonshot
-      - id: kimi
-        env: { MOONSHOT_KEY: ${{ secrets.MOONSHOT_AI_KIMIDEV }} }
-        run: |
-          MODEL="${{ steps.ctx.outputs.MODE }}"
-          DIFF_JSON=$(jq -Rs . < "${{ steps.collect.outputs.FILE }}")
+    # 3) confirm model exists for this key
+    - name: Check model availability
+      env: { MOONSHOT_AI_KIMIDEV: ${{ secrets.MOONSHOT_AI_KIMIDEV }} }
+      run: |
+        curl -s https://api.moonshot.ai/v1/models \
+          -H "Authorization: Bearer $MOONSHOT_AI_KIMIDEV" |
+          jq -e --arg m "${{ steps.ctx.outputs.MODE }}" '.data[].id | select(. == $m)' \
+          || { echo "::error ::Model ${{ steps.ctx.outputs.MODE }} not available"; exit 1; }
 
-          jq -n --arg m "$MODEL" --argjson diff "$DIFF_JSON" '{
-            model: $m,
-            messages: [
-              {role:"system",
-               content:"You are an expert software engineer. Provide a concise, line-referenced GitHub code review of the content supplied."},
-              {role:"user", content: $diff}
-            ],
-            max_tokens: 512,
-            temperature: 0.2
-          }' > payload.json
+    # 4) collect code/diff minus libs & binaries
+    - id: blob
+      run: |
+        EX='node_modules|vendor|dist|build|\.next|\.venv|\.cache|__pycache__'
+        if [[ "${{ steps.ctx.outputs.SCOPE }}" == "repo" ]]; then
+          git ls-files -z | grep -zEv "(${EX})" |
+          xargs -0 -I{} bash -c '[[ $(wc -c < "{}") -lt 307200 ]] && cat "{}"' |
+          head -c 360000 > blob.txt
+        else
+          curl -sL "${{ github.event.pull_request.diff_url }}" |
+          grep -Ev "^diff --git a/(${EX})/" > blob.txt
+        fi
+        sed -i 's/`/‘‘/g' blob.txt
+        echo "FILE=blob.txt" >> $GITHUB_OUTPUT
 
-          STATUS=$(curl -s -o resp.json -w "%{http_code}" \
-                   -H "Authorization: Bearer $MOONSHOT_KEY" \
+    # 5) build payload & call Moonshot (retry 429/5xx)
+    - id: kimi
+      env: { MOONSHOT_AI_KIMIDEV: ${{ secrets.MOONSHOT_AI_KIMIDEV }} }
+      run: |
+        jq -n --rawfile diff "${{ steps.blob.outputs.FILE }}" \
+               --arg m "${{ steps.ctx.outputs.MODE }}" '{
+          model: $m,
+          messages:[
+            {role:"system",
+             content:"You are an expert software engineer. Provide a concise, line-referenced GitHub code review of the content supplied."},
+            {role:"user", content: $diff}
+          ],
+          max_tokens:512,
+          temperature:0.2
+        }' > payload.json
+
+        for a in 0 1 2; do
+          STATUS=$(curl -s -w "%{http_code}" -o resp.json \
+                   -H "Authorization: Bearer $MOONSHOT_AI_KIMIDEV" \
                    -H "Content-Type: application/json" \
                    --data @payload.json \
-                   https://api.moonshot.ai/v1/chat/completions)
+                   https://api.moonshot.ai/v1/chat/completions) && break
+          code=${STATUS: -3}
+          [[ "$code" =~ 429|500|502|503|504 ]] || break
+          sleep $(( (2**a) * 5 ))
+        done
+        echo "Moonshot HTTP $STATUS"
+        [[ "$STATUS" == *200 ]] || { cat resp.json; exit 1; }
 
-          echo "Moonshot HTTP $STATUS"
-          cat resp.json
-          [[ "$STATUS" == 200 ]] || exit 1
+        jq -r '.choices[0].message.content' resp.json > review.txt
+        echo "REVIEW<<EOF" >> $GITHUB_OUTPUT
+        cat review.txt >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
-          jq -r '.choices[0].message.content' resp.json > review.txt
-          echo "REVIEW<<EOF" >> "$GITHUB_OUTPUT"
-          cat review.txt >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+    # 6) post comment (skip manual run)
+    - if: github.event_name != 'workflow_dispatch'
+      env: { GH_TOKEN: ${{ github.token }} }
+      run: |
+        BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**\n_Model:_ ${{ steps.ctx.outputs.MODE }}\n\n$(cat review.txt)")
+        curl -s -X POST \
+          -H "Authorization: Bearer $GH_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          -d "{\"body\": $BODY}" \
+          "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
 
-# 5️⃣  comment on the PR (skipped for manual run)
-      - if: github.event_name != 'workflow_dispatch'
-        env: { GH_TOKEN: ${{ github.token }} }
-        run: |
-          BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**  \n_Model:_ ${{ steps.ctx.outputs.MODE }}\n\n$(cat review.txt)")
-          curl -s -X POST \
-               -H "Authorization: Bearer $GH_TOKEN" \
-               -H "Accept: application/vnd.github+json" \
-               -d "{\"body\": $BODY}" \
-               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
-
-# 6️⃣  save raw response (optional)
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: moonshot-response
-          path: resp.json
+    # 7) save raw response (debug)
+    - if: always()
+      uses: actions/upload-artifact@v4
+      with: { name: moonshot-response, path: resp.json }
