@@ -15,7 +15,9 @@ name: "Kimi-Dev review"
 on:
   pull_request:
     types: [opened, synchronize]
-  workflow_dispatch:
+    branches:
+      - '*'
+  workflow_dispatch: {}
 
 concurrency:
   group: kimi-${{ github.head_ref || github.ref_name }}
@@ -33,98 +35,96 @@ jobs:
       FALLBACK_MODELS: "kimidev-72b-128k kimidev-72b-32k kimidev-72b-chat moonshot-v1-32k"
 
     steps:
-    # 0) fail fast if secret missing
-    - run: |
-        [[ -n "$MOONSHOT_KEY" ]] || { echo "::error ::MOONSHOT_AI_KIMIDEV not set"; exit 1; }
+      # 0) fail fast if secret missing
+      - run: |
+          [[ -n "$MOONSHOT_KEY" ]] || { echo "::error ::MOONSHOT_AI_KIMIDEV not set"; exit 1; }
 
-    # 1) checkout
-    - uses: actions/checkout@v4
-      with: { fetch-depth: 0 }
+      # 1) checkout
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
 
-    # 2) pick the first model slug we actually have access to
-    - id: model
-      run: |
-        list=$(curl -s https://api.moonshot.ai/v1/models \
-                -H "Authorization: Bearer $MOONSHOT_KEY" | jq -r '.data[].id')
-        for slug in $FALLBACK_MODELS; do
-          echo "$list" | grep -qx "$slug" && { echo "OK=$slug" >> $GITHUB_OUTPUT; break; }
-        done
-        [[ -n "${{ steps.model.outputs.OK }}" ]] || \
-          { echo "::error ::None of $FALLBACK_MODELS available"; exit 1; }
+      # 2) pick the first model slug we actually have access to
+      - id: model
+        run: |
+          list=$(curl -s https://api.moonshot.ai/v1/models \
+                  -H "Authorization: Bearer $MOONSHOT_KEY" | jq -r '.data[].id')
+          for slug in $FALLBACK_MODELS; do
+            echo "$list" | grep -qx "$slug" && { echo "OK=$slug" >> $GITHUB_OUTPUT; break; }
+          done
+          [[ -n "${{ steps.model.outputs.OK }}" ]] || \
+            { echo "::error ::None of $FALLBACK_MODELS available"; exit 1; }
 
-    # 3) decide scope: repo for first commit / manual; diff otherwise
-    - id: ctx
-      run: |
-        if [[ "${{ github.event_name }}" == "workflow_dispatch" || \
-              "${{ github.event.action }}" == "opened" ]]; then
-          echo "SCOPE=repo" >> $GITHUB_OUTPUT
-        else
-          echo "SCOPE=diff" >> $GITHUB_OUTPUT
-        fi
+      # 3) decide scope: repo for first commit / manual; diff otherwise
+      - id: ctx
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || \
+                ( "${{ github.event_name }}" == "pull_request" && "${{ github.event.action }}" == "opened" ) ]]; then
+            echo "SCOPE=repo" >> $GITHUB_OUTPUT
+          else
+            echo "SCOPE=diff" >> $GITHUB_OUTPUT
+          fi
 
-    # 4) collect code, ignoring libs & >300 kB binaries
-    - id: blob
-      run: |
-        EX='node_modules|vendor|dist|build|\.next|\.venv|\.cache|__pycache__'
-        if [[ "${{ steps.ctx.outputs.SCOPE }}" == "repo" ]]; then
-          git ls-files -z | grep -zEv "(${EX})" |
-          xargs -0 -I{} bash -c '[[ $(wc -c < "{}") -lt 307200 ]] && cat "{}"' |
-          head -c 360000 > blob.txt
-        else
-          curl -sL "${{ github.event.pull_request.diff_url }}" |
-          grep -Ev "^diff --git a/(${EX})/" > blob.txt
-        fi
-        sed -i 's/`/‘‘/g' blob.txt
-        echo "FILE=blob.txt" >> $GITHUB_OUTPUT
+      # 4) collect code, ignoring libs & >300 kB binaries
+      - id: blob
+        run: |
+          EX='node_modules|vendor|dist|build|\.next|\.venv|\.cache|__pycache__'
+          if [[ "${{ steps.ctx.outputs.SCOPE }}" == "repo" ]]; then
+            git ls-files -z | grep -zEv "(${EX})" |
+            xargs -0 -I{} bash -c '[[ $(wc -c < "{}") -lt 307200 ]] && cat "{}"' |
+            head -c 360000 > blob.txt
+          else
+            curl -sL "${{ github.event.pull_request.diff_url }}" |
+            grep -Ev "^diff --git a/(${EX})/" > blob.txt
+          fi
+          sed -i 's/`/‘‘/g' blob.txt
+          echo "FILE=blob.txt" >> $GITHUB_OUTPUT
 
-    # 5) build payload & call Moonshot with retry
-    - id: kimi
-      run: |
-        jq -n --rawfile diff "${{ steps.blob.outputs.FILE }}" \
-               --arg m "${{ steps.model.outputs.OK }}" '{
-          model: $m,
-          messages:[
-            {role:"system",
-             content:"You are an expert software engineer. Provide a concise, line-referenced GitHub code review."},
-            {role:"user", content: $diff}
-          ],
-          max_tokens: 512,
-          temperature: 0.2
-        }' > payload.json
+      # 5) build payload & call Moonshot with retry
+      - id: kimi
+        run: |
+          jq -n --rawfile diff "${{ steps.blob.outputs.FILE }}" \
+                 --arg m "${{ steps.model.outputs.OK }}" '{
+            model: $m,
+            messages:[
+              {role:"system",
+               content:"You are an expert software engineer. Provide a concise, line-referenced GitHub code review."},
+              {role:"user", content: $diff}
+            ],
+            max_tokens: 512,
+            temperature: 0.2
+          }' > payload.json
 
-        for a in 0 1 2; do
-          STATUS=$(curl -s -w "%{http_code}" -o resp.json \
-                   -H "Authorization: Bearer $MOONSHOT_KEY" \
-                   -H "Content-Type: application/json" \
-                   --data @payload.json \
-                   https://api.moonshot.ai/v1/chat/completions) && break
-          [[ "${STATUS:(-3)}" =~ 429|5.. ]] && sleep $(( (2**a)*5 )) || break
-        done
-        echo "Moonshot HTTP $STATUS"; [[ "$STATUS" == *200 ]] || exit 1
-        jq -r '.choices[0].message.content' resp.json > review.txt
-        echo "REVIEW<<EOF" >> $GITHUB_OUTPUT
-        cat review.txt >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+          for a in 0 1 2; do
+            STATUS=$(curl -s -w "%{http_code}" -o resp.json \
+                     -H "Authorization: Bearer $MOONSHOT_KEY" \
+                     -H "Content-Type: application/json" \
+                     --data @payload.json \
+                     https://api.moonshot.ai/v1/chat/completions) && break
+            [[ "${STATUS:(-3)}" =~ 429|5.. ]] && sleep $(( (2**a)*5 )) || break
+          done
+          echo "Moonshot HTTP $STATUS"; [[ "$STATUS" == *200 ]] || exit 1
+          jq -r '.choices[0].message.content' resp.json > review.txt
+          echo "REVIEW<<EOF" >> $GITHUB_OUTPUT
+          cat review.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-    # 6) comment back on PR
-    - if: github.event_name != 'workflow_dispatch'
-      env: { GH_TOKEN: ${{ github.token }} }
-      run: |
-        BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**\
-        \n_Model:_ ${{ steps.model.outputs.OK }}\
-        \n\n$(cat review.txt)")
-        curl -s -X POST \
-             -H "Authorization: Bearer $GH_TOKEN" \
-             -H "Accept: application/vnd.github+json" \
-             -d "{\"body\": $BODY}" \
-             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
+      # 6) comment back on PR
+      - if: github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY=$(jq -Rs '.' <<< "🤖 **Kimi-Dev review**\n_Model:_ ${{ steps.model.outputs.OK }}\n\n$(cat review.txt)")
+          curl -s -X POST \
+               -H "Authorization: Bearer $GH_TOKEN" \
+               -H "Accept: application/vnd.github+json" \
+               -d "{\"body\": $BODY}" \
+               "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
 
-    # 7) save raw response (tiny)
-    - if: always()
-      uses: actions/upload-artifact@v4
--------
-      with:
-        name: moonshot-response
-        path: resp.json
+      # 7) save raw response (tiny)
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: moonshot-response
+          path: resp.json
 
 # This is a change to trigger the workflow.
