@@ -35,9 +35,18 @@ jobs:
       # This pulls your secret named 'MOONSHOT_KEY' from your repository settings
       MOONSHOT_KEY: ${{ secrets.MOONSHOT_KEY }}
       # This is the order in which the bot will try to use Moonshot models
+      # IMPORTANT: If your preferred larger models (like kimidev-72b-128k) are not
+      # available, the bot will fall back to smaller ones, potentially leading
+      # to "token limit" errors if your code is too large for those smaller models.
       FALLBACK_MODELS: "kimidev-72b-128k kimidev-72b-32k kimidev-72b-chat moonshot-v1-32k"
       # NEW: Define common exclusion patterns for code collection here for easier modification
       EXCLUDE_PATTERNS: 'node_modules|vendor|dist|build|\.next|\.venv|\.cache|__pycache__|env|venv|target'
+      # NEW: Maximum size for the entire collected code blob (in bytes)
+      # Roughly 120KB for a 32K token model (approx. 1 token = 4 bytes for code)
+      MAX_CODE_BLOB_BYTES: 120000 
+      # NEW: Maximum size for individual files within the collected code blob (in bytes)
+      MAX_SINGLE_FILE_BYTES: 100000 
+
 
     steps:
       # --- Setup and Checks ---
@@ -137,41 +146,48 @@ jobs:
           echo "SCOPE=$SCOPE" >> $GITHUB_OUTPUT # Output the chosen scope
 
       # 6. Collect Code Blob for Review
-      # Improvement: More internal logging, uses the `EXCLUDE_PATTERNS` environment variable.
-      # Added artifact upload for the code blob itself, which is very useful for debugging.
+      # IMPROVEMENT: Reduced MAX_CODE_BLOB_BYTES and MAX_SINGLE_FILE_BYTES to avoid token limits
       - name: 📂 Collect Code to Send to AI
         id: blob # ID for this step's outputs
         run: |
           BLOB_FILE="code_blob.txt" # The file where we'll put the code/diff
           EXCLUDE_PATTERNS_VAR="${{ env.EXCLUDE_PATTERNS }}" # Use the env var defined at the top
+          MAX_CODE_BLOB_BYTES="${{ env.MAX_CODE_BLOB_BYTES }}" # Use the env var for total blob size
+          MAX_SINGLE_FILE_BYTES="${{ env.MAX_SINGLE_FILE_BYTES }}" # Use the env var for individual file size
 
           echo "Excluding files matching patterns: $EXCLUDE_PATTERNS_VAR"
+          echo "Max total code for review: $((MAX_CODE_BLOB_BYTES / 1024))KB (approx. limit for 32k token models)."
+          echo "Max single file size: $((MAX_SINGLE_FILE_BYTES / 1024))KB."
 
           if [[ "${{ steps.ctx.outputs.SCOPE }}" == "repo" ]]; then
             echo "Gathering full repository content (excluding specified folders/files)..."
             # This finds all files, filters out excluded ones, and adds them to BLOB_FILE.
-            # Files larger than 300KB are skipped, and total output is capped at 360KB.
             find . -type f -print0 | grep -zEv "(${EXCLUDE_PATTERNS_VAR})/" | \
               xargs -0 -I{} bash -c '
                 FILE_PATH="{}"
                 FILE_SIZE=$(wc -c < "$FILE_PATH")
-                if [[ "$FILE_SIZE" -lt 307200 ]]; then # Max 300KB per file
+                if [[ "$FILE_SIZE" -lt '$MAX_SINGLE_FILE_BYTES' ]]; then # Use MAX_SINGLE_FILE_BYTES
                   echo "--- FILE_START: $FILE_PATH --- (Size: $FILE_SIZE bytes)" >> "'"$BLOB_FILE"'"
                   cat "$FILE_PATH" >> "'"$BLOB_FILE"'"
                   echo "" >> "'"$BLOB_FILE"'" # Newline after content
                   echo "--- FILE_END: $FILE_PATH ---" >> "'"$BLOB_FILE"'"
                   echo "" >> "'"$BLOB_FILE"'" # Newline to separate files
                 else
-                  echo "Skipping large file: '$FILE_PATH' (Size: $FILE_SIZE bytes, max 300KB allowed)." >&2
+                  echo "Skipping large file: '$FILE_PATH' (Size: $FILE_SIZE bytes, max $((MAX_SINGLE_FILE_BYTES / 1024))KB allowed)." >&2
                 fi
               '
             # Cap the total blob size. This is crucial for LLM context limits.
-            head -c 368640 "$BLOB_FILE" > "$BLOB_FILE.tmp" && mv "$BLOB_FILE.tmp" "$BLOB_FILE"
+            head -c ${MAX_CODE_BLOB_BYTES} "$BLOB_FILE" > "$BLOB_FILE.tmp" && mv "$BLOB_FILE.tmp" "$BLOB_FILE"
+            echo "::notice ::The collected code blob was capped at approximately $((MAX_CODE_BLOB_BYTES / 1024))KB to fit model token limits."
           else
             echo "Collecting code differences (diff) for review (excluding specified folders/files)..."
             # Fetches the raw diff and filters out excluded paths.
             curl -sL "${{ github.event.pull_request.diff_url }}" | \
               grep -Ev "^(diff --git a/|--- a/|+++ b/)((${EXCLUDE_PATTERNS_VAR})|vendor)/" > "$BLOB_FILE"
+            
+            # Diff content might also be too large, cap it as well
+            head -c ${MAX_CODE_BLOB_BYTES} "$BLOB_FILE" > "$BLOB_FILE.tmp" && mv "$BLOB_FILE.tmp" "$BLOB_FILE"
+            echo "::notice ::The collected diff blob was capped at approximately $((MAX_CODE_BLOB_BYTES / 1024))KB to fit model token limits."
           fi
           
           # Replace backticks (`) with a different character to prevent Markdown formatting issues in the final review comment.
@@ -201,7 +217,7 @@ jobs:
       # --- AI Processing & Commenting ---
 
       # 7. Call Moonshot AI for Code Review
-      # Improvement: More detailed logging, clearer error messages for API calls.
+      # IMPROVEMENT: More specific error message for HTTP 400 (token limit)
       - name: 🧠 Call Moonshot AI for Code Review
         id: kimi # ID for this step's outputs
         run: |
@@ -240,18 +256,24 @@ jobs:
 
           echo "Sending request to Moonshot AI..."
           STATUS=""
+          API_ERROR_MESSAGE="" # NEW: Variable to store specific API error message
+
           for a in 0 1 2; do # Retry up to 3 times (initial attempt + 2 retries)
-            # 'curl' sends the request. '-s' for silent, '-w' to print HTTP code, '-o' to save response body.
-            RESPONSE=$(curl -s -w "%{http_code}" -o "$RESPONSE_FILE" \
+            RESPONSE_RAW=$(curl -s -w "%{http_code}" -o "$RESPONSE_FILE" \
                        -H "Authorization: Bearer $MOONSHOT_KEY" \
                        -H "Content-Type: application/json" \
                        --data @"$PAYLOAD_FILE" \
                        https://api.moonshot.ai/v1/chat/completions)
-            STATUS="${RESPONSE:(-3)}" # Extract the HTTP status code (last 3 characters)
+            STATUS="${RESPONSE_RAW:(-3)}" # Extract the HTTP status code (last 3 characters)
 
             if [[ "$STATUS" == "200" ]]; then
               echo "✅ Moonshot AI call successful (HTTP $STATUS)."
               break # Success! Exit the retry loop
+            elif [[ "$STATUS" == "400" ]]; then # NEW: Specific check for HTTP 400 errors
+                API_ERROR_MESSAGE=$(jq -r '.error.message // "Unknown 400 error"' "$RESPONSE_FILE")
+                echo "::error ::Moonshot AI call failed with HTTP 400 (Bad Request). This often means: '$API_ERROR_MESSAGE'."
+                echo "This could be due to exceeding the model's token limit, an invalid payload, or other input issues."
+                break # Do not retry 400 errors, as they are usually input-related
             elif [[ "$STATUS" =~ 429|5.. ]]; then # Check for Rate Limit (429) or Server Error (5xx)
               SLEEP_TIME=$(( (2**a)*5 )) # Calculate exponential backoff for retries
               echo "Moonshot AI call failed with HTTP $STATUS. Retrying in ${SLEEP_TIME} seconds..."
@@ -267,7 +289,10 @@ jobs:
           echo "Final Moonshot AI HTTP Status: $STATUS"
           if [[ "$STATUS" != "200" ]]; then
             echo "::error ::Moonshot AI call ultimately failed after retries with HTTP $STATUS."
-            echo "Possible causes: Invalid 'MOONSHOT_KEY', unsupported model, or persistent Moonshot AI service issues."
+            if [[ -n "$API_ERROR_MESSAGE" ]]; then
+                echo "Specific API message: '$API_ERROR_MESSAGE'"
+            fi
+            echo "Possible causes: Invalid 'MOONSHOT_KEY', unsupported model, persistent Moonshot AI service issues, or code blob size issue."
             exit 1 # Fail the workflow if the API call was unsuccessful
           fi
 
