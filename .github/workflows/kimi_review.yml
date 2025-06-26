@@ -7,7 +7,7 @@
 # • Built-in concurrency; no self-cancelling.
 #
 # SECRET required:
-#   MOONSHOT_AI_KIMIDEV = sk-xxxxxxxxxxxxxxxxxxxxxxxx
+#   MOONSHOT_KEY = sk-xxxxxxxxxxxxxxxxxxxxxxxx
 # ---------------------------------------------------------------------
 
 name: "Kimi-Dev review"
