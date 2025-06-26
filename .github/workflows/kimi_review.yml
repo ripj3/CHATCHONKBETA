@@ -146,7 +146,7 @@ jobs:
           echo "SCOPE=$SCOPE" >> $GITHUB_OUTPUT # Output the chosen scope
 
       # 6. Collect Code Blob for Review
-      # IMPROVEMENT: Reduced MAX_CODE_BLOB_BYTES and MAX_SINGLE_FILE_BYTES to avoid token limits
+      # IMPROVEMENT: Corrected shell quoting for variables within xargs subshell
       - name: 📂 Collect Code to Send to AI
         id: blob # ID for this step's outputs
         run: |
@@ -161,21 +161,27 @@ jobs:
 
           if [[ "${{ steps.ctx.outputs.SCOPE }}" == "repo" ]]; then
             echo "Gathering full repository content (excluding specified folders/files)..."
-            # This finds all files, filters out excluded ones, and adds them to BLOB_FILE.
+            # Corrected quoting for xargs bash -c command to allow variable expansion from outer script
+            # The entire bash -c argument is enclosed in double quotes.
+            # Variables from the outer shell ($MAX_SINGLE_FILE_BYTES, $BLOB_FILE) are directly expanded.
+            # Variables for the inner shell (like $FILE_PATH, $FILE_SIZE) are escaped with '\$'.
+            # Double quotes within the inner script need to be escaped with '\ "'.
             find . -type f -print0 | grep -zEv "(${EXCLUDE_PATTERNS_VAR})/" | \
-              xargs -0 -I{} bash -c '
-                FILE_PATH="{}"
-                FILE_SIZE=$(wc -c < "$FILE_PATH")
-                if [[ "$FILE_SIZE" -lt '$MAX_SINGLE_FILE_BYTES' ]]; then # Use MAX_SINGLE_FILE_BYTES
-                  echo "--- FILE_START: $FILE_PATH --- (Size: $FILE_SIZE bytes)" >> "'"$BLOB_FILE"'"
-                  cat "$FILE_PATH" >> "'"$BLOB_FILE"'"
-                  echo "" >> "'"$BLOB_FILE"'" # Newline after content
-                  echo "--- FILE_END: $FILE_PATH ---" >> "'"$BLOB_FILE"'"
-                  echo "" >> "'"$BLOB_FILE"'" # Newline to separate files
+              xargs -0 -I{} bash -c "
+                FILE_PATH=\"{}\"
+                # Redirect stderr to /dev/null for wc -c and cat to suppress permission errors in logs,
+                # as some files might genuinely be unreadable by the runner.
+                FILE_SIZE=\$(wc -c < \"\$FILE_PATH\" 2>/dev/null || echo 0)
+                if [[ \"\$FILE_SIZE\" -lt \"${MAX_SINGLE_FILE_BYTES}\" ]]; then
+                  echo \"--- FILE_START: \$FILE_PATH --- (Size: \$FILE_SIZE bytes)\" >> \"${BLOB_FILE}\"
+                  cat \"\$FILE_PATH\" >> \"${BLOB_FILE}\" 2>/dev/null || echo \"Content could not be read or permission denied.\" >> \"${BLOB_FILE}\"
+                  echo \"\" >> \"${BLOB_FILE}\" # Newline after content
+                  echo \"--- FILE_END: \$FILE_PATH ---\" >> \"${BLOB_FILE}\"
+                  echo \"\" >> \"${BLOB_FILE}\" # Newline to separate files
                 else
-                  echo "Skipping large file: '$FILE_PATH' (Size: $FILE_SIZE bytes, max $((MAX_SINGLE_FILE_BYTES / 1024))KB allowed)." >&2
+                  echo \"Skipping large file: '\$FILE_PATH' (Size: \$FILE_SIZE bytes, max \$(( ${MAX_SINGLE_FILE_BYTES} / 1024 ))KB allowed).\" >&2
                 fi
-              '
+              "
             # Cap the total blob size. This is crucial for LLM context limits.
             head -c ${MAX_CODE_BLOB_BYTES} "$BLOB_FILE" > "$BLOB_FILE.tmp" && mv "$BLOB_FILE.tmp" "$BLOB_FILE"
             echo "::notice ::The collected code blob was capped at approximately $((MAX_CODE_BLOB_BYTES / 1024))KB to fit model token limits."
