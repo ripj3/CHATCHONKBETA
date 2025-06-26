@@ -1,7 +1,7 @@
 ############################
 # 1️⃣  FRONT‑END BUILD STAGE
 ############################
-FROM node:18 AS frontend-builder
+FROM node:20 AS frontend-builder
 WORKDIR /opt/frontend_build
 
 # Copy manifests first for cache efficiency
