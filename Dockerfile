@@ -9,15 +9,15 @@ RUN npm install -g pnpm@latest
 
 # Copy manifests first for cache efficiency
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
-RUN rm -f pnpm-lock.yaml && pnpm install && pnpm update
+RUN rm -f pnpm-lock.yaml && npx pnpm install && npx pnpm update
 RUN rm -rf frontend/node_modules
-RUN pnpm install --prefix frontend
+RUN npx pnpm install --prefix frontend
 
 # Copy the rest of the frontend source
 COPY frontend/ ./
 
 # Build → static export (no extra npm script needed)
-RUN pnpm build
+RUN npx pnpm build
 
 ############################
 # 2️⃣  PYTHON DEP STAGE
