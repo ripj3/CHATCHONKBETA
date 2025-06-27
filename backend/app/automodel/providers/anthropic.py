@@ -84,7 +84,8 @@ class AnthropicProvider(BaseProvider):
                 ),
                 "max_tokens": 200000,
                 "supports_vision": True,
-                "cost_per_1k_tokens": 0.003,
+                "cost_per_1k_prompt_tokens": 0.003,
+                "cost_per_1k_completion_tokens": 0.015,
                 "priority_score": 10.0,
                 "supported_tasks": {
                     TaskType.TEXT_GENERATION,
@@ -103,7 +104,8 @@ class AnthropicProvider(BaseProvider):
                 "name": "Claude 3 Opus",
                 "description": "Most powerful model for complex reasoning",
                 "max_tokens": 200000,
-                "cost_per_1k_tokens": 0.015,
+                "cost_per_1k_prompt_tokens": 0.015,
+                "cost_per_1k_completion_tokens": 0.075,
                 "priority_score": 9.5,
                 "supported_tasks": {
                     TaskType.TEXT_GENERATION,
@@ -121,7 +123,8 @@ class AnthropicProvider(BaseProvider):
                 "name": "Claude 3 Sonnet",
                 "description": "Balanced model for most tasks",
                 "max_tokens": 200000,
-                "cost_per_1k_tokens": 0.003,
+                "cost_per_1k_prompt_tokens": 0.003,
+                "cost_per_1k_completion_tokens": 0.015,
                 "priority_score": 8.5,
                 "supported_tasks": {
                     TaskType.TEXT_GENERATION,
@@ -139,7 +142,8 @@ class AnthropicProvider(BaseProvider):
                 "name": "Claude 3 Haiku",
                 "description": "Fast and efficient model for simple tasks",
                 "max_tokens": 200000,
-                "cost_per_1k_tokens": 0.00025,
+                "cost_per_1k_prompt_tokens": 0.00025,
+                "cost_per_1k_completion_tokens": 0.00125,
                 "priority_score": 7.0,
                 "supported_tasks": {
                     TaskType.TEXT_GENERATION,
@@ -162,7 +166,8 @@ class AnthropicProvider(BaseProvider):
                 supports_streaming=True,
                 supports_functions=False,  # Claude doesn't support function calling yet
                 supports_vision=config.get("supports_vision", False),
-                cost_per_1k_tokens=config["cost_per_1k_tokens"],
+                cost_per_1k_prompt_tokens=config["cost_per_1k_prompt_tokens"],
+                cost_per_1k_completion_tokens=config["cost_per_1k_completion_tokens"],
                 supported_tasks=config["supported_tasks"],
                 priority_score=config["priority_score"],
                 is_available=True,

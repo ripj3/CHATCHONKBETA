@@ -81,7 +81,8 @@ class QwenProvider(BaseProvider):
                     "Fast and efficient multilingual model"
                 ),
                 "max_tokens": 8192,
-                "cost_per_1k_tokens": 0.002,
+                "cost_per_1k_prompt_tokens": 0.001, # Example value, verify with Qwen pricing
+                "cost_per_1k_completion_tokens": 0.002, # Example value
                 "priority_score": 7.0,
                 "supported_tasks": {
                     TaskType.TEXT_GENERATION,
@@ -97,7 +98,8 @@ class QwenProvider(BaseProvider):
                 "name": "Qwen Plus",
                 "description": "Advanced multilingual model with better reasoning",
                 "max_tokens": 32768,
-                "cost_per_1k_tokens": 0.004,
+                "cost_per_1k_prompt_tokens": 0.002, # Example value
+                "cost_per_1k_completion_tokens": 0.004, # Example value
                 "priority_score": 8.0,
                 "supported_tasks": {
                     TaskType.TEXT_GENERATION,
@@ -115,7 +117,8 @@ class QwenProvider(BaseProvider):
                 "name": "Qwen Max",
                 "description": "Most capable Qwen model for complex tasks",
                 "max_tokens": 32768,
-                "cost_per_1k_tokens": 0.02,
+                "cost_per_1k_prompt_tokens": 0.01, # Example value
+                "cost_per_1k_completion_tokens": 0.02, # Example value
                 "priority_score": 8.5,
                 "supported_tasks": {
                     TaskType.TEXT_GENERATION,
@@ -140,7 +143,8 @@ class QwenProvider(BaseProvider):
                 supports_streaming=True,
                 supports_functions=False,
                 supports_vision=False,
-                cost_per_1k_tokens=config["cost_per_1k_tokens"],
+                cost_per_1k_prompt_tokens=config["cost_per_1k_prompt_tokens"],
+                cost_per_1k_completion_tokens=config["cost_per_1k_completion_tokens"],
                 supported_tasks=config["supported_tasks"],
                 priority_score=config["priority_score"],
                 is_available=True,

@@ -296,7 +296,11 @@ jobs:
           if [[ "$STATUS" != "200" ]]; then
             echo "::error ::Moonshot AI call ultimately failed after retries with HTTP $STATUS."
             if [[ -n "$API_ERROR_MESSAGE" ]]; then
-                echo "Specific API message: '$API_ERROR_MESSAGE'"
+              echo "Specific API message: '$API_ERROR_MESSAGE'"
+            elif [ -f "$RESPONSE_FILE" ] && jq -e '.error.message' "$RESPONSE_FILE" > /dev/null; then
+              # Attempt to extract error message for other non-200 JSON responses
+              OTHER_API_ERROR_MESSAGE=$(jq -r '.error.message' "$RESPONSE_FILE")
+              echo "General API message: '$OTHER_API_ERROR_MESSAGE'"
             fi
             echo "Possible causes: Invalid 'MOONSHOT_KEY', unsupported model, persistent Moonshot AI service issues, or code blob size issue."
             exit 1 # Fail the workflow if the API call was unsuccessful
