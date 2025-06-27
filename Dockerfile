@@ -4,9 +4,12 @@
 FROM node:20 AS frontend-builder
 WORKDIR /opt/frontend_build
 
+# Install pnpm globally
+RUN npm install -g pnpm@latest
+
 # Copy manifests first for cache efficiency
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
-RUN pnpm install -g pnpm@latest && rm -f pnpm-lock.yaml && pnpm install && pnpm update
+RUN rm -f pnpm-lock.yaml && pnpm install && pnpm update
 RUN rm -rf frontend/node_modules
 RUN pnpm install --prefix frontend
 
