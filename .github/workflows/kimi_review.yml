@@ -7,7 +7,7 @@
 # • Built-in concurrency; no self-cancelling.
 #
 # SECRET required:
-#   MOONSHOT_KEY = sk-xxxxxxxxxxxxxxxxxxxxxxxx (ensure this secret is set in your repo settings)
+#   MOONSHOT_KEY2 = sk-xxxxxxxxxxxxxxxxxxxxxxxx (ensure this secret is set in your repo settings)
 # ---------------------------------------------------------------------
 
 name: "Kimi-Dev Review Bot" # Improved clarity in the workflow name
@@ -32,8 +32,8 @@ jobs:
       pull-requests: write # Allows the workflow to post comments on your pull requests
 
     env:
-      # This pulls your secret named 'MOONSHOT_KEY' from your repository settings
-      MOONSHOT_KEY: ${{ secrets.MOONSHOT_KEY }}
+      # This pulls your secret named 'MOONSHOT_KEY2' from your repository settings
+      MOONSHOT_KEY2: ${{ secrets.MOONSHOT_KEY2 }}
       # This is the order in which the bot will try to use Moonshot models
       # IMPORTANT: If your preferred larger models (like kimidev-72b-128k) are not
       # available, the bot will fall back to smaller ones, potentially leading
@@ -55,13 +55,13 @@ jobs:
       # Improvement: Clearer step name, more direct feedback for a non-coder.
       - name: 🔑 Verify Moonshot API Key is Set
         run: |
-          echo "Checking if the 'MOONSHOT_KEY' secret is available..."
-          if [[ -z "$MOONSHOT_KEY" ]]; then
-            echo "::error ::The 'MOONSHOT_KEY' secret is NOT set or is empty. This is required for the bot to work."
+          echo "Checking if the 'MOONSHOT_KEY2' secret is available..."
+          if [[ -z "$MOONSHOT_KEY2" ]]; then
+            echo "::error ::The 'MOONSHOT_KEY2' secret is NOT set or is empty. This is required for the bot to work."
             echo "Please go to your repository settings > Secrets and variables > Actions, and add a secret named 'MOONSHOT_KEY' with your Moonshot AI API key."
             exit 1
           fi
-          echo "✅ 'MOONSHOT_KEY' secret found. Proceeding."
+          echo "✅ 'MOONSHOT_KEY2' secret found. Proceeding."
 
       # 2. Checkout Code (Required to access files)
       # Improvement: Slightly more descriptive name.
@@ -82,12 +82,12 @@ jobs:
           # This command fetches the list of models from Moonshot AI and extracts their IDs.
           # If it fails (e.g., bad API key), 'list' might be empty.
           list=$(curl -s https://api.moonshot.ai/v1/models \
-                  -H "Authorization: Bearer $MOONSHOT_KEY" | jq -r '.data[].id')
+                  -H "Authorization: Bearer $MOONSHOT_KEY2" | jq -r '.data[].id')
           
           if [ -z "$list" ]; then
             echo "::error ::Moonshot AI API returned an empty list of models or an error occurred during the API call."
-            echo "This usually means your 'MOONSHOT_KEY' is incorrect, expired, or there's a temporary issue with Moonshot AI service."
-            echo "Please double-check your 'MOONSHOT_KEY' secret value."
+            echo "This usually means your 'MOONSHOT_KEY2' is incorrect, expired, or there's a temporary issue with Moonshot AI service."
+            echo "Please double-check your 'MOONSHOT_KEY2' secret value."
             exit 1 # Stop the workflow here if we can't even get the model list
           fi
           
