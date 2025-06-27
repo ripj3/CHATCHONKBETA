@@ -1,35 +1,138 @@
 {
-  "mcpServers": {
+  "workbench.settings.openDefaultKeybindings": true,
+  "git.openRepositoryInParentFolders": "never",
+  "workbench.colorTheme": "Default High Contrast",
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "supabase-access-token",
+      "description": "Supabase personal access token",
+      "password": true
+    }
+  ],
+  "servers": {
+    "mcp-server-time": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_server_time",
+        "--local-timezone=America/Los_Angeles"
+      ],
+      "env": {}
+    },
     "sequentialthinking": {
       "command": "npx",
       "args": [
         "-y",
         "@modelcontextprotocol/server-sequential-thinking"
       ],
-      "alwaysAllow": [
-        "sequentialthinking"
-      ]
+      "env": {}
     },
-    "brave-search": {
+    "memory": {
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-brave-search"
+        "@modelcontextprotocol/server-memory"
       ],
       "env": {
-        "BRAVE_API_KEY": "BSAcqq1kPAHnoi5jyaaoKwoy4i95AAX"
-      },
-      "alwaysAllow": [
-        "brave_web_search"
-      ]
+        "MEMORY_FILE_PATH": "C:/DEV/DEV_PROJECTS/B15B_CHATCHONK6"
+      }
     },
-    "stripe": {
+    "taskmanager": {
       "command": "npx",
       "args": [
         "-y",
-        "@stripe/mcp",
-        "--tools=all",
-        "--api-key=rk_test_51033ZA2vXF6OLFVLU15TeAZc8YUfeSMRNcVF5QoFXGy5SDHNe15TLZ1vuIlUUmBpUCb0F16xZ2taJtmng08NQVxy00AhySeBjv"
+        "@kazuph/mcp-taskmanager"
+      ],
+      "env": {}
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/playwright-mcp-server"
+      ],
+      "env": {}
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem"
+      ],
+      "env": {},
+      "startOnRestart": true
+    },
+    "supabase-chch3": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "sbp_93c74b635108bb6fdda22126c3e98e02f60465bd"
+      ],
+      "env": {
+        "SUPABASE_PROJECTS": "[{\"ref\":\"hqzoibcaibusectmwrif\",\"name\":\"CHCH3\",\"db_password\":\"${env:SUPABASE_DB_PASSWORD}\",\"service_role_key\":\"${env:SUPABASE_SERVICE_ROLE_KEY}\",\"region\":\"us-west-1\"}]"
+      },
+      "startOnRestart": true
+    },
+    "supabase-mswap": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "sbp_93c74b635108bb6fdda22126c3e98e02f60465bd"
+      ],
+      "env": {
+        "SUPABASE_PROJECTS": "[{\"ref\":\"llxzkpihzvvdztdparme\",\"name\":\"MSWAP\",\"db_password\":\"${env:SUPABASE_DB_PASSWORD_MSWAP}\",\"service_role_key\":\"${env:SUPABASE_SERVICE_ROLE_KEY}\",\"region\":\"us-east-2\"}]"
+      },
+      "startOnRestart": true
+    }
+  },
+  "files.autoSave": "onFocusChange",
+  "git.enableSmartCommit": true,
+  "svelte.enable-ts-plugin": true,
+  "stripe.enableIntegrationGuides": true,
+  "yaml.schemas": {
+    "file:///c%3A/Users/lizmc/.vscode/extensions/atlassian.atlascode-3.8.0/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml"
+  },
+  "atlascode.jira.lastCreateSiteAndProject": {
+    "siteId": "",
+    "projectKey": ""
+  },
+  "github.copilot.enable": {
+    "*": false
+  },
+  "augment.chat.userGuidelines": "ChatChonk User Guidelines\nCore Development Principles\nUse the str-replace-editor tool with the \"view\" command to examine directory contents\nUse the codebase-retrieval tool to get information about specific directories\n\nTHINK FIRST: Plan before coding, document your approach\nKISS + DRY: Keep it simple and don't repeat yourself\nComponent Strategy: Build modular, reusable components\nAccessibility First: Ensure all features are accessible\nSecurity Focused: Follow security best practices\nWorkspace Setup\nMCP Servers\nThe following MCP servers are configured in your Augment workspace:\n\nSequential Thinking (sequentialthinking)\nFor step-by-step reasoning and complex problem-solving\nStart manually: npx -y @modelcontextprotocol/server-sequential-thinking\nMemory (memory)\nFor knowledge graph and persistent memory\nStart manually: npx -y @modelcontextprotocol/server-memory\nTask Manager (taskmanager)\nFor task planning and tracking\nStart manually: npx -y @kazuph/mcp-taskmanager\nPlaywright (playwright)\nFor browser automation and testing\nStart manually: npx -y @executeautomation/playwright-mcp-server\nFile System (filesystem)\nFor file operations and management\nStart manually: npx -y @modelcontextprotocol/server-filesystem\nTime Server (mcp-server-time)\nFor timezone functionality\nStart manually: python -m mcp_server_time --local-timezone=America/Los_Angeles\nContext7 (context7)\nFor accessing library documentation and code examples\nStart manually: npx -y @context7/mcp-server\nProvides up-to-date documentation for various libraries and frameworks\nIntegrated Tools\nThe following tools are configured in your Augment workspace:\n\nGitHub\nFor version control and code collaboration\nRepository: B15B_CHATCHONK6\nCurrent branch: file-processing-implementation\nJira\nFor issue tracking and project management\nUse for tracking tasks, bugs, and features\nSupabase\nFor database and authentication\nProjects: CHCH3 (ID: hqzoibcaibusectmwrif, Region: us-west-1)\nDevelopment Workflow\nStarting Your Development Session\nStart MCP Servers:\nRun the install_and_start_mcp_servers.bat script as Administrator\nOr start servers individually using the npx commands\nVerify servers are connected in Augment Workspace settings\nSet Up Windows Defender Exceptions (if needed):\nRun setup_mcp_defender_exceptions.ps1 as Administrator\nThis adds necessary exceptions for Node.js and MCP servers\nCheck GitHub Branch:\nEnsure you're on the correct branch (file-processing-implementation)\nPull latest changes before starting work\nCoding Standards\nFile Structure:\nFollow the directory structure in chatchonk/dir_structure\nKeep tests in ./chatchonk/tests/\nError Handling:\nUse specialized FileProcessingError classes\nInclude appropriate error codes\nImplement proper error handling in both backend and frontend\nDocumentation:\nDocument all functions, classes, and complex logic\nUpdate README.md when adding new features\nReference mcp-memory-protocol.md for memory management procedures\nUsing MCP Tools\nSequential Thinking:\nUse for complex problem-solving and step-by-step reasoning\nGreat for breaking down complex tasks\nMemory:\nUse for storing and retrieving knowledge\nFollow procedures in mcp-memory-protocol.md\nTask Manager:\nUse for planning and tracking tasks\nBreak down complex tasks into smaller, manageable steps\nPlaywright:\nUse for browser automation and testing\nGreat for end-to-end testing\nFile System:\nUse for file operations and management\nHelpful for working with the project's file structure\nContext7:\nUse for accessing library documentation and code examples\nHelps with understanding and implementing libraries correctly\nProvides up-to-date documentation for various frameworks and packages\nUsing Integrated Tools\nGitHub:\nCreate feature branches from file-processing-implementation\nMake small, focused commits with clear messages\nCreate pull requests for code review\nJira:\nTrack tasks, bugs, and features\nUpdate ticket status as you progress\nLink GitHub commits and PRs to Jira tickets\nSupabase:\nUse for authentication and database operations\nFollow security best practices\nImplement Row Level Security (RLS) policies\nTroubleshooting\nMCP Server Issues\nIf you encounter issues with MCP servers:\n\nCheck the MCP_SERVER_TROUBLESHOOTING.md guide\nVerify Windows Defender exceptions are set up\nCheck server names in settings.json (no hyphens)\nRestart VS Code after making changes\nCommon Issues\nWindows Defender Blocking:\nRun setup_mcp_defender_exceptions.ps1 as Administrator\nManually add exceptions if needed\nIncorrect Server Names:\nUse \"sequentialthinking\" (without hyphen)\nUse \"taskmanager\" (without hyphen)\nUse \"filesystem\" (without hyphen)\nUse \"context7\" (without hyphen)\nPort Conflicts:\nCheck for other applications using the same ports\nRestart your computer to free up ports\nGetting Help\nIf you need assistance:\n\nCheck the documentation in the project\nRefer to the troubleshooting guides\nUse the MCP server documentation:\nSequential Thinking\nMemory\nTask Manager\nPlaywright\nFile System\nContext7\nRemember to always think first, plan your approach, and follow the established coding principles.",
+  "roo-cline.allowedCommands": [
+    "npm test",
+    "npm install",
+    "tsc",
+    "git log",
+    "git diff",
+    "git show"
+  ],
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": ""
+      },
+      "alwaysAllow": [
+        "resolve-library-id",
+        "resolve"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
       ]
     }
   }
