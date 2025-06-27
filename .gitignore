@@ -50,6 +50,10 @@ uploads/
 # Render.yaml specific
 .render/
 
+# KIMI
+/kimireviews
+
+
 # Other
 .env.local
 .env.development.local
