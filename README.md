@@ -144,8 +144,8 @@ uvicorn backend.main:app --reload --port 8000
 
 ```bash
 cd frontend
-npm install          # or pnpm i
-npm run dev          # http://localhost:3000
+pnpm install
+pnpm dev          # http://localhost:3000
 ```
 
 The app will proxy API requests to `localhost:8000`.
@@ -157,7 +157,7 @@ The app will proxy API requests to `localhost:8000`.
 | Task | Command |
 |------|---------|
 | Start backend (hot-reload) | `uvicorn backend.main:app --reload` |
-| Start frontend | `npm run dev` |
+| Start frontend | `pnpm dev` |
 | Lint & format | `ruff check`, `black .`, `eslint .` |
 | Run unit tests | `pytest` |
 | Generate template docs | `python scripts/template_preview.py` |
@@ -230,12 +230,12 @@ python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r backend/requirements.txt
 
 # Frontend
-cd frontend && npm ci && npm run build
+cd frontend && pnpm install --frozen-lockfile && pnpm build
 
 # Process management with PM2
-sudo npm i -g pm2
+sudo pnpm add -g pm2
 pm2 start "uvicorn backend.main:app --host 0.0.0.0 --port 8000" --name chatchonk-api
-pm2 start "npm start" --name chatchonk-frontend --cwd frontend
+pm2 start "pnpm start" --name chatchonk-frontend --cwd frontend
 pm2 save && pm2 startup
 ```
 

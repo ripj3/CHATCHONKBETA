@@ -5,16 +5,16 @@ FROM node:20 AS frontend-builder
 WORKDIR /opt/frontend_build
 
 # Copy manifests first for cache efficiency
-COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm install -g npm@latest && rm -f package-lock.json && npm install && npm update
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
+RUN pnpm install -g pnpm@latest && rm -f pnpm-lock.yaml && pnpm install && pnpm update
 RUN rm -rf frontend/node_modules
-RUN npm install --prefix frontend
+RUN pnpm install --prefix frontend
 
 # Copy the rest of the frontend source
 COPY frontend/ ./
 
 # Build → static export (no extra npm script needed)
-RUN npm run build
+RUN pnpm build
 
 ############################
 # 2️⃣  PYTHON DEP STAGE

@@ -24,7 +24,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci || npm install # npm ci is preferred if package-lock.json is reliable
+        run: pnpm install --frozen-lockfile || pnpm install # pnpm install --frozen-lockfile is preferred if pnpm-lock.yaml is reliable
 
       - name: Cache Node.js modules
         uses: actions/cache@v3
@@ -40,7 +40,7 @@ jobs:
 
       - name: Run TypeScript type check (Frontend)
         working-directory: ./frontend
-        run: npm run typecheck
+        run: pnpm typecheck
       
       - name: Build frontend (Next.js)
         working-directory: ./frontend
@@ -49,7 +49,7 @@ jobs:
         # env:
         #   NEXT_PUBLIC_API_URL: "http://localhost:8000/api" # Example placeholder for CI
         #   NEXT_PUBLIC_SOME_OTHER_VAR: ${{ secrets.YOUR_CI_SECRET_FOR_THAT_VAR }}
-        run: npm run build
+        run: pnpm build
 
       # Backend Checks
       - name: Set up Python

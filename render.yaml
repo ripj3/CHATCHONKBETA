@@ -20,6 +20,10 @@ services:
    runtime: docker
    dockerfilePath: backend/Dockerfile
    plan: starter
+   disks:
+     - name: chatchonk-data
+       mountPath: /app/data
+       sizeGB: 10
    healthCheckPath: /api/health
    envVars:
     - key: PORT
@@ -33,15 +37,15 @@ services:
     - key: RELOAD
       value: "False"
     - key: UPLOAD_DIR
-      value: "/app/uploads"
+      value: "/app/data/uploads"
     - key: TEMP_DIR
-      value: "/app/tmp"
+      value: "/app/data/tmp"
     - key: EXPORT_DIR
-      value: "/app/exports"
+      value: "/app/data/exports"
     - key: TEMPLATES_DIR
       value: "/app/templates"
     - key: ALLOWED_ORIGINS
-      value: "https://your-chatchonk-api-url.onrender.com"
+      value: "https://chatchonkbeta.onrender.com"
     - key: API_V1_STR
       value: "/api"
     - key: PROJECT_NAME
