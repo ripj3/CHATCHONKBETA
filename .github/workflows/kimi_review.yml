@@ -246,10 +246,10 @@ jobs:
               exit 1
           fi
 
-          echo "Preparing request for Moonshot AI model: ${{ env.SELECTED_MOONSHOT_MODEL }}"
+          echo "Preparing request for Moonshot AI model: $SELECTED_MOONSHOT_MODEL"
           # Construct the JSON payload with the selected model and the collected code
           jq -n --rawfile diff "$CODE_BLOB_PATH" \
-                --arg m "${{ env.SELECTED_MOONSHOT_MODEL }}" '{
+                --arg m "$SELECTED_MOONSHOT_MODEL" '{
             model: $m,
             messages:[
               {role:"system",
@@ -266,7 +266,7 @@ jobs:
 
           for a in 0 1 2; do # Retry up to 3 times (initial attempt + 2 retries)
             RESPONSE_RAW=$(curl -s -w "%{http_code}" -o "$RESPONSE_FILE" \
-                       -H "Authorization: Bearer $MOONSHOT_KEY" \
+                       -H "Authorization: Bearer $MOONSHOT_KEY2" \
                        -H "Content-Type: application/json" \
                        --data @"$PAYLOAD_FILE" \
                        https://api.moonshot.ai/v1/chat/completions)
@@ -322,7 +322,7 @@ jobs:
           GH_TOKEN: ${{ github.token }} # GitHub's special token for interacting with the PR
         run: |
           REVIEW_BODY="${{ steps.kimi.outputs.REVIEW_COMMENT }}"
-          MODEL_USED="${{ env.SELECTED_MOONSHOT_MODEL }}" # The model that was actually used
+          MODEL_USED="$SELECTED_MOONSHOT_MODEL" # The model that was actually used
 
           if [ -z "$REVIEW_BODY" ]; then
             # If for some reason the AI didn't return any content, provide a fallback message
