@@ -13,4 +13,7 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = {
+  output: 'export', // Required for static export
+  distDir: 'out', // Explicit output directory
+}

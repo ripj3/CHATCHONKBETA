@@ -1,49 +1,54 @@
 ############################
-# 1️⃣  FRONT‑END BUILD STAGE
+# 1️⃣ FRONTEND BUILDER
 ############################
 FROM node:20 AS frontend-builder
-WORKDIR /opt/frontend_build
+WORKDIR /app/frontend
 
-# Install pnpm globally
-RUN npm install -g pnpm@latest
-
-# Copy manifests first for cache efficiency
+# Copy only dependency files first for better caching
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
-RUN rm -f pnpm-lock.yaml && npx pnpm install && npx pnpm update
-RUN rm -rf frontend/node_modules
-RUN npx pnpm install --prefix frontend
 
-# Copy the rest of the frontend source
+# Install dependencies
+RUN npm install -g pnpm@latest && \
+    pnpm install --frozen-lockfile
+
+# Copy full frontend source
 COPY frontend/ ./
 
-# Build → static export (no extra npm script needed)
-RUN npx pnpm build
+# Build static export
+RUN pnpm build
 
 ############################
-# 2️⃣  PYTHON DEP STAGE
+# 2️⃣ BACKEND BUILDER
 ############################
-FROM python:3.11-slim AS builder
-WORKDIR /install
-COPY backend/requirements.txt ./
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt --prefix=/install --no-cache-dir
+FROM python:3.11-slim AS backend-builder
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y gcc libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 ############################
-# 3️⃣  RUNTIME STAGE
+# 3️⃣ RUNTIME IMAGE
 ############################
-FROM python:3.11-slim AS runtime
+FROM python:3.11-slim
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1
 ENV PORT=${PORT:-8000}
 
-# Python deps & backend code
-COPY --from=builder /install /usr/local
+# Copy Python dependencies
+COPY --from=backend-builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+
+# Copy backend code
 COPY backend/ ./backend
 
-# Static frontend bundle
-# Next.js with `output: 'export'` writes the static site to the `out/` directory
+# Copy frontend build
+COPY --from=frontend-builder /app/frontend/out ./frontend_build
 
-
-COPY --from=frontend-builder /opt/frontend_build/out ./frontend_build
-
-CMD ["bash", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"]
+# Expose port and run server
+EXPOSE $PORT
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
