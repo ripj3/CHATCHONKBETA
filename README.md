@@ -5,9 +5,99 @@
 
 ChatChonk is a privacy-first SaaS platform that transforms messy AI chat exports (ChatGPT, Claude, Gemini & more) into **structured, searchable knowledge bundles** ready for Obsidian, Notion, and other knowledge management systems.
 
-**🚀 Now featuring the complete AutoModel-ModelSwapper system with enterprise-grade security and cost controls!**
 
----
+
+## Coach 
+Scope: Core voice and text interaction assistant embedded in the ChatChonk user experience. Serves as onboarding guide, assistant, and interaction layer—not a general chatbot.
+1. Purpose
+
+Sara is the user's persistent companion in ChatChonk—a coach, not a tool. She helps guide, explain, recall, and reframe the interface, workflows, and creative chaos.
+
+Sara is not “cute AI.” She’s a personal system interface with memory and voice. She can clarify tasks, modify settings, and interpret user goals. Her design prioritizes voice-friendly UX, contextual help, and customizable persona logic.
+2. Modes of Interaction
+
+    Text Mode: Default fallback for accessibility and silent interaction
+
+    Voice Mode: Powered by Kokoro-compatible TTS stack (ESPnet/open-source acceptable fallback)
+
+    Switchable by user at any time with:
+
+        Voice command: “Type instead” or “Mute”
+
+        Text command: /switch to text, /mute, /unmute, /change voice
+
+3. Primary Capabilities (MVP)
+Feature	Description
+🟢 Voice/Typed Command Support	Voice command interpreter with fallback to typed commands
+🟢 Prompt-Driven Contextual Help	“What does this do?”, “How do I export?”, “Can I rename this?”
+🟢 Configurable Persona	Name, tone, voice model, and interaction style can be changed
+🟢 Session Memory (short-term)	Remembers current task/thread/folder in local session
+🟢 File Awareness	Can respond with file stats like “You uploaded a 1.8GB video file yesterday”
+🟢 Onboarding Flow	Greets new users, explains interface, helps connect Discord/account/etc.
+🟡 Assistant Routing Layer	Can invoke system-level commands (e.g., trigger export, call API)
+🟡 Help Layer API	Generates help text from internal system knowledge or markdown docs
+
+    🟡 = Core MVP logic stubbed now, expandable later
+
+4. Configuration / Customization
+
+Users can adjust Sara’s identity and behavior:
+Configurable Parameter	Example Options
+Name	Sara, Sage, Quinn, Jin, Sora, etc.
+Voice Model	Kokoro Default, ESPnet (soft female), robotic
+Prompt Personality	Friendly guide / Technical operator / Stoic bot
+Default Mode	Voice or typing
+Permission Scope	Coach only / Coach + command / Silent only
+
+Configuration interface must be accessible via UI modal or Sara’s own commands:
+
+    “Change your name to Sora”
+
+    “Talk like a robot now”
+
+    “Be more concise”
+
+    “Stop giving me onboarding tips”
+
+5. Integration Points
+
+Sara’s logic lives in the Assistant Layer, not the model routing stack. It acts as a contextual dispatcher and interface bridge.
+Integration	Description
+Frontend	Wasp/React text + voice interface with mute and config toggles
+Backend API	Calls helper API endpoints: file list, export status, queue
+AutoMCP	Can reference which model was used (e.g., "That was Claude 3")
+Discord MCP	Can send bug reports on command (e.g., “Tell you this was slow”)
+Supabase	Stores persistent Sara prefs (voice, mode, config)
+6. Architecture & Voice Stack
+
+    Use open-source Kokoro or ESPnet for TTS
+
+    Web Speech API or Whisper fallback for browser voice input
+
+    Local session memory stored per tab
+
+    Permissions gating: voice must be re-enabled per session unless persisted
+
+    All interactions should be logged (locally) for debugging but never stored unless user opts in
+
+7. Future Phases (Post-MVP)
+Feature	Phase
+🟢 Threadkeeper integration	v1.1
+🟢 Goal tracking & prompting	v1.2
+🟢 Assistant Suggestions ("Want help organizing that?")	v1.2
+🟡 Voice-only input mode	v1.3
+🟡 Long-term memory	v1.4
+🟡 Coach Templates	v1.5
+🟡 LLM tone-tuning	v1.5+
+8. Constraints
+
+    Must respect all accessibility rules: keyboard accessible, color contrast, readable fonts
+
+    Must not require voice; always provide text fallback
+
+    Cannot speak or persist without explicit opt-in
+
+    Sara does not suggest data be sent to train the system unless prompted by the user
 
 ## ✨ What's New - AutoModel Integration
 
