@@ -2,7 +2,7 @@
 
 // This is a test comment for Kimi-Dev review
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,14 +22,21 @@ import {
 
 export default function HomePage() {
   const [dragActive, setDragActive] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Screen reader announcement text
+  const [announcement, setAnnouncement] = useState('')
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    
     if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true)
+      setAnnouncement('File drop zone is now active. Release to upload.')
     } else if (e.type === "dragleave") {
       setDragActive(false)
+      setAnnouncement('File drop zone is inactive.')
     }
   }
 
@@ -41,8 +48,31 @@ export default function HomePage() {
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       // Handle file upload
       console.log('File dropped:', e.dataTransfer.files[0])
+      handleFiles(e.dataTransfer.files)
     }
   }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      // Handle file upload
+      console.log('Files selected:', e.target.files)
+      handleFiles(e.target.files)
+    }
+  }
+
+  const handleFiles = (files: FileList) => {
+    // Process the files (this would connect to your actual file processing logic)
+    setAnnouncement(`${files.length} file${files.length !== 1 ? 's' : ''} selected for upload.`)
+    // Additional file processing logic would go here
+  }
+
+  const triggerFileInput = () => {
+    // Programmatically click the hidden file input
+    fileInputRef.current?.click()
+  }
+
+  // Utility class for visually hidden elements (screen reader only)
+  const srOnly = "absolute w-px h-px p-0 -m-1 overflow-hidden clip-rect-0 whitespace-nowrap border-0"
 
   const features = [
     {
@@ -82,7 +112,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-chatchonk-pink-500 to-chatchonk-pink-600 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-white" />
+                <Sparkles className="h-5 w-5 text-white" aria-hidden="true" />
               </div>
               <h1 className="text-2xl font-bold text-chatchonk-neutral-900">ChatChonk</h1>
             </div>
@@ -91,7 +121,7 @@ export default function HomePage() {
                 href="/admin" 
                 className="text-sm text-chatchonk-neutral-600 hover:text-chatchonk-pink-600 transition-colors"
               >
-                <Settings className="h-4 w-4 inline mr-1" />
+                <Settings className="h-4 w-4 inline mr-1" aria-hidden="true" />
                 Admin
               </Link>
               <Button variant="outline">Sign In</Button>
@@ -119,43 +149,67 @@ export default function HomePage() {
           {/* Upload Area */}
           <Card className="max-w-2xl mx-auto mb-8">
             <CardContent className="p-8">
-              <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  dragActive 
-                    ? 'border-chatchonk-pink-500 bg-chatchonk-pink-50' 
-                    : 'border-chatchonk-neutral-300 hover:border-chatchonk-pink-400'
-                }`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-              >
-                <Upload className="h-12 w-12 text-chatchonk-pink-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-chatchonk-neutral-900 mb-2">
-                  Drop your chat exports here
-                </h3>
-                <p className="text-chatchonk-neutral-600 mb-4">
-                  Support for ZIP files up to 2GB from ChatGPT, Claude, Gemini & more
-                </p>
-                <Button size="lg" className="bg-chatchonk-pink-600 hover:bg-chatchonk-pink-700">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Choose Files
-                </Button>
+              {/* Hidden file input */}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileSelect} 
+                className={srOnly} 
+                id="file-upload" 
+                multiple 
+                accept=".zip,.json,.txt,.csv" 
+              />
+              
+              {/* Wrap the drop zone in a label */}
+              <label htmlFor="file-upload">
+                <div
+                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                    dragActive 
+                      ? 'border-chatchonk-pink-500 bg-chatchonk-pink-50' 
+                      : 'border-chatchonk-neutral-300 hover:border-chatchonk-pink-400'
+                  }`}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  <Upload className="h-12 w-12 text-chatchonk-pink-500 mx-auto mb-4" aria-hidden="true" />
+                  <h3 className="text-lg font-semibold text-chatchonk-neutral-900 mb-2">
+                    Drop your chat exports here
+                  </h3>
+                  <p className="text-chatchonk-neutral-600 mb-4">
+                    Support for ZIP files up to 2GB from ChatGPT, Claude, Gemini & more
+                  </p>
+                  <Button 
+                    size="lg" 
+                    className="bg-chatchonk-pink-600 hover:bg-chatchonk-pink-700" 
+                    onClick={triggerFileInput}
+                    type="button"
+                  >
+                    <Upload className="h-4 w-4 mr-2" aria-hidden="true" />
+                    Choose Files
+                  </Button>
+                </div>
+              </label>
+              
+              {/* ARIA live region for announcements */}
+              <div className={srOnly} aria-live="polite">
+                {announcement}
               </div>
             </CardContent>
           </Card>
 
           <div className="flex items-center justify-center space-x-6 text-sm text-chatchonk-neutral-500">
             <div className="flex items-center">
-              <Shield className="h-4 w-4 mr-1" />
+              <Shield className="h-4 w-4 mr-1" aria-hidden="true" />
               Privacy-first
             </div>
             <div className="flex items-center">
-              <Zap className="h-4 w-4 mr-1" />
+              <Zap className="h-4 w-4 mr-1" aria-hidden="true" />
               Fast processing
             </div>
             <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 mr-1" />
+              <CheckCircle className="h-4 w-4 mr-1" aria-hidden="true" />
               No signup required
             </div>
           </div>
@@ -179,7 +233,7 @@ export default function HomePage() {
               <Card key={feature.title} className="text-center hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-chatchonk-pink-100 flex items-center justify-center mx-auto mb-4">
-                    <feature.icon className="h-6 w-6 text-chatchonk-pink-600" />
+                    <feature.icon className="h-6 w-6 text-chatchonk-pink-600" aria-hidden="true" />
                   </div>
                   <CardTitle className="text-lg">{feature.title}</CardTitle>
                 </CardHeader>
@@ -225,7 +279,7 @@ export default function HomePage() {
                   </CardDescription>
                   <Button variant="outline" size="sm">
                     Preview Template
-                    <ArrowRight className="h-3 w-3 ml-1" />
+                    <ArrowRight className="h-3 w-3 ml-1" aria-hidden="true" />
                   </Button>
                 </CardContent>
               </Card>
@@ -240,7 +294,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="h-6 w-6 rounded bg-chatchonk-pink-600 flex items-center justify-center">
-                <Sparkles className="h-4 w-4 text-white" />
+                <Sparkles className="h-4 w-4 text-white" aria-hidden="true" />
               </div>
               <span className="font-semibold">ChatChonk</span>
             </div>

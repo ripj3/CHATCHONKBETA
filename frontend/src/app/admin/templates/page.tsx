@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -22,6 +22,10 @@ import {
   Eye,
   TrendingUp
 } from 'lucide-react'
+
+// Visually-hidden helper class
+const srOnly =
+  'absolute w-px h-px p-0 -m-1 overflow-hidden clip-rect-0 whitespace-nowrap border-0'
 
 // Mock template data - replace with real API calls
 const templates = [
@@ -108,6 +112,7 @@ const getCategoryColor = (category: string) => {
 export default function TemplatesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
+  const [announcement, setAnnouncement] = useState('')
 
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -121,6 +126,11 @@ export default function TemplatesPage() {
   const totalUsage = templates.reduce((sum, t) => sum + t.usageCount, 0)
   const categories = Array.from(new Set(templates.map(t => t.category)))
 
+  // Announce result count when filter changes
+  useEffect(() => {
+    setAnnouncement(`Showing ${filteredTemplates.length} templates.`)
+  }, [filteredTemplates])
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -130,7 +140,7 @@ export default function TemplatesPage() {
           <p className="text-gray-600">Manage ChatChonk processing templates</p>
         </div>
         <Button>
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
           Create Template
         </Button>
       </div>
@@ -140,7 +150,7 @@ export default function TemplatesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Templates</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalTemplates}</div>
@@ -153,7 +163,7 @@ export default function TemplatesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Usage</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalUsage.toLocaleString()}</div>
@@ -166,7 +176,7 @@ export default function TemplatesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Categories</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{categories.length}</div>
@@ -188,8 +198,13 @@ export default function TemplatesPage() {
         <CardContent>
           <div className="flex items-center space-x-4 mb-6">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" aria-hidden="true" />
+              {/* Hidden label for search */}
+              <label htmlFor="search-templates" className={srOnly}>
+                Search templates
+              </label>
               <input
+                id="search-templates"
                 type="text"
                 placeholder="Search templates..."
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-chatchonk-pink-500 focus:border-transparent"
@@ -197,7 +212,12 @@ export default function TemplatesPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            {/* Hidden label for category filter */}
+            <label htmlFor="category-filter" className={srOnly}>
+              Filter templates by category
+            </label>
             <select
+              id="category-filter"
               className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-chatchonk-pink-500 focus:border-transparent"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
@@ -264,17 +284,17 @@ export default function TemplatesPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="icon">
-                        <Eye className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" aria-label="Preview template">
+                        <Eye className="h-4 w-4" aria-hidden="true" />
                       </Button>
-                      <Button variant="ghost" size="icon">
-                        <Edit className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" aria-label="Edit template">
+                        <Edit className="h-4 w-4" aria-hidden="true" />
                       </Button>
-                      <Button variant="ghost" size="icon">
-                        <Download className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" aria-label="Download template">
+                        <Download className="h-4 w-4" aria-hidden="true" />
                       </Button>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" aria-label="Delete template">
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </div>
                   </TableCell>
@@ -284,6 +304,11 @@ export default function TemplatesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Live region for table updates */}
+      <div className={srOnly} aria-live="assertive">
+        {announcement}
+      </div>
     </div>
   )
 }

@@ -35,6 +35,9 @@ import {
   Cell
 } from 'recharts'
 
+// Utility class for screen-reader-only content
+const srOnly = "absolute w-px h-px p-0 -m-1 overflow-hidden clip-rect-0 whitespace-nowrap border-0"
+
 // Define a type for the metrics data
 interface BackendMetrics {
   total_requests: number;
@@ -124,6 +127,7 @@ export default function AnalyticsPage() {
   const [backendMetrics, setBackendMetrics] = useState<BackendMetrics | null>(null);
   const [loadingMetrics, setLoadingMetrics] = useState(true);
   const [metricsError, setMetricsError] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -135,9 +139,11 @@ export default function AnalyticsPage() {
         }
         const data: BackendMetrics = await response.json();
         setBackendMetrics(data);
+        setAnnouncement('Backend metrics loaded.');
       } catch (error) {
         console.error("Failed to fetch backend metrics:", error);
         setMetricsError("Failed to load backend metrics.");
+        setAnnouncement('Failed to load backend metrics.');
       } finally {
         setLoadingMetrics(false);
       }
@@ -184,9 +190,7 @@ export default function AnalyticsPage() {
       icon: Clock,
       period: 'since last restart'
     }
-  ] // Semicolon removed here
-
-  // Ensure this line is blank or removed if it was just whitespace
+  ]
 
   return (
     <div className="space-y-6">
@@ -198,11 +202,11 @@ export default function AnalyticsPage() {
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline">
-            <Calendar className="h-4 w-4 mr-2" />
+            <Calendar className="h-4 w-4 mr-2" aria-hidden="true" />
             Last 30 Days
           </Button>
           <Button>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
             Export Report
           </Button>
         </div>
@@ -230,16 +234,16 @@ export default function AnalyticsPage() {
               <CardTitle className="text-sm font-medium">
                 {kpi.title}
               </CardTitle>
-              <kpi.icon className="h-4 w-4 text-muted-foreground" />
+              <kpi.icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{kpi.value}</div>
               <p className="text-xs text-muted-foreground flex items-center">
                 {kpi.change && (
                   kpi.changeType === 'positive' ? (
-                    <TrendingUp className="h-3 w-3 mr-1 text-green-600" />
+                    <TrendingUp className="h-3 w-3 mr-1 text-green-600" aria-hidden="true" />
                   ) : (
-                    <TrendingDown className="h-3 w-3 mr-1 text-red-600" />
+                    <TrendingDown className="h-3 w-3 mr-1 text-red-600" aria-hidden="true" />
                   )
                 )}
                 {kpi.change && (
@@ -265,30 +269,59 @@ export default function AnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={userGrowthData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="users"
-                  stackId="1"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                  name="Total Users"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="activeUsers"
-                  stackId="2"
-                  stroke="#82ca9d"
-                  fill="#82ca9d"
-                  name="Active Users"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Area chart showing total users, new users, and active users over the last seven months."
+              >
+                <AreaChart data={userGrowthData} isAnimationActive={false}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="users"
+                    stackId="1"
+                    stroke="#8884d8"
+                    fill="#8884d8"
+                    name="Total Users"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="activeUsers"
+                    stackId="2"
+                    stroke="#82ca9d"
+                    fill="#82ca9d"
+                    name="Active Users"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+              {/* Screen-reader fallback table */}
+              <table className={srOnly}>
+                <caption>User Growth Data</caption>
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Total Users</th>
+                    <th>New Users</th>
+                    <th>Active Users</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {userGrowthData.map((d) => (
+                    <tr key={d.month}>
+                      <td>{d.month}</td>
+                      <td>{d.users}</td>
+                      <td>{d.newUsers}</td>
+                      <td>{d.activeUsers}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
 
@@ -301,28 +334,55 @@ export default function AnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={processingVolumeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tickFormatter={(value: string) => new Date(value).toLocaleDateString()} />
-                <YAxis />
-                <Tooltip labelFormatter={(value) => new Date(value).toLocaleDateString()} />
-                <Line
-                  type="monotone"
-                  dataKey="files"
-                  stroke="#8884d8"
-                  strokeWidth={2}
-                  name="Files Uploaded"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="requests"
-                  stroke="#82ca9d"
-                  strokeWidth={2}
-                  name="AI Requests"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Line chart showing daily file uploads and AI processing requests over the last week."
+              >
+                <LineChart data={processingVolumeData} isAnimationActive={false}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tickFormatter={(value: string) => new Date(value).toLocaleDateString()} />
+                  <YAxis />
+                  <Tooltip labelFormatter={(value) => new Date(value).toLocaleDateString()} />
+                  <Line
+                    type="monotone"
+                    dataKey="files"
+                    stroke="#8884d8"
+                    strokeWidth={2}
+                    name="Files Uploaded"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="requests"
+                    stroke="#82ca9d"
+                    strokeWidth={2}
+                    name="AI Requests"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+              {/* Screen-reader fallback table */}
+              <table className={srOnly}>
+                <caption>Processing Volume Data</caption>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Files Uploaded</th>
+                    <th>AI Requests</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {processingVolumeData.map((d) => (
+                    <tr key={d.date}>
+                      <td>{new Date(d.date).toLocaleDateString()}</td>
+                      <td>{d.files}</td>
+                      <td>{d.requests}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -338,25 +398,40 @@ export default function AnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={templateUsageData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="usage"
-                >
-                  {templateUsageData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Pie chart showing distribution of template usage this month."
+              >
+                <PieChart isAnimationActive={false}>
+                  <Pie
+                    data={templateUsageData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="usage"
+                  >
+                    {templateUsageData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Screen-reader fallback list */}
+              <ul className={srOnly}>
+                {templateUsageData.map((d) => (
+                  <li key={d.name}>
+                    {d.name}: {d.usage}% usage
+                  </li>
+                ))}
+              </ul>
+            </div>
           </CardContent>
         </Card>
 
@@ -369,17 +444,44 @@ export default function AnalyticsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
-                <Bar yAxisId="left" dataKey="revenue" fill="#8884d8" name="Revenue ($)" />
-                <Line yAxisId="right" type="monotone" dataKey="subscriptions" stroke="#82ca9d" strokeWidth={2} name="Subscriptions" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Bar chart showing monthly revenue and subscription growth."
+              >
+                <BarChart data={revenueData} isAnimationActive={false}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Bar yAxisId="left" dataKey="revenue" fill="#8884d8" name="Revenue ($)" />
+                  <Line yAxisId="right" type="monotone" dataKey="subscriptions" stroke="#82ca9d" strokeWidth={2} name="Subscriptions" />
+                </BarChart>
+              </ResponsiveContainer>
+              {/* Screen-reader fallback table */}
+              <table className={srOnly}>
+                <caption>Revenue and Subscription Data</caption>
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Revenue ($)</th>
+                    <th>Subscriptions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {revenueData.map((d) => (
+                    <tr key={d.month}>
+                      <td>{d.month}</td>
+                      <td>{d.revenue}</td>
+                      <td>{d.subscriptions}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -433,9 +535,14 @@ export default function AnalyticsPage() {
               <Badge className="bg-green-100 text-green-800">
                 Excellent
               </Badge>
-           </div>
-            </CardContent>
+            </div>
+          </CardContent>
         </Card>
+      </div>
+      
+      {/* Live region for screen reader announcements */}
+      <div className={srOnly} aria-live="assertive">
+        {announcement}
       </div>
     </div>
   );

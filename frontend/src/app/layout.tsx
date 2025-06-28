@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import '@/styles/globals.css' // Assuming this will contain Tailwind directives and brand styles
 // import { ThemeProvider } from '@/context/ThemeContext' // Placeholder for future ThemeProvider
 import { Toaster } from '@/components/ui/sonner'; // Assuming sonner is set up in ui components
+import Coach from '../components/Coach'; // Persistent AI coach component
 
 const inter = Inter({
   subsets: ['latin'],
@@ -127,6 +128,8 @@ export default function RootLayout({
           </main>
           {/* Footer can go here if it's part of every page */}
           <Toaster richColors position="top-right" />
+          {/* Persistent AI Coach */}
+          <Coach userId="demo-user" />
         {/* </ThemeProvider> */}
         </HighlightProvider>
       </body>

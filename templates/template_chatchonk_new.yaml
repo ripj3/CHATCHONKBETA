@@ -1,0 +1,194 @@
+# ChatChonk Template Boilerplate
+# Version: 1.0.0
+# Author: Rip Jonesy
+# Description: This file serves as a boilerplate for creating new templates for ChatChonk.
+#              Copy this file and modify it to create your own custom templates.
+#              Each section is commented to explain its purpose and usage.
+
+# -------------------------------------------------------------------------
+# METADATA SECTION
+# This section contains basic information about your template.
+# -------------------------------------------------------------------------
+metadata:
+  # Human-readable name of the template (appears in UI)
+  name: "Template Name Here"
+  
+  # Unique identifier for the template (no spaces, use hyphens or underscores)
+  id: "template-id-here"
+  
+  # Detailed description of what this template does
+  description: "Describe what this template does and when it should be used. This helps users understand the purpose of the template."
+  
+  # Version number of this template (semantic versioning recommended)
+  version: "1.0.0"
+  
+  # Creator of the template
+  author: "Your Name"
+  
+  # Category for organizing templates (e.g., 'study', 'meeting-notes', 'research', 'creative', 'project-management')
+  category: "template-category"
+  
+  # Tags for filtering and searching templates
+  tags: ["tag1", "tag2", "tag3", "adhd-friendly"]
+
+# -------------------------------------------------------------------------
+# AI PROCESSING SECTION
+# This section guides the AI in processing the conversation.
+# -------------------------------------------------------------------------
+ai_processing:
+  # The system prompt instructs the AI how to analyze and structure the conversation.
+  # Be specific about what information to extract and how to format it.
+  system_prompt: |
+    You are an AI assistant specialized in transforming AI chat conversations into a structured format.
+    Analyze the provided conversation and extract the following information:
+    
+    1. **Main Topic:** Identify the primary subject or theme of the conversation.
+    2. **Key Points:** Extract the most important points discussed, organized by subtopic.
+    3. **Questions:** Identify any questions asked during the conversation.
+    4. **Decisions/Conclusions:** Note any decisions made or conclusions reached.
+    5. **Action Items:** List any tasks or follow-up actions mentioned.
+    
+    Format your response as a structured JSON object with these sections.
+    Focus on extracting the most relevant information and organizing it logically.
+  
+  # Parameters control how the AI generates its response
+  parameters:
+    # Temperature controls randomness (0.0 = deterministic, 1.0 = creative)
+    temperature: 0.5
+    
+    # Maximum tokens the AI should generate in its response
+    max_tokens: 2500
+    
+    # Top_p controls diversity (lower = more focused on likely tokens)
+    top_p: 0.9
+
+# -------------------------------------------------------------------------
+# TEMPLATE SECTION
+# This section defines how the extracted information is formatted.
+# Uses Mustache-style syntax {{variable}} for dynamic content.
+# -------------------------------------------------------------------------
+template:
+  # Frontmatter defines metadata for tools like Obsidian or Notion
+  frontmatter: |
+    ---
+    title: "{{main_topic | default('Untitled Conversation')}}"
+    date: {{date}}
+    source: "{{source | default('ChatChonk')}}"
+    tags: [{{#tags}}{{.}}, {{/tags}}chatchonk]
+    status: {{status | default('Draft')}}
+    chatchonk_template_id: "{{template_id}}"
+    dataview: true
+    ---
+  
+  # Content defines the main body of the document
+  content: |
+    # {{main_topic | default('Untitled Conversation')}}
+    
+    > [!info] About this document
+    > Generated from chat conversation on {{date}}
+    > Template: {{template_name}}
+    
+    ## Key Points
+    
+    {{#key_points}}
+    ### {{subtitle}}
+    
+    {{#points}}
+    - {{.}}
+    {{/points}}
+    
+    {{/key_points}}
+    
+    ## Questions
+    
+    {{#questions}}
+    - **Q:** {{question}}
+      - **A:** {{answer | default('Not answered')}}
+    {{/questions}}
+    
+    ## Decisions & Conclusions
+    
+    {{#decisions}}
+    - {{.}}
+    {{/decisions}}
+    
+    {{^decisions}}
+    *No specific decisions or conclusions were identified.*
+    {{/decisions}}
+    
+    ## Action Items
+    
+    {{#action_items}}
+    - [ ] {{action}} {{#assignee}}(Assigned to: {{.}}){{/assignee}} {{#due_date}}(Due: {{.}}){{/due_date}}
+    {{/action_items}}
+    
+    {{^action_items}}
+    *No action items were identified.*
+    {{/action_items}}
+    
+    ## Raw Conversation Summary
+    
+    {{summary}}
+
+# -------------------------------------------------------------------------
+# EXTRACTION RULES SECTION (OPTIONAL)
+# This section provides additional guidance for the AI on how to extract specific information.
+# -------------------------------------------------------------------------
+extraction_rules:
+  # Rules for extracting the main topic
+  main_topic_extraction:
+    prompt: "What is the primary subject or main topic discussed in this conversation? Respond with the topic only."
+    
+  # Rules for extracting key points
+  key_points_extraction:
+    prompt: "Identify the main subtopics discussed and list the key points for each."
+    patterns:
+      - "The key point is..."
+      - "Important to note that..."
+      - "A critical aspect is..."
+  
+  # Rules for extracting questions
+  questions_extraction:
+    prompt: "List all questions asked in the conversation along with their answers if provided."
+    patterns:
+      - "?"
+      - "Can you explain"
+      - "How does"
+      - "What is"
+  
+  # Rules for extracting action items
+  action_items_extraction:
+    prompt: "Identify any tasks, to-dos, or follow-up actions mentioned in the conversation."
+    patterns:
+      - "I need to"
+      - "We should"
+      - "TODO:"
+      - "Don't forget to"
+      - "Remember to"
+
+# -------------------------------------------------------------------------
+# NOTES ON TOOL REPRESENTATION (OPTIONAL)
+# This section provides guidance on how the template should be displayed in different tools.
+# -------------------------------------------------------------------------
+notes_on_tool_representation:
+  # Notes for Obsidian representation
+  obsidian: |
+    - This template uses YAML frontmatter for Dataview compatibility.
+    - Callouts (> [!info]) enhance readability and visual distinction.
+    - Checkboxes for action items are supported by Obsidian's task tracking.
+    - Consider using the Kanban plugin for action items if preferred.
+    - Tags in frontmatter will appear in Obsidian's tag pane.
+  
+  # Notes for Notion representation
+  notion: |
+    - The frontmatter can be converted to Notion properties.
+    - Each heading can be a toggle block in Notion for collapsible sections.
+    - Action items can use Notion's checkbox property.
+    - Consider using Notion databases to track action items across multiple notes.
+    - The info callout can be represented as a Notion callout block.
+  
+  # Notes for other tools
+  other_tools: |
+    - For plain Markdown: Remove the frontmatter and callout syntax.
+    - For HTML export: Consider adding CSS classes for styling different sections.
+    - For PDF export: Ensure headings have sufficient spacing for readability.

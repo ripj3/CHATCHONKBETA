@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +25,10 @@ import {
 } from 'lucide-react'
 
 // Mock file data - replace with real API calls
+// Utility class for visually-hidden content
+const srOnly =
+  'absolute w-px h-px p-0 -m-1 overflow-hidden clip-rect-0 whitespace-nowrap border-0'
+
 const files = [
   {
     id: 1,
@@ -85,19 +89,20 @@ const formatDate = (dateString: string) => {
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'completed':
-      return <CheckCircle className="h-4 w-4 text-green-500" />
+      return <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
     case 'processing':
-      return <Clock className="h-4 w-4 text-yellow-500" />
+      return <Clock className="h-4 w-4 text-yellow-500" aria-hidden="true" />
     case 'failed':
-      return <AlertCircle className="h-4 w-4 text-red-500" />
+      return <AlertCircle className="h-4 w-4 text-red-500" aria-hidden="true" />
     default:
-      return <FileText className="h-4 w-4 text-gray-500" />
+      return <FileText className="h-4 w-4 text-gray-500" aria-hidden="true" />
   }
 }
 
 export default function FilesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [announcement, setAnnouncement] = useState('')
 
   const filteredFiles = files.filter(file => {
     const matchesSearch = file.filename.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -111,6 +116,11 @@ export default function FilesPage() {
   const processingFiles = files.filter(f => f.status === 'processing').length
   const failedFiles = files.filter(f => f.status === 'failed').length
 
+  // announce table result count changes
+  useEffect(() => {
+    setAnnouncement(`Showing ${filteredFiles.length} files.`)
+  }, [filteredFiles])
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -120,7 +130,7 @@ export default function FilesPage() {
           <p className="text-gray-600">Monitor file uploads and processing status</p>
         </div>
         <Button>
-          <Upload className="h-4 w-4 mr-2" />
+          <Upload className="h-4 w-4 mr-2" aria-hidden="true" />
           Upload File
         </Button>
       </div>
@@ -130,7 +140,7 @@ export default function FilesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Files</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalFiles}</div>
@@ -143,7 +153,7 @@ export default function FilesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-500" />
+            <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{completedFiles}</div>
@@ -156,7 +166,7 @@ export default function FilesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Processing</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-500" />
+            <Clock className="h-4 w-4 text-yellow-500" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{processingFiles}</div>
@@ -169,7 +179,7 @@ export default function FilesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Failed</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-500" />
+            <AlertCircle className="h-4 w-4 text-red-500" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{failedFiles}</div>
@@ -191,8 +201,13 @@ export default function FilesPage() {
         <CardContent>
           <div className="flex items-center space-x-4 mb-6">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" aria-hidden="true" />
+              {/* Hidden label for search */}
+              <label htmlFor="search-files" className={srOnly}>
+                Search files
+              </label>
               <input
+                id="search-files"
                 type="text"
                 placeholder="Search files..."
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-chatchonk-pink-500 focus:border-transparent"
@@ -200,7 +215,12 @@ export default function FilesPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            {/* Hidden label for status selector */}
+            <label htmlFor="status-filter" className={srOnly}>
+              Filter files by status
+            </label>
             <select
+              id="status-filter"
               className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-chatchonk-pink-500 focus:border-transparent"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -260,8 +280,8 @@ export default function FilesPage() {
                     {file.processedAt ? formatDate(file.processedAt) : '-'}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" aria-label="More actions">
+                      <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -270,6 +290,11 @@ export default function FilesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Live region for table updates */}
+      <div className={srOnly} aria-live="assertive">
+        {announcement}
+      </div>
     </div>
   )
 }

@@ -86,3 +86,12 @@ ephemeral_storage/
 exports/
 storage/
 local_dev_start.ps1
+
+# Backup files
+.env.bak
+*.bak
+
+# Next.js build output
+frontend/.next/
+frontend/out/
+

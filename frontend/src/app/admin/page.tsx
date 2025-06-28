@@ -15,6 +15,9 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 
 // Mock data - replace with real API calls
+// Utility class for screen-reader only content
+const srOnly =
+  'absolute w-px h-px p-0 -m-1 overflow-hidden clip-rect-0 whitespace-nowrap border-0'
 const stats = [
   {
     title: 'Total Users',
@@ -105,7 +108,7 @@ export default function AdminDashboard() {
               <CardTitle className="text-sm font-medium">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <stat.icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
@@ -113,7 +116,7 @@ export default function AdminDashboard() {
                 <span className={`inline-flex items-center ${
                   stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
                 }`}>
-                  <TrendingUp className="h-3 w-3 mr-1" />
+                  <TrendingUp className="h-3 w-3 mr-1" aria-hidden="true" />
                   {stat.change}
                 </span>
                 {' '}from last month
@@ -134,8 +137,14 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={processingData}>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Line chart showing files processed and AI requests over the last seven days."
+              >
+                <LineChart data={processingData} isAnimationActive={false}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -155,7 +164,27 @@ export default function AdminDashboard() {
                   name="AI Requests"
                 />
               </LineChart>
-            </ResponsiveContainer>
+              </ResponsiveContainer>
+              {/* Screen-reader fallback table */}
+              <table className={srOnly}>
+                <thead>
+                  <tr>
+                    <th>Day</th>
+                    <th>Files</th>
+                    <th>AI Requests</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {processingData.map((d) => (
+                    <tr key={d.name}>
+                      <td>{d.name}</td>
+                      <td>{d.files}</td>
+                      <td>{d.requests}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
 
@@ -168,8 +197,14 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Pie chart showing distribution of AI model usage this month."
+              >
+                <PieChart isAnimationActive={false}>
                 <Pie
                   data={modelUsageData}
                   cx="50%"
@@ -185,8 +220,17 @@ export default function AdminDashboard() {
                   ))}
                 </Pie>
                 <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Screen-reader fallback list */}
+              <ul className={srOnly}>
+                {modelUsageData.map((d) => (
+                  <li key={d.name}>
+                    {d.name}: {d.value}%
+                  </li>
+                ))}
+              </ul>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -205,11 +249,11 @@ export default function AdminDashboard() {
               <div key={activity.id} className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   {activity.status === 'completed' ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-green-500" aria-hidden="true" />
                   ) : activity.status === 'processing' ? (
-                    <Clock className="h-5 w-5 text-yellow-500" />
+                    <Clock className="h-5 w-5 text-yellow-500" aria-hidden="true" />
                   ) : (
-                    <AlertCircle className="h-5 w-5 text-red-500" />
+                    <AlertCircle className="h-5 w-5 text-red-500" aria-hidden="true" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

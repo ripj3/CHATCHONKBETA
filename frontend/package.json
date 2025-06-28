@@ -37,6 +37,7 @@
     "clsx": "^2.1.0",
     "date-fns": "^3.6.0",
     "framer-motion": "^12.18.1",
+    "focus-trap-react": "^10.2.3",
     "jotai": "^2.8.0",
     "lodash": "^4.17.21",
     "lowlight": "^3.3.0",
