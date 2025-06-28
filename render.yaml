@@ -18,7 +18,7 @@ services:
  - type: web
    name: chatchonk-api
    runtime: docker
-   dockerfilePath: backend/Dockerfile
+   dockerfilePath: ./Dockerfile
    plan: starter
    disks:
      - name: chatchonk-data
@@ -50,3 +50,10 @@ services:
       value: "/api"
     - key: PROJECT_NAME
       value: "ChatChonk"
+    # --- AI Coach (Sara) Streaming TTS Service ---
+    - key: KOKORO_TTS_BASE_URL
+      value: "http://kokoro-tts-service:8880"   # TODO: replace with actual Render service URL
+
+    # --- Frontend Base URL (for CORS, redirects, etc.) ---
+    - key: FRONTEND_URL
+      value: "https://chatchonkbeta.onrender.com"

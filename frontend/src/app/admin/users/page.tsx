@@ -22,6 +22,10 @@ import {
   Activity
 } from 'lucide-react'
 
+// Utility class for screen-reader-only elements
+const srOnly =
+  'absolute w-px h-px p-0 -m-1 overflow-hidden clip-rect-0 whitespace-nowrap border-0'
+
 // Mock user data - replace with real API calls
 const users = [
   {
@@ -87,6 +91,7 @@ const formatDateTime = (dateString: string) => {
 export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [announcement, setAnnouncement] = useState('')
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,6 +104,11 @@ export default function UsersPage() {
   const activeUsers = users.filter(u => u.status === 'active').length
   const proUsers = users.filter(u => u.plan === 'pro' || u.plan === 'enterprise').length
 
+  // Announce result count when filter changes
+  React.useEffect(() => {
+    setAnnouncement(`Showing ${filteredUsers.length} users.`)
+  }, [filteredUsers])
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -108,7 +118,7 @@ export default function UsersPage() {
           <p className="text-gray-600">Manage and monitor ChatChonk users</p>
         </div>
         <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
+          <UserPlus className="h-4 w-4 mr-2" aria-hidden="true" />
           Add User
         </Button>
       </div>
@@ -118,7 +128,7 @@ export default function UsersPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Activity className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalUsers}</div>
@@ -131,7 +141,7 @@ export default function UsersPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Activity className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeUsers}</div>
@@ -144,7 +154,7 @@ export default function UsersPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Premium Users</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Activity className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{proUsers}</div>
@@ -166,8 +176,16 @@ export default function UsersPage() {
         <CardContent>
           <div className="flex items-center space-x-4 mb-6">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
+                aria-hidden="true"
+              />
+              {/* Hidden label for search */}
+              <label htmlFor="search-users" className={srOnly}>
+                Search users
+              </label>
               <input
+                id="search-users"
                 type="text"
                 placeholder="Search users..."
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-chatchonk-pink-500 focus:border-transparent"
@@ -175,7 +193,12 @@ export default function UsersPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            {/* Hidden label for status filter */}
+            <label htmlFor="status-filter" className={srOnly}>
+              Filter users by status
+            </label>
             <select
+              id="status-filter"
               className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-chatchonk-pink-500 focus:border-transparent"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -204,7 +227,7 @@ export default function UsersPage() {
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex items-center space-x-3">
-                      <div className="h-8 w-8 rounded-full bg-chatchonk-pink-500 flex items-center justify-center">
+                      <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                         <span className="text-white text-sm font-medium">
                           {user.name.charAt(0)}
                         </span>
@@ -246,6 +269,11 @@ export default function UsersPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Live region for announcements */}
+      <div className={srOnly} aria-live="assertive">
+        {announcement}
+      </div>
     </div>
   )
 }

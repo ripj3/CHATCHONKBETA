@@ -35,6 +35,9 @@ import {
 } from 'recharts'
 
 // Mock data - replace with real API calls
+// Utility class for screen-reader-only content
+const srOnly =
+  'absolute w-px h-px p-0 -m-1 overflow-hidden clip-rect-0 whitespace-nowrap border-0'
 const modelStats = [
   {
     title: 'Total Requests',
@@ -129,13 +132,16 @@ export default function ModelsPage() {
               <CardTitle className="text-sm font-medium">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <stat.icon
+                className="h-4 w-4 text-muted-foreground"
+                aria-hidden="true"
+              />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
               <p className="text-xs text-muted-foreground">
                 <span className="inline-flex items-center text-green-600">
-                  <TrendingUp className="h-3 w-3 mr-1" />
+                  <TrendingUp className="h-3 w-3 mr-1" aria-hidden="true" />
                   {stat.change}
                 </span>
                 {' '}from last hour
@@ -156,8 +162,14 @@ export default function ModelsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={performanceData}>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Line chart showing AI request volume and average response time over the last 24 hours."
+              >
+                <LineChart data={performanceData} isAnimationActive={false}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="time" />
                 <YAxis yAxisId="left" />
@@ -174,6 +186,26 @@ export default function ModelsPage() {
                 />
               </LineChart>
             </ResponsiveContainer>
+              {/* Screen-reader fallback table */}
+              <table className={srOnly}>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Requests</th>
+                    <th>Response Time (s)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {performanceData.map((d) => (
+                    <tr key={d.time}>
+                      <td>{d.time}</td>
+                      <td>{d.requests}</td>
+                      <td>{d.responseTime}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
 
@@ -186,8 +218,14 @@ export default function ModelsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
+            <div tabIndex={0}>
+              <ResponsiveContainer
+                width="100%"
+                height={300}
+                role="img"
+                aria-label="Pie chart showing distribution of AI tasks processed today."
+              >
+                <PieChart isAnimationActive={false}>
                 <Pie
                   data={taskDistribution}
                   cx="50%"
@@ -203,8 +241,17 @@ export default function ModelsPage() {
                   ))}
                 </Pie>
                 <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Screen-reader fallback list */}
+              <ul className={srOnly}>
+                {taskDistribution.map((t) => (
+                  <li key={t.name}>
+                    {t.name}: {t.value}%
+                  </li>
+                ))}
+              </ul>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -233,7 +280,10 @@ export default function ModelsPage() {
                 <TableRow key={model.name}>
                   <TableCell>
                     <div className="flex items-center space-x-3">
-                      <Brain className="h-5 w-5 text-chatchonk-pink-500" />
+                      <Brain
+                        className="h-5 w-5 text-chatchonk-pink-500"
+                        aria-hidden="true"
+                      />
                       <div className="font-medium text-gray-900">{model.name}</div>
                     </div>
                   </TableCell>
@@ -242,9 +292,15 @@ export default function ModelsPage() {
                     <div className="flex items-center space-x-2">
                       <span>{model.successRate}%</span>
                       {model.successRate > 97 ? (
-                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <CheckCircle
+                          className="h-4 w-4 text-green-500"
+                          aria-hidden="true"
+                        />
                       ) : (
-                        <AlertCircle className="h-4 w-4 text-yellow-500" />
+                        <AlertCircle
+                          className="h-4 w-4 text-yellow-500"
+                          aria-hidden="true"
+                        />
                       )}
                     </div>
                   </TableCell>
@@ -277,9 +333,15 @@ export default function ModelsPage() {
               <div key={error.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                 <div className="flex-shrink-0">
                   {error.severity === 'error' ? (
-                    <AlertCircle className="h-5 w-5 text-red-500" />
+                    <AlertCircle
+                      className="h-5 w-5 text-red-500"
+                      aria-hidden="true"
+                    />
                   ) : (
-                    <AlertCircle className="h-5 w-5 text-yellow-500" />
+                    <AlertCircle
+                      className="h-5 w-5 text-yellow-500"
+                      aria-hidden="true"
+                    />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

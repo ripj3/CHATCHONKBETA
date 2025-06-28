@@ -35,14 +35,14 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
+      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
         <div className="flex h-16 items-center justify-center border-b border-gray-200">
           <h1 className="text-xl font-bold text-chatchonk-pink-600">
             ChatChonk Admin
           </h1>
         </div>
         
-        <nav className="mt-8 px-4">
+        <nav className="mt-8 px-4" aria-label="Main Navigation">
           <ul className="space-y-2">
             {navigation.map((item) => (
               <li key={item.name}>
@@ -50,17 +50,17 @@ export default function AdminLayout({
                   href={item.href}
                   className="flex items-center rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-chatchonk-pink-50 hover:text-chatchonk-pink-700 transition-colors"
                 >
-                  <item.icon className="mr-3 h-5 w-5" />
+                  <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
                   {item.name}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
-      </div>
+      </aside>
 
       {/* Main content */}
-      <div className="pl-64">
+      <main className="pl-64">
         {/* Top header */}
         <header className="bg-white shadow-sm border-b border-gray-200">
           <div className="px-6 py-4">
@@ -84,7 +84,7 @@ export default function AdminLayout({
         <main className="p-6">
           {children}
         </main>
-      </div>
+      </main>
     </div>
   )
 }
