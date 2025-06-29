@@ -1,88 +1,46 @@
-# Node.js
-node_modules/
-.pnp/
-.pnp.js
-
-/BACKUP
-
-# Python
-__pycache__/
-*.pyc
-*.pyd
-*.pyo
-.Python/
-venv/
-.venv/
-env/
-.env
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.hypothesis/
-.pytest_cache/
-
-# Editor/IDE
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-*.swp
-*~
+# ─── General ────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
-
-# Logs and temporary files
+.idea/
+.vscode/
 *.log
 *.tmp
-tmp/
-temp/
 
-# Build artifacts
-build/
-dist/
+# ─── Node / PNPM / Next.js ─────────────────────────────────────
+node_modules/
+.pnpm-store/
+*.tgz
+.next/
 out/
+coverage/
+.nyc_output/
 
-# Uploads directory
-uploads/
+# ─── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+env/
+venv/
 
-# Render.yaml specific
-.render/
+# ─── Virtual environments (generic) ────────────────────────────
+*/.env/
+*/.venv/
 
-# KIMI
-/kimireviews
+# ─── OS generated files ────────────────────────────────────────
+ehthumbs.db
+Icon?
+Desktop.ini
 
+# ─── Editor / Tooling artefacts ────────────────────────────────
+*.swp
+*.swo
+*.swn
+*.bak
 
-# Other
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-# Ignore Next.js SWC binaries
-frontend/next-swc.*.node
-frontend/libvips-*.dll
-.env.bak
-
-# Factory Items
-Factory+Bridge-0.1.21+Setup.exe
-
-# OLD files
-OLDREADME.md
-
-# Docs
-/docs/dev/*.md
-
-# Added by security review
-.roo/mcp.json
-fix_rls_policies.sql
-
-# New additions based on review
-frontend_build/
-ephemeral_storage/
-exports/
-storage/
-local_dev_start.ps1
+# ─── Project-specific ignores ──────────────────────────────────
+# Backup of old vulnerable requirements file
+*.vulnerable.txt

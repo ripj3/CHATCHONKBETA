@@ -87,7 +87,13 @@
     "typescript": "^5.4.5"
   },
   "overrides": {
-    "highlight.js": "11.9.0"
+    "highlight.js": "11.9.0",
+    "prismjs": "1.30.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "prismjs": "1.30.0"
+    }
   },
   "engines": {
     "node": ">=18.17.0"
