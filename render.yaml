@@ -18,13 +18,24 @@ services:
  - type: web
    name: chatchonk-api
    runtime: docker
-   dockerfilePath: backend/Dockerfile
+   dockerfilePath: Dockerfile          # Moved Dockerfile to project root
    plan: starter
+   # ----- Runtime resource limits ---------------------------------
+   limits:
+     cpu: 1                            # 1 vCPU
+     memoryMB: 1024                    # 1 GiB RAM
+   # ----------------------------------------------------------------
    disks:
      - name: chatchonk-data
        mountPath: /app/data
        sizeGB: 10
    healthCheckPath: /api/health
+   healthCheckTimeoutSeconds: 5        # fail if health endpoint >5 s
+   # Startup / readiness probe – delay traffic until healthy
+   readinessCheckPath: /api/health
+   readinessCheckTimeoutSeconds: 10
+   readinessCheckIntervalSeconds: 5
+
    envVars:
     - key: PORT
       value: "10000"

@@ -16,7 +16,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, SecretStr
+from pydantic import BaseModel, Field, SecretStr, HttpUrl, constr, validator
 
 
 # === User Tier Enums ===
@@ -45,6 +45,15 @@ class SecurityLevel(str, Enum):
     SYSTEM = "system"  # System-managed keys
     USER = "user"  # User-provided keys
     RESTRICTED = "restricted"  # Limited access
+
+# === Supported Provider Types ===
+# Keeping the list lean; extend as needed.
+class SupportedProviderType(str, Enum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    DEEPSEEK = "deepseek"
+    QWEN = "qwen"
+    MISTRAL = "mistral"
 
 
 # === Database Models (matching existing MSWAP schema) ===
@@ -440,3 +449,59 @@ class UsageStatsResponse(BaseModel):
     performance_summary: Dict[str, Any] = Field(
         default_factory=dict, description="Performance summary"
     )
+
+
+# -----------------------------------------------------------
+# New – Validated Provider-Config request payloads (used by API)
+# -----------------------------------------------------------
+_NameStr = constr(min_length=3, max_length=50)
+# 20+ url-safe chars (basic sanity check – adjust if stricter format desired)
+_ApiKeyStr = constr(regex=r"^[A-Za-z0-9_\-]{20,}$")
+
+
+class CreateProviderConfigRequest(BaseModel):
+    """Validated payload for creating a user provider configuration."""
+
+    name: _NameStr = Field(..., description="Human-readable provider name")
+    provider_type: SupportedProviderType = Field(..., description="Provider type")
+    api_key: SecretStr = Field(..., description="API key for the provider")
+    base_url: Optional[HttpUrl] = Field(
+        None, description="Custom API endpoint URL"
+    )
+    organization_id: Optional[str] = Field(None, description="Organization ID")
+    regions: List[str] = Field(default_factory=list, description="Supported regions")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional metadata"
+    )
+
+    # Extra defensive validation for api_key pattern
+    @validator("api_key")
+    def _validate_api_key(cls, v: SecretStr) -> SecretStr:  # noqa: N805
+        if not _ApiKeyStr.regex.match(v.get_secret_value()):
+            raise ValueError("api_key appears to be in an invalid format")
+        return v
+
+
+class UpdateProviderConfigRequest(BaseModel):
+    """Validated payload for updating an existing provider configuration."""
+
+    name: Optional[_NameStr] = Field(
+        None, description="Human-readable provider name"
+    )
+    api_key: Optional[SecretStr] = Field(None, description="API key for the provider")
+    base_url: Optional[HttpUrl] = Field(
+        None, description="Custom API endpoint URL"
+    )
+    organization_id: Optional[str] = Field(None, description="Organization ID")
+    enabled: Optional[bool] = Field(None, description="Whether the provider is enabled")
+    priority: Optional[int] = Field(None, description="Provider priority")
+    regions: Optional[List[str]] = Field(None, description="Supported regions")
+    metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
+
+    @validator("api_key")
+    def _validate_api_key_optional(cls, v: Optional[SecretStr]) -> Optional[SecretStr]:  # noqa: N805
+        if v is None:
+            return v
+        if not _ApiKeyStr.regex.match(v.get_secret_value()):
+            raise ValueError("api_key appears to be in an invalid format")
+        return v

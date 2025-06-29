@@ -16,9 +16,10 @@ Author: Rip Jonesy
 import logging
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from pydantic import BaseModel, ValidationError
+from app.core.security import get_current_user
+from app.core.rate_limiter import rate_limiter
 
 from app.models.mswap_models import (
     UserProviderConfig,
@@ -36,30 +37,7 @@ logger = logging.getLogger("chatchonk.api.modelswapper")
 
 # Initialize router and dependencies
 router = APIRouter(prefix="/modelswapper", tags=["ModelSwapper"])
-security = HTTPBearer()
 modelswapper_service = ModelSwapperService()
-
-
-# === Authentication & Authorization ===
-async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> Dict[str, Any]:
-    """
-    Extract user information from JWT token.
-
-    TODO: Implement proper JWT validation with Supabase
-    For now, returns mock user data.
-    """
-    # TODO: Validate JWT token with Supabase
-    # TODO: Extract user_id, tier, and other claims
-
-    # Mock user data for development
-    return {
-        "user_id": "mock-user-123",
-        "email": "user@example.com",
-        "tier": UserTier.BIGCHONK,
-        "is_active": True,
-    }
 
 
 async def require_tier(min_tier: UserTier):
@@ -86,6 +64,27 @@ async def require_tier(min_tier: UserTier):
         return user
 
     return _check_tier
+
+
+async def apply_rate_limit(request: Request, user: Dict[str, Any] = Depends(get_current_user)):
+    """Apply rate limiting based on user tier."""
+    user_id = user["user_id"]
+    user_tier = UserTier(user.get("tier", UserTier.FREE))
+    
+    # Define rate limits based on user tier
+    tier_limits = {
+        UserTier.FREE: {"limit": 50, "window": 60},  # 50 requests per minute
+        UserTier.LILBEAN: {"limit": 100, "window": 60},  # 100 requests per minute
+        UserTier.CLAWBACK: {"limit": 200, "window": 60},  # 200 requests per minute
+        UserTier.BIGCHONK: {"limit": 500, "window": 60},  # 500 requests per minute
+        UserTier.MEOWTRIX: {"limit": 1000, "window": 60},  # 1000 requests per minute
+    }
+    
+    limits = tier_limits.get(user_tier, tier_limits[UserTier.FREE])
+    
+    # Apply rate limiting
+    await rate_limiter(request, user_id, limits["limit"], limits["window"])
+    return user
 
 
 # === Response Models ===
@@ -122,14 +121,15 @@ async def health_check():
         logger.error(f"Health check failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="ModelSwapper service is unhealthy",
+            detail="ModelSwapper service is unhealthy: " + str(e),
         )
 
 
 # === Model Selection Endpoints ===
 @router.post("/select-model", response_model=ModelSelectionResponse)
 async def select_model(
-    request: ModelSelectionRequest, user: Dict[str, Any] = Depends(get_current_user)
+    request: ModelSelectionRequest, 
+    user: Dict[str, Any] = Depends(apply_rate_limit)
 ):
     """
     Select the best AI model for a given task.
@@ -154,12 +154,25 @@ async def select_model(
         return response
 
     except ValueError as e:
+        logger.warning(f"Invalid request parameters: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except ValidationError as e:
+        logger.warning(f"Request validation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Invalid request data: {str(e)}"
+        )
+    except ConnectionError as e:
+        logger.error(f"Connection error during model selection: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Service temporarily unavailable. Please try again later."
+        )
     except Exception as e:
-        logger.error(f"Model selection failed: {e}")
+        logger.error(f"Model selection failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to select model",
+            detail="Failed to select model: An unexpected error occurred"
         )
 
 
@@ -168,17 +181,29 @@ async def select_model(
     "/provider-configs", response_model=List[UserProviderConfig]
 )  # Changed to UserProviderConfig
 async def get_provider_configs(
+    request: Request,
     user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK)),
 ):
     """Get user's provider configurations (Clawback tier and above)."""
     try:
+        # Apply rate limiting
+        await rate_limiter(request, user["user_id"], 30, 60)  # 30 requests per minute
+        
         configs = await modelswapper_service.get_user_provider_configs(user["user_id"])
         return configs
+    except HTTPException:
+        raise
+    except ConnectionError as e:
+        logger.error(f"Database connection error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database service temporarily unavailable"
+        )
     except Exception as e:
-        logger.error(f"Failed to get provider configs: {e}")
+        logger.error(f"Failed to get provider configs: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve provider configurations",
+            detail="Failed to retrieve provider configurations: " + str(e)
         )
 
 
@@ -186,28 +211,50 @@ async def get_provider_configs(
     "/provider-configs", response_model=UserProviderConfig
 )  # Changed to UserProviderConfig
 async def create_provider_config(
-    request: CreateProviderConfigRequest,
+    request: Request,
+    config_request: CreateProviderConfigRequest,
     user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK)),
 ):
     """Create a new provider configuration with user's API key."""
     try:
+        # Apply rate limiting - stricter for creation operations
+        await rate_limiter(request, user["user_id"], 10, 60)  # 10 requests per minute
+        
         config = await modelswapper_service.create_user_provider_config(
-            user["user_id"], request
+            user["user_id"], config_request
         )
 
         logger.info(
-            f"Created provider config for {request.provider_type} by user "
+            f"Created provider config for {config_request.provider_type} by user "
             f"{user['user_id']}"
         )
         return config
 
+    except ValueError as e:
+        logger.warning(f"Invalid provider config parameters: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except ValidationError as e:
+        logger.warning(f"Provider config validation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Invalid configuration data: {str(e)}"
+        )
+    except ConnectionError as e:
+        logger.error(f"Database connection error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database service temporarily unavailable"
+        )
     except Exception as e:
         logger.error(
-            f"Failed to create provider config: {e}"
+            f"Failed to create provider config: {e}", exc_info=True
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create provider configuration",
+            detail="Failed to create provider configuration: " + str(e)
         )
 
 
@@ -216,40 +263,80 @@ async def create_provider_config(
 )  # Changed to UserProviderConfig
 async def update_provider_config(
     config_id: str,
-    request: UpdateProviderConfigRequest,
+    request: Request,
+    update_request: UpdateProviderConfigRequest,
     user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK)),
 ):
     """Update an existing provider configuration."""
     try:
+        # Apply rate limiting
+        await rate_limiter(request, user["user_id"], 20, 60)  # 20 requests per minute
+        
         config = await modelswapper_service.update_user_provider_config(
-            user["user_id"], config_id, request
+            user["user_id"], config_id, update_request
         )
+
+        if not config:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Provider configuration with ID {config_id} not found"
+            )
 
         logger.info(f"Updated provider config {config_id} by user {user['user_id']}")
         return config
 
+    except ValueError as e:
+        logger.warning(f"Invalid provider config update parameters: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except ValidationError as e:
+        logger.warning(f"Provider config update validation failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Invalid update data: {str(e)}"
+        )
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Failed to update provider config: {e}")
+        logger.error(f"Failed to update provider config: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update provider configuration",
+            detail=f"Failed to update provider configuration {config_id}: {str(e)}"
         )
 
 
 @router.delete("/provider-configs/{config_id}")
 async def delete_provider_config(
-    config_id: str, user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
+    config_id: str, 
+    request: Request,
+    user: Dict[str, Any] = Depends(require_tier(UserTier.CLAWBACK))
 ):
     """Delete a provider configuration."""
     try:
+        # Apply rate limiting - stricter for deletion operations
+        await rate_limiter(request, user["user_id"], 10, 60)  # 10 requests per minute
+        
+        # Check if the config exists and belongs to the user
+        config = await modelswapper_service.get_user_provider_config(
+            user["user_id"], config_id
+        )
+        
+        if not config:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Provider configuration with ID {config_id} not found"
+            )
+            
         success = await modelswapper_service.delete_user_provider_config(
             user["user_id"], config_id
         )
 
         if not success:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Provider configuration not found",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete provider configuration"
             )
 
         logger.info(f"Deleted provider config {config_id} by user {user['user_id']}")
@@ -258,16 +345,19 @@ async def delete_provider_config(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to delete provider config: {e}")
+        logger.error(f"Failed to delete provider config: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete provider configuration",
+            detail=f"Failed to delete provider configuration {config_id}: {str(e)}"
         )
 
 
 # === Usage & Analytics Endpoints ===
 @router.get("/usage", response_model=UsageStatsResponse)
-async def get_usage_stats(user: Dict[str, Any] = Depends(get_current_user)):
+async def get_usage_stats(
+    request: Request,
+    user: Dict[str, Any] = Depends(apply_rate_limit)
+):
     """Get user's API usage statistics and rate limits."""
     try:
         # TODO: Implement usage statistics retrieval
@@ -288,19 +378,26 @@ async def get_usage_stats(user: Dict[str, Any] = Depends(get_current_user)):
             },
         )
 
+    except ConnectionError as e:
+        logger.error(f"Database connection error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Usage statistics service temporarily unavailable"
+        )
     except Exception as e:
-        logger.error(f"Failed to get usage stats: {e}")
+        logger.error(f"Failed to get usage stats: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve usage statistics",
+            detail=f"Failed to retrieve usage statistics: {str(e)}"
         )
 
 
 # === Model Performance Endpoints ===
 @router.get("/models/performance")
 async def get_model_performance(
+    request: Request,
     task_type: Optional[TaskType] = None,
-    user: Dict[str, Any] = Depends(get_current_user),
+    user: Dict[str, Any] = Depends(apply_rate_limit),
 ):
     """Get model performance statistics for the user."""
     try:
@@ -330,9 +427,19 @@ async def get_model_performance(
             ],
         }
 
+    except ValueError as e:
+        if task_type is not None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid task type: {task_type}"
+            )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
     except Exception as e:
-        logger.error(f"Failed to get model performance: {e}")
+        logger.error(f"Failed to get model performance: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve model performance data",
+            detail=f"Failed to retrieve model performance data: {str(e)}"
         )
