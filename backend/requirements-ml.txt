@@ -23,7 +23,7 @@ whisper==1.1.10
 pydub==0.25.1
 
 # === Text Processing and NLP ===
-nltk==3.8.1
+nltk==3.9.1
 spacy==3.7.2
 langchain==0.0.335
 langchain-community==0.0.10
