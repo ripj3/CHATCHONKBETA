@@ -41,7 +41,7 @@ python-magic==0.4.27  # For file type detection
 aiofiles==23.2.1  # Async file operations
 zipfile38==0.0.3  # Enhanced ZIP handling
 rarfile==4.1  # RAR support
-py7zr==0.20.5  # 7zip support
+py7zr==1.0.0  # 7zip support
 
 # === Document Processing ===
 pypdf==3.17.0  # PDF processing
